@@ -16,6 +16,7 @@ namespace Demo
         static void Main(string[] args)
         {
             var www = new HttpRequest("https://api.datamarket.azure.com");
+            www.Method = HttpRequestMethod.GET;
             www.Path = "Bing/MicrosoftTranslator/v1/Translate";
             www.QueryString += new {
                 Text = "'hello world'",
