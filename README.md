@@ -24,9 +24,12 @@ static void Main(string[] args)
 * 修复在某些情况下初始化会出现错误的问题  
 * 支持提交Json正文  
 ```csharp
-var www = new HttpRequest("www.x.com");
-www.Path = "yyy/zzz";
-www.FormBody += new { id = 1, name = "blqw" };
-www.FormBody.ContentType = ContentType.ApplicationJson;
-www.GetString();
+static void Main(string[] args)
+{
+    var www = new HttpRequest("www.x.com");
+    www.Path = "yyy/zzz";
+    www.FormBody += new { id = 1, name = "blqw" };
+    www.FormBody.ContentType = ContentType.ApplicationJson;
+    www.GetString();
+}
 ```
