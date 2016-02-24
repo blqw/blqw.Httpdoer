@@ -14,12 +14,9 @@ namespace blqw.HttpRequestComponent
     /// </summary>
     class Component
     {
-        public static bool IsInitialized { get; } = Initialize();
-
-        private static bool Initialize()
+        static Component()
         {
             MEFPart.Import(typeof(Component));
-            return true;
         }
 
         [Import]
