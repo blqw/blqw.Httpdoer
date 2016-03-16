@@ -13,7 +13,7 @@ namespace blqw.Web
     /// <remarks>周子鉴 2015.08.01</remarks>
     public class HttpHeaders : HttpParameterCollection
     {
-        static readonly MethodInfo AddInternal = typeof(WebHeaderCollection).GetMethod(
+        static readonly Action<WebHeaderCollection, string, string> AddInternal = (Action<WebHeaderCollection,string, string>)(typeof(WebHeaderCollection).GetMethod(
                     "AddInternal",
                     BindingFlags.NonPublic | BindingFlags.Instance,
                     null,
@@ -24,7 +24,7 @@ namespace blqw.Web
                     BindingFlags.NonPublic | BindingFlags.Instance,
                     null,
                     new Type[] { typeof(string), typeof(string) },
-                    null);
+                    null)).CreateDelegate(typeof(Action<WebHeaderCollection, string, string>));
 
         private static Dictionary<string, HttpResponseHeader> GetSystemHeaders()
         {
@@ -79,7 +79,7 @@ namespace blqw.Web
                 {
                     continue;
                 }
-                AddInternal.Invoke(request.Headers, new object[] { name, this[name] });
+                AddInternal(request.Headers, name, this[name]);
             }
         }
 

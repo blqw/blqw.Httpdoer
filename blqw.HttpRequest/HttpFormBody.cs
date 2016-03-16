@@ -74,9 +74,7 @@ namespace blqw.Web
         /// <summary> 设定头
         /// </summary>
         public string ContentType { get; set; }
-
-
-        static readonly XmlSerializer _XmlSerializer = new XmlSerializer(typeof(HttpFormBody));
+        
         /// <summary> 返回表单参数的字节
         /// </summary>
         /// <param name="encoding">编码格式</param>
