@@ -16,21 +16,47 @@ namespace Demo
 
         static void Main(string[] args)
         {
-            Debug.Listeners.Add(new ConsoleTraceListener());
-            var www = new HttpRequest("https://api.datamarket.azure.com");
-            www.Method = HttpRequestMethod.GET;
-            www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-            www.QueryString += new {
-                Text = "'hello world'",
-                To = "'zh-CHS'"
-            };
 
-            www.Headers.Add("Authorization", AUTH_TOKEN);
-            
-            var str = www.GetString().Result;
-            
-            Console.WriteLine();
-            Console.WriteLine(GetText(str));
+            AAA().Wait();
+
+            Console.Read();
+
+
+
+
+
+
+
+
+            //Debug.Listeners.Add(new ConsoleTraceListener());
+            //var www = new HttpRequest("https://api.datamarket.azure.com");
+            //www.Method = HttpRequestMethod.GET;
+            //www.Path = "Bing/MicrosoftTranslator/v1/Translate";
+            //www.QueryString += new {
+            //    Text = "'hello world'",
+            //    To = "'zh-CHS'"
+            //};
+
+            //www.Headers.Add("Authorization", AUTH_TOKEN);
+
+            //var str = www.GetString().Result;
+
+            //Console.WriteLine();
+            //Console.WriteLine(GetText(str));
+        }
+
+        public static async Task AAA()
+        {
+            RequestPool.Interval = 5000;
+            await Task.Yield();
+            var www = new HttpRequest("http://localhost:27214/api/values");
+            www.Timeout = new TimeSpan(0, 0, 1);
+            var s = await www.GetString();
+            if (www.Exception != null)
+            {
+                Console.WriteLine(www.Exception.Message);
+            }
+            Console.WriteLine(s);
         }
 
         static string GetText(string str)

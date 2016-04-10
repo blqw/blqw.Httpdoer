@@ -43,7 +43,7 @@ namespace blqw.Web
             }
             return true;
         }
-        
+
         /// <summary> 初始化http请求
         /// </summary>
         public HttpRequest()
@@ -93,11 +93,17 @@ namespace blqw.Web
         /// </summary>
         public TimeSpan Timeout { get; set; }
 
+        /// <summary>
+        /// 是否需要保持连接
+        /// </summary>
+        public bool KeepAlive { get; set; }
 
         HttpHeaders _Headers;
         HttpQueryString _QueryString;
         HttpFormBody _FormBody;
         CookieContainer _Cookie;
+        Action _Abort;
+        DateTime _RequestCreated;
 
         /// <summary> 请求头
         /// </summary>
@@ -159,6 +165,7 @@ namespace blqw.Web
                 }
                 var timer = Stopwatch.StartNew();
                 var bytes = GetBytes(response);
+                response.Close();
                 timer.Stop();
                 Trace.WriteLine($"timing: {timer.ElapsedMilliseconds}; length:{bytes.Length}", "HttpRequest.ReadBytes");
                 return bytes;
@@ -174,6 +181,10 @@ namespace blqw.Web
         {
             using (var stream = response.GetResponseStream())
             {
+                if (stream.CanTimeout)
+                {
+                    stream.ReadTimeout = 3000;
+                }
                 if ("gzip".Equals(response.ContentEncoding, StringComparison.OrdinalIgnoreCase))
                 {
                     using (var gzip = new GZipStream(stream, CompressionMode.Decompress))
@@ -219,10 +230,12 @@ namespace blqw.Web
             www.Timeout = (int)Timeout.TotalMilliseconds;
             Headers.SetHeaders(www);
             www.Method = GetMethod();
-            www.KeepAlive = false;
-
+            www.KeepAlive = KeepAlive;
             try
             {
+                _Abort = www.Abort;
+                RequestPool.Add(this);
+                _RequestCreated = DateTime.Now;
                 if (_FormBody != null)
                 {
                     FormBody.SetHeaders(www, Encoding);
@@ -232,6 +245,10 @@ namespace blqw.Web
                     {
                         using (var req = await www.GetRequestStreamAsync())
                         {
+                            if (req.CanTimeout)
+                            {
+                                req.WriteTimeout = 3000;
+                            }
                             await req.WriteAsync(formdata, 0, formdata.Length).ConfigureAwait(false);
                         }
                     }
@@ -243,7 +260,9 @@ namespace blqw.Web
 
                 ms[1] = "set data:" + timer.ElapsedMilliseconds;
                 timer.Restart();
-                var res = (HttpWebResponse)await www.GetResponseAsync();
+                _RequestCreated = DateTime.Now;
+                var res = (HttpWebResponse)await www.GetResponseAsync().ConfigureAwait(false);
+                _Abort = null;
                 ms[2] = "response:" + timer.ElapsedMilliseconds;
                 timer.Restart();
                 www.CookieContainer = new CookieContainer();
@@ -279,10 +298,36 @@ namespace blqw.Web
             }
             finally
             {
+                _Abort = null;
                 ms[3] = "end:" + timer.ElapsedMilliseconds;
                 Trace.WriteLine(ResponseCode, "HttpRequest.StatusCode");
                 Trace.WriteLine(string.Join("; ", ms), "HttpRequest.Timing");
             }
+        }
+
+        /// <summary>
+        /// 取消请求
+        /// </summary>
+        public void Abort()
+        {
+            _Abort?.Invoke();
+        }
+
+        /// <summary>
+        /// 判断是否已完成或超时
+        /// </summary>
+        internal bool IsCompletedOrTimeout()
+        {
+            if (_Abort == null)
+            {
+                return true;
+            }
+            if ((DateTime.Now - _RequestCreated) > Timeout)
+            {
+                Abort();
+                return true;
+            }
+            return false;
         }
 
         /// <summary> 
@@ -331,6 +376,10 @@ namespace blqw.Web
         /// <param name="stream"></param>
         private static IEnumerable<byte> ReadAll(Stream stream)
         {
+            if (stream.CanTimeout)
+            {
+                stream.ReadTimeout = 3000;
+            }
             int length = 1024;
             byte[] buffer = new byte[length];
             int index = 0;
