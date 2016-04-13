@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -26,22 +27,9 @@ namespace blqw.Web
 
         private static bool Initialize()
         {
-            //用于https的请求验证票据
-            ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
             //并发请求数
             ServicePointManager.DefaultConnectionLimit = 1024;
-            try
-            {
-                //用于Get提交正文的请求
-                var t = typeof(HttpWebRequest).GetField("_Verb", BindingFlags.Instance | BindingFlags.NonPublic).FieldType;
-                var list = (IDictionary)t.GetField("NamedHeaders", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-                list["Get+"] = t.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)[0].Invoke(new object[] { "GET", true, false, false, false });
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-            return true;
+            return false;
         }
 
         /// <summary> 初始化http请求
@@ -103,7 +91,6 @@ namespace blqw.Web
         HttpFormBody _FormBody;
         CookieContainer _Cookie;
         Action _Abort;
-        DateTime _RequestCreated;
 
         /// <summary> 请求头
         /// </summary>
@@ -112,6 +99,8 @@ namespace blqw.Web
             get { return _Headers ?? (_Headers = new HttpHeaders()); }
             set { _Headers = value; }
         }
+
+
         /// <summary> Url参数
         /// </summary>
         public HttpQueryString QueryString
@@ -154,7 +143,6 @@ namespace blqw.Web
 
         /// <summary> 获取请求字节 
         /// </summary>
-        /// <remarks>周子鉴 2016.02.01</remarks>
         public async Task<byte[]> GetBytes()
         {
             using (var response = await GetResponse())
@@ -164,46 +152,46 @@ namespace blqw.Web
                     return new byte[0];
                 }
                 var timer = Stopwatch.StartNew();
-                var bytes = GetBytes(response);
-                response.Close();
+                var bytes = await response.Content.ReadAsByteArrayAsync();
                 timer.Stop();
                 Trace.WriteLine($"timing: {timer.ElapsedMilliseconds}; length:{bytes.Length}", "HttpRequest.ReadBytes");
                 return bytes;
             }
         }
 
-        /// <summary> 获取响应的字节流
-        /// </summary>
-        /// <param name="response">响应体</param>
-        /// <returns></returns>
-        /// <remarks>周子鉴 2016.02.01</remarks>
-        private byte[] GetBytes(HttpWebResponse response)
+        static readonly HttpClient HttpClient = GetOnlyHttpClient();
+
+        private static HttpClient GetOnlyHttpClient()
         {
-            using (var stream = response.GetResponseStream())
-            {
-                if (stream.CanTimeout)
-                {
-                    stream.ReadTimeout = 3000;
-                }
-                if ("gzip".Equals(response.ContentEncoding, StringComparison.OrdinalIgnoreCase))
-                {
-                    using (var gzip = new GZipStream(stream, CompressionMode.Decompress))
-                    {
-                        return ReadAll(gzip).ToArray();
-                    }
-                }
-                return ReadAll(stream).ToArray();
-            }
+            var handler = new HttpClientHandler();
+            handler.AllowAutoRedirect = true;
+            handler.MaxAutomaticRedirections = 10;
+            handler.UseCookies = false;
+            handler.AutomaticDecompression = DecompressionMethods.GZip;
+            handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
+            var www = new HttpClient(handler);
+            www.Timeout = new TimeSpan(0, 0, 30);
+            www.MaxResponseContentBufferSize = int.MaxValue;
+            www.DefaultRequestHeaders.Add("User-Agent", HttpHeaders.DefaultUserAgent);
+            return www;
         }
 
         /// <summary>
         /// 获取相应对象
         /// </summary>
         /// <returns></returns>
-        public async Task<HttpWebResponse> GetResponse()
+        public async Task<HttpResponseMessage> GetResponse()
         {
             var timer = Stopwatch.StartNew();
-            string[] ms = new string[4];
+            long pre = 0,
+                setheader = 0,
+                setbody = 0,
+                res = 0,
+                acceptcookie = 0,
+                acceptheader = 0,
+                error = 0,
+                end = 0;
+
             if (Encoding == null)
             {
                 Encoding = Encoding.UTF8;
@@ -212,7 +200,7 @@ namespace blqw.Web
             {
                 await PreRequest.ConfigureAwait(false);
                 PreRequest = null;
-                ms[0] = "pre:" + timer.ElapsedMilliseconds;
+                pre = timer.ElapsedMilliseconds;
                 timer.Restart();
             }
             ResponseCode = 0;
@@ -221,87 +209,113 @@ namespace blqw.Web
 
             Trace.WriteLine(uri.ToString(), "HttpRequest.Url");
 
-            var www = WebRequest.CreateHttp(uri);
-            if (uri.Scheme == Uri.UriSchemeHttps)
-            {
-                www.ProtocolVersion = HttpVersion.Version10;
-            }
-            www.CookieContainer = Cookie;
-            www.Timeout = (int)Timeout.TotalMilliseconds;
-            Headers.SetHeaders(www);
-            www.Method = GetMethod();
-            www.KeepAlive = KeepAlive;
+            var cancel = new CancellationTokenSource(Timeout);
             try
             {
-                _Abort = www.Abort;
-                RequestPool.Add(this);
-                _RequestCreated = DateTime.Now;
+                _Abort = cancel.Cancel;
+                var message = new HttpRequestMessage(GetHttpMethod(), uri);
+
+                if (Cookie?.Count > 0) message.Headers.Add("Cookie", Cookie.GetCookieHeader(uri));
+                if (KeepAlive) message.Headers.Connection.Add("keep-alive");
+
                 if (_FormBody != null)
                 {
-                    FormBody.SetHeaders(www, Encoding);
                     var formdata = FormBody.GetBytes(Encoding);
-                    www.ContentLength = formdata.Length;
-                    if (formdata.Length > 0)
-                    {
-                        using (var req = await www.GetRequestStreamAsync())
-                        {
-                            if (req.CanTimeout)
-                            {
-                                req.WriteTimeout = 3000;
-                            }
-                            await req.WriteAsync(formdata, 0, formdata.Length).ConfigureAwait(false);
-                        }
-                    }
-                }
-                else
-                {
-                    www.ContentLength = 0;
+                    message.Content = new ByteArrayContent(formdata);
+
+                    message.Content.Headers.Add("Content-Type", FormBody.ContentType);
+                    message.Content.Headers.ContentType.CharSet = Encoding.WebName;
+                    //message.Headers.TryAddWithoutValidation("Content-Type", "charset=" + Encoding.WebName);
+
+                    setbody = timer.ElapsedMilliseconds;
+                    timer.Restart();
                 }
 
-                ms[1] = "set data:" + timer.ElapsedMilliseconds;
-                timer.Restart();
-                _RequestCreated = DateTime.Now;
-                var res = (HttpWebResponse)await www.GetResponseAsync().ConfigureAwait(false);
+                if (_Headers?.Count > 0)
+                {
+                    foreach (var item in _Headers)
+                    {
+                        var arr = item.Value as IEnumerable<string>;
+                        if (arr != null)
+                        {
+                            if (!message.Headers.TryAddWithoutValidation(item.Key, arr)
+                                && message.Content != null)
+                            {
+                                message.Content.Headers.TryAddWithoutValidation(item.Key, arr);
+                            }
+                        }
+                        else
+                        {
+
+                            var str = item.Value as string ?? item.Value + "";
+                            if (!message.Headers.TryAddWithoutValidation(item.Key, str)
+                                && message.Content != null)
+                            {
+                                message.Content.Headers.TryAddWithoutValidation(item.Key, str);
+                            }
+                        }
+
+                    }
+                    setheader = timer.ElapsedMilliseconds;
+                    timer.Restart();
+                }
+
+
+                var response = await HttpClient.SendAsync(message, cancel.Token);
                 _Abort = null;
-                ms[2] = "response:" + timer.ElapsedMilliseconds;
+                res = timer.ElapsedMilliseconds;
                 timer.Restart();
-                www.CookieContainer = new CookieContainer();
-                www.CookieContainer.Add(res.Cookies);
-                Headers.Clear();
-                Headers.Add(res.Headers);
-                ResponseCode = res.StatusCode;
-                return res;
+                if (AcceptCookie && response.Headers.Contains("Set-Cookie"))
+                {
+                    var setcookies = response.Headers.GetValues("Set-Cookie");
+                    foreach (var cookie in setcookies)
+                    {
+                        Cookie.SetCookies(uri, cookie);
+                    }
+                    acceptcookie = timer.ElapsedMilliseconds;
+                    timer.Restart();
+                }
+                if (AcceptHeader)
+                {
+                    Headers.Clear();
+                    foreach (var head in response.Headers)
+                    {
+                        Headers.Add(head.Key, head.Value);
+                    }
+                    foreach (var head in response.Content.Headers)
+                    {
+                        Headers.Add(head.Key, head.Value);
+                    }
+                    acceptheader = timer.ElapsedMilliseconds;
+                    timer.Restart();
+                }
+                ResponseCode = response.StatusCode;
+                return response;
 
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
-                Exception = ex;
-                Trace.WriteLine(ex.Message, "HttpRequest.Error");
-                var res = ex.Response as HttpWebResponse;
-                ms[2] = "error:" + timer.ElapsedMilliseconds;
+                error = timer.ElapsedMilliseconds;
                 timer.Restart();
-                if (res != null)
+                if (ex is TaskCanceledException && _Abort != null)
                 {
-                    www.CookieContainer = new CookieContainer();
-                    www.CookieContainer.Add(res.Cookies);
-                    Headers.Clear();
-                    Headers.Add(res.Headers);
-                    ResponseCode = res.StatusCode;
-                    return res;
+                    ex = new TimeoutException("请求已超时");
                 }
-                else
-                {
-                    ResponseCode = (HttpStatusCode)ex.Status;
-                    return null;
-                }
-                throw;
+                Trace.WriteLine(ex.Message, "HttpRequest.Error");
+                Exception = ex;
+                ResponseCode = 0;
+                return null;
             }
             finally
             {
+                cancel?.Dispose();
                 _Abort = null;
-                ms[3] = "end:" + timer.ElapsedMilliseconds;
+                setbody = timer.ElapsedMilliseconds;
+                timer.Stop();
                 Trace.WriteLine(ResponseCode, "HttpRequest.StatusCode");
-                Trace.WriteLine(string.Join("; ", ms), "HttpRequest.Timing");
+                Trace.WriteLine(
+                    $"pre={pre}; setheader={setheader}; setbody={setbody}; response={res}; acceptcookie={acceptcookie}; acceptheader={acceptheader}; error={error}; end={end}",
+                    "HttpRequest.Timing");
             }
         }
 
@@ -310,24 +324,12 @@ namespace blqw.Web
         /// </summary>
         public void Abort()
         {
-            _Abort?.Invoke();
-        }
-
-        /// <summary>
-        /// 判断是否已完成或超时
-        /// </summary>
-        internal bool IsCompletedOrTimeout()
-        {
-            if (_Abort == null)
+            var abort = _Abort;
+            if (abort != null)
             {
-                return true;
+                _Abort = null;
+                abort();
             }
-            if ((DateTime.Now - _RequestCreated) > Timeout)
-            {
-                Abort();
-                return true;
-            }
-            return false;
         }
 
         /// <summary> 
@@ -392,6 +394,34 @@ namespace blqw.Web
             }
         }
 
+        static readonly HttpMethod HttpMethod_CONNECT = new HttpMethod("CONNECT");
+        /// <summary> 获取 HttpMethod
+        /// </summary>
+        public HttpMethod GetHttpMethod()
+        {
+            switch (Method)
+            {
+                case HttpRequestMethod.GET:
+                    return HttpMethod.Get;
+                case HttpRequestMethod.POST:
+                    return HttpMethod.Post;
+                case HttpRequestMethod.HEAD:
+                    return HttpMethod.Head;
+                case HttpRequestMethod.TRACE:
+                    return HttpMethod.Trace;
+                case HttpRequestMethod.PUT:
+                    return HttpMethod.Put;
+                case HttpRequestMethod.DELETE:
+                    return HttpMethod.Delete;
+                case HttpRequestMethod.OPTIONS:
+                    return HttpMethod.Options;
+                case HttpRequestMethod.CONNECT:
+                    return HttpMethod_CONNECT;
+                default:
+                    return HttpMethod.Get;
+            }
+        }
+
         /// <summary> 获取 HttpMethod 枚举的字符串
         /// </summary>
         public string GetMethod()
@@ -399,7 +429,7 @@ namespace blqw.Web
             switch (Method)
             {
                 case HttpRequestMethod.GET:
-                    return IsInitialized ? "GET+" : "GET";
+                    return "GET";
                 case HttpRequestMethod.POST:
                     return "POST";
                 case HttpRequestMethod.HEAD:
@@ -452,6 +482,8 @@ namespace blqw.Web
         /// <summary> 发出请求前执行的任务
         /// </summary>
         internal Task PreRequest { get; set; }
+        public bool AcceptHeader { get; set; }
+        public bool AcceptCookie { get; set; }
 
         /// <summary>
         /// 返回当前请求的url

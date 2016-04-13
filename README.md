@@ -20,6 +20,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.04.14
+* 新增同步版本,基于原有的HttpWebRequest实现  
+* 优化异步版本,基于HttpClient重新实现  
+
 #### 2016.04.11
 * 增加一个连接池管理长时间无法结束的请求  
   

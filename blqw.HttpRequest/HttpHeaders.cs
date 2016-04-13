@@ -37,8 +37,7 @@ namespace blqw.Web
 
             return dict;
         }
-
-
+        
         /// <summary> 运算符 加号(+) 重载,实现追加参数的语法糖
         /// </summary>
         /// <param name="headers">需要追加参数的请求头</param>
@@ -53,6 +52,20 @@ namespace blqw.Web
             return headers;
         }
 
+        internal static readonly string DefaultUserAgent = GetDefaultUserAgent();
+
+        private static string GetDefaultUserAgent()
+        {
+            var windows = Environment.OSVersion.ToString();
+            if (Environment.Is64BitOperatingSystem)
+            {
+                windows += "; WOW64";
+            }
+            var nf = ".NET-Framework/" + Environment.Version.ToString();
+            var name = typeof(HttpRequest).Assembly.GetName();
+            return $"{nf} ({windows}) {name.Name}/{name.Version.ToString()} ({Environment.MachineName}; {Environment.UserName})";
+        }
+
         /// <summary> 设置请求头
         /// </summary>
         /// <param name="request">http请求</param>
@@ -63,11 +76,11 @@ namespace blqw.Web
             var useragent = this["UserAgent"];
             if (useragent == null)
             {
-                request.UserAgent = "Top.Framework/3.5.0.0";
+                request.UserAgent = DefaultUserAgent;
             }
             else
             {
-                request.UserAgent = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(useragent)) ?? "Top.Framework/3.5.0.0";
+                request.UserAgent = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(useragent)) ?? DefaultUserAgent;
             }
             request.Headers["Accept-Encoding"] = "gzip, deflate, sdch";
             request.Headers["Accept-Language"] = "zh-CN,zh;q=0.8";

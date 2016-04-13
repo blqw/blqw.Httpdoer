@@ -20,7 +20,7 @@ namespace PerformanceTest
     {
         static SimpleCrawler()
         {
-            RequestPool.Interval = 5000;
+
         }
         static ConcurrentQueue<Uri> Urls = new ConcurrentQueue<Uri>();
 
@@ -129,6 +129,7 @@ namespace PerformanceTest
                 {
                     www.KeepAlive = true;
                     www.BaseUrl = await GetUrl();
+                    www.AcceptHeader = true;
                     var html = await www.GetString();
                     sw.Stop();
                     if (sw.Elapsed > MaxTime)

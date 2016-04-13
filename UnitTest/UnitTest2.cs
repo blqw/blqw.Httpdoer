@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using blqw.Web;
+using System.Net;
 
 namespace UnitTest
 {
@@ -90,5 +91,32 @@ namespace UnitTest
             var json = www.Encoding.GetString(www.FormBody.GetBytes(www.Encoding));
             Assert.AreEqual("{\"a\":[[1,2],[3,4,5]]}", json);
         }
+
+
+        [TestMethod]
+        public void 测试头编码()
+        {
+            var model = new
+            {
+                OwnerId = 510789,
+                BrokerKId = 49005,
+                BrokerName = "肖佳",
+                Phone = "15012345600",
+                EarnestMoney = 15200,
+                HouseList = new[] {
+                    new { VillageName = "凤凰城", Building = "1幢", HouseId = "12" }
+                }
+            };
+
+            var www = new HttpRequest("www.baidu.com");
+            www.KeepAlive = true;
+            www.Cookie.Add(new Uri("http://www.baidu.com"),new Cookie("sessionid","123456789"));
+            www.FormBody.Add(model);
+            www.Method = HttpRequestMethod.POST;
+            www.Encoding = System.Text.Encoding.Default;
+            www.FormBody.ContentType = ContentType.ApplicationJson + ";charset=utf-8";
+            www.GetString().Wait();
+        }
+
     }
 }

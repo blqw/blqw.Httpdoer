@@ -16,48 +16,33 @@ namespace Demo
 
         static void Main(string[] args)
         {
-
-            AAA().Wait();
-
-            Console.Read();
-
-
-
-
-
-
-
-
-            //Debug.Listeners.Add(new ConsoleTraceListener());
-            //var www = new HttpRequest("https://api.datamarket.azure.com");
-            //www.Method = HttpRequestMethod.GET;
-            //www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-            //www.QueryString += new {
-            //    Text = "'hello world'",
-            //    To = "'zh-CHS'"
-            //};
-
-            //www.Headers.Add("Authorization", AUTH_TOKEN);
-
-            //var str = www.GetString().Result;
-
-            //Console.WriteLine();
-            //Console.WriteLine(GetText(str));
-        }
-
-        public static async Task AAA()
-        {
-            RequestPool.Interval = 5000;
-            await Task.Yield();
-            var www = new HttpRequest("http://localhost:27214/api/values");
-            www.Timeout = new TimeSpan(0, 0, 1);
-            var s = await www.GetString();
-            if (www.Exception != null)
+            Debug.Listeners.Add(new ConsoleTraceListener());
+            //var www = new HttpRequest("http://localhost:27214/api/values");
+            //www.Timeout = new TimeSpan(0,0,5);
+            //www.QueryString.Add("id", "1");
+            //var task = www.GetString();
+            //www.Abort();
+            //task.Wait();
+            var www = new HttpRequest("https://api.datamarket.azure.com");
+            www.Method = HttpRequestMethod.GET;
+            www.Path = "Bing/MicrosoftTranslator/v1/Translate";
+            www.AcceptCookie = true;
+            www.AcceptHeader = true;
+            www.QueryString += new
             {
-                Console.WriteLine(www.Exception.Message);
-            }
-            Console.WriteLine(s);
+                Text = "'hello world'",
+                To = "'zh-CHS'"
+            };
+
+            www.Headers.Add("Authorization", AUTH_TOKEN);
+
+            var str = www.GetString().Result;
+
+            Console.WriteLine();
+            Console.WriteLine(GetText(str));
         }
+
+       
 
         static string GetText(string str)
         {

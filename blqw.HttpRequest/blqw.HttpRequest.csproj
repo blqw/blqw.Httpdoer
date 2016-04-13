@@ -51,12 +51,12 @@
     <Compile Include="HttpParameterCollection.cs" />
     <Compile Include="HttpQueryString.cs" />
     <Compile Include="HttpRequest.cs" />
+    <Compile Include="HttpRequestSync.cs" />
     <Compile Include="HttpRequestMethod.cs" />
     <Compile Include="IOC\Component.cs" />
     <Compile Include="IOC\MEF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestContentType.cs" />
-    <Compile Include="RequestPool.cs" />
     <Compile Include="SimpleRequest.cs" />
     <Compile Include="TaskTimeout.cs" />
   </ItemGroup>

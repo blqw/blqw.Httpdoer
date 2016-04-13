@@ -70,6 +70,37 @@ namespace blqw.Web
             request.Method = HttpRequestMethod.POST;
             return request.GetString();
         }
+
+        /// <summary> 用于简单的Get请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        [Export("HttpGet")]
+        [ExportMetadata("Priority", 100)]
+        public static Task<string> Get(string url, object data)
+        {
+            var request = new HttpRequest();
+            request.Path = url;
+            request.QueryString.Add(data);
+            request.Method = HttpRequestMethod.GET;
+            return request.GetString();
+        }
+
+        /// <summary> 用于简单的Post请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        [Export("HttpPost")]
+        [ExportMetadata("Priority", 100)]
+        public static Task<string> Post(string url, object data)
+        {
+            var request = new HttpRequest();
+            request.Path = url;
+            request.FormBody.Add(data);
+            request.Method = HttpRequestMethod.POST;
+            return request.GetString();
+        }
+
     }
 
 }
