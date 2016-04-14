@@ -20,6 +20,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.04.15
+* 更新MEF  
+
 #### 2016.04.14
 * 新增同步版本,基于原有的HttpWebRequest实现  
 * 优化异步版本,基于HttpClient重新实现  
