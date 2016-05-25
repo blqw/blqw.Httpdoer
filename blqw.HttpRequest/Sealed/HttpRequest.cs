@@ -86,43 +86,29 @@ namespace blqw.Web
         public Uri GetURL()
         {
             Uri baseUrl = BaseUrl;
-            var url = Path;
-            Uri uri;
-            if (url == null)
+            var path = Path;
+
+            if (path == null && baseUrl == null)
             {
-                if (baseUrl == null)
-                {
-                    throw new ArgumentNullException($"{nameof(BaseUrl)} + {nameof(Path)}");
-                }
-                uri = BaseUrl;
+                return null;
             }
-            else if (BaseUrl == null)
+
+            Uri url;
+            if (baseUrl == null)
             {
-                if (Uri.TryCreate(url, UriKind.Absolute, out uri) == false)
+                if (Uri.TryCreate(path, UriKind.Absolute, out url) == false)
                 {
                     throw new UriFormatException("UrlError");
                 }
-            }
-            else if (Uri.TryCreate(BaseUrl + url, UriKind.Absolute, out uri) == false)
-            {
-                throw new UriFormatException("UrlError");
+                return url;
             }
 
-            var query = Query.ToString();
-            if (query.Length == 0)
+            if(Uri.TryCreate(baseUrl, path, out url))
             {
-                return uri;
+                return url;
             }
 
-            if (uri.Query.Length == 0 || "?".Equals(uri.Query))
-            {
-                query = "?" + query;
-            }
-            else
-            {
-                query = uri.Query.TrimEnd(_TrimChars) + "&" + query;
-            }
-            return new Uri(uri, query);
+            throw new UriFormatException("UrlError");
         }
 
         static readonly char[] _TrimChars = new[] { '&' };

@@ -21,14 +21,15 @@ namespace blqw.Web
 
         public IHttpResponse Send(IHttpRequest request)
         {
-            Uri url = request.GetURL();
-            Trace.WriteLine(url.ToString(), "HttpRequest.Url");
-            var www = WebRequest.CreateHttp(url);
+            var data = new HttpRequestData(request);
+
+            Trace.WriteLine(data.Url.ToString(), "HttpRequest.Url");
+            var www = WebRequest.CreateHttp(data.Url);
             if (request.Version != null)
             {
                 www.ProtocolVersion = request.Version;
             }
-            else if (url.Scheme == Uri.UriSchemeHttps)
+            else if (data.Url.Scheme == Uri.UriSchemeHttps)
             {
                 www.ProtocolVersion = HttpVersion.Version10;
             }
@@ -36,7 +37,7 @@ namespace blqw.Web
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
-
+            
 
             throw new NotImplementedException();
         }

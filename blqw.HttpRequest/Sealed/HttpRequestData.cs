@@ -30,11 +30,36 @@ namespace blqw.Web
             {
                 throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
             }
-
-            _Path = request.ToString();
+            var url = request.GetURL();
+            if (url == null)
+            {
+                throw new UriFormatException("url不能为空");
+            }
+            _Path = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
+            var fragment = url.Fragment;
             Body = parser.Format(null, GetBodyParams(request), provider);
-            var query = _Buffer.ToString();
-
+            if (url.Query.Length == 0)
+            {
+                _Buffer.Append("?");
+            }
+            else
+            {
+                _Buffer.Append(url.Query);
+            }
+            string query;
+            if (_Buffer.Length == 1)
+            {
+                query = fragment;
+            }
+            else
+            {
+                query = _Buffer.Append(fragment).ToString();
+            }
+            if (Uri.TryCreate(url, query, out url) == false)
+            {
+                throw new UriFormatException();
+            }
+            Url = url;
         }
 
         private string _Path;
@@ -49,6 +74,13 @@ namespace blqw.Web
             {
                 switch (param.Location)
                 {
+                    case HttpParamLocation.Auto:
+                        if (_Path.Contains("{" + param.Name + "}"))
+                            goto case HttpParamLocation.Path;
+                        else if (request.Method == HttpMethod.Get)
+                            goto case HttpParamLocation.Query;
+                        else
+                            goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
                         AppendObject(_Buffer, param.Name, param.Value);
                         break;
@@ -58,25 +90,10 @@ namespace blqw.Web
                     case HttpParamLocation.Path:
                         _Path.Replace("{" + param.Name + "}", param.Value?.ToString());
                         break;
-                    case HttpParamLocation.Auto:
-                        if (request.Method == HttpMethod.Get)
-                        {
-                            goto case HttpParamLocation.Query;
-                        }
-                        else if (_Path.Contains("{" + param.Name + "}"))
-                        {
-                            goto case HttpParamLocation.Path;
-                        }
-                        else
-                        {
-                            goto case HttpParamLocation.Body;
-                        }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));
                 }
-
             }
-            throw new NotImplementedException();
         }
 
         private static void AppendObject(StringBuilder buffer, string preName, object obj)
@@ -114,9 +131,7 @@ namespace blqw.Web
                 AppendObject(buffer, ConcatName(preName, p.Name), p.GetValue(obj));
             }
         }
-
-
-
+        
         private static void AppendEscape(StringBuilder buffer, string str)
         {
             const int max = 32766;
@@ -139,8 +154,7 @@ namespace blqw.Web
             }
             buffer.Append(Uri.EscapeDataString(str.Substring(i, length - i + max)));
         }
-
-
+        
         /// <summary> 
         /// 连接参数名,如果存在前缀的话 组成 `前缀.参数名` 的格式
         /// </summary>
