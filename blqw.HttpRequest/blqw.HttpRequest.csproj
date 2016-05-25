@@ -45,20 +45,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\HttpBodyParserBase.cs" />
+    <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="EncodeURI.cs" />
-    <Compile Include="HttpFormBody.cs" />
-    <Compile Include="HttpHeaders.cs" />
-    <Compile Include="HttpParameterCollection.cs" />
-    <Compile Include="HttpQueryString.cs" />
-    <Compile Include="HttpRequest.cs" />
-    <Compile Include="HttpRequestSync.cs" />
-    <Compile Include="HttpRequestMethod.cs" />
+    <Compile Include="Sealed\HttpBody.cs" />
+    <Compile Include="Interface\IHttpBodyParser.cs" />
+    <Compile Include="Interface\IHttpParameterCollection.cs" />
+    <Compile Include="Sealed\HttpBodyParsers.cs" />
+    <Compile Include="Sealed\HttpClientSync.cs" />
+    <Compile Include="Sealed\HttpContentType.cs" />
+    <Compile Include="Sealed\HttpHeaders.cs" />
+    <Compile Include="Sealed\HttpParamLocation.cs" />
+    <Compile Include="Sealed\HttpParameterCollection.cs" />
+    <Compile Include="Sealed\HttpParams.cs" />
+    <Compile Include="Sealed\HttpParamValue.cs" />
+    <Compile Include="Interface\IHttpClient.cs" />
+    <Compile Include="Interface\IHttpRequest.cs" />
+    <Compile Include="Interface\IHttpResponse.cs" />
     <Compile Include="IOC\Component.cs" />
     <Compile Include="IOC\MEF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestContentType.cs" />
-    <Compile Include="SimpleRequest.cs" />
-    <Compile Include="TaskTimeout.cs" />
+    <Compile Include="Sealed\HttpRequest.cs" />
+    <Compile Include="Sealed\HttpRequestData.cs" />
+    <Compile Include="Sealed\HttpStringParams.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Old\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
