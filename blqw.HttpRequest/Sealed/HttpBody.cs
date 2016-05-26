@@ -13,9 +13,18 @@ namespace blqw.Web
     public sealed class HttpBody : HttpParamsBase<object>, IFormattable
     {
         internal HttpBody(IHttpParameterCollection @params)
-            :base(@params)
+            : base(@params)
         {
 
+        }
+
+        public HttpBody(IEnumerable<KeyValuePair<string, object>> body)
+            :base(new HttpParameterCollection())
+        {
+            foreach (var item in body)
+            {
+                base[item.Key] = item.Value;
+            }
         }
 
         public override HttpParamLocation Location
@@ -25,31 +34,19 @@ namespace blqw.Web
                 return HttpParamLocation.Body;
             }
         }
-
-
-        public byte[] GetBytes()
+       
+        public HttpContentType ContentType
         {
-            var parser = ContentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
-            if (parser == null)
+            get
             {
-                return null;
+                return (string)Params.GetValue("Content-Type", HttpParamLocation.Header);
             }
-            return parser.Format(null, this, ContentType);
-        }
-
-        public HttpContentType ContentType { get; set; }
-
-        public bool SetContentType(string contentType, Encoding defaultEncoding)
-        {
-            HttpContentType result;
-            if (HttpContentType.TryParse(contentType, defaultEncoding, out result))
+            set
             {
-                ContentType = result;
-                return true;
+                Params.SetValue("Content-Type", value.ToString(), HttpParamLocation.Header);
             }
-            return false;
         }
-
+        
         public string ToString(string format)
         {
             return ToString(format, ContentType);
@@ -73,6 +70,6 @@ namespace blqw.Web
             }
             return parser.Format(format, this, formatProvider);
         }
-        
+
     }
 }

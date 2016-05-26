@@ -8,13 +8,25 @@ namespace blqw.Web
 {
     public abstract class HttpBodyParserBase : IHttpBodyParser
     {
-        public abstract string Format(string format, object arg, IFormatProvider formatProvider);
-        public virtual byte[] Format(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
+        public abstract IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
+        public abstract byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
+
+        public  virtual string Format(string format, object arg, IFormatProvider formatProvider)
         {
-            var str = ((ICustomFormatter)this).Format(format, body, formatProvider);
+            if (arg == null)
+            {
+                return string.Empty;
+            }
+            var body = arg as IEnumerable<KeyValuePair<string, object>>;
+            if (body == null)
+            {
+                throw new FormatException(nameof(arg) + "必须是" + nameof(IEnumerable<KeyValuePair<string, object>>));
+            }
+            var bytes = Serialize(format, body, formatProvider);
             var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding
                         ?? Encoding.UTF8;
-            return charset.GetBytes(str);
+            return charset.GetString(bytes);
+
         }
     }
 }

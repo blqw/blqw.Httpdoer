@@ -18,6 +18,13 @@ namespace blqw.Web
         /// <param name="body">请求或响应正文</param>
         /// <param name="formatProvider">它提供有关当前实例的格式信息</param>
         /// <returns></returns>
-        byte[] Format(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
+        byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
+
+        /// <summary>
+        /// 将字节流转换为键值对枚举
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
     }
 }

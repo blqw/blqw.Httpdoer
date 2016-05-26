@@ -15,6 +15,11 @@ namespace blqw.Web
         public HttpRequestData(IHttpRequest request)
             : this()
         {
+            var url = request.GetURL();
+            if (url == null)
+            {
+                throw new UriFormatException("url不能为空");
+            }
             if (_Buffer == null)
             {
                 _Buffer = new StringBuilder();
@@ -30,14 +35,8 @@ namespace blqw.Web
             {
                 throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
             }
-            var url = request.GetURL();
-            if (url == null)
-            {
-                throw new UriFormatException("url不能为空");
-            }
             _Path = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
             var fragment = url.Fragment;
-            Body = parser.Format(null, GetBodyParams(request), provider);
             if (url.Query.Length == 0)
             {
                 _Buffer.Append("?");
@@ -46,6 +45,7 @@ namespace blqw.Web
             {
                 _Buffer.Append(url.Query);
             }
+            Body = parser.Serialize(null, GetBodyParams(request), provider);
             string query;
             if (_Buffer.Length == 1)
             {
@@ -89,6 +89,8 @@ namespace blqw.Web
                         break;
                     case HttpParamLocation.Path:
                         _Path.Replace("{" + param.Name + "}", param.Value?.ToString());
+                        break;
+                    case HttpParamLocation.Header:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));

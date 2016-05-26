@@ -11,5 +11,6 @@ namespace blqw.Web
         object GetValue(string name, HttpParamLocation location);
         void SetValue(HttpParamValue value);
         void SetValue(string name, object value, HttpParamLocation location);
+        bool Contains(string name, HttpParamLocation location);
     }
 }

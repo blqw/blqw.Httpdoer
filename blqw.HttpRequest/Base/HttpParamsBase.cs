@@ -26,11 +26,11 @@ namespace blqw.Web
         {
             get
             {
-                return (T)Params.GetValue(name, HttpParamLocation.Body);
+                return (T)Params.GetValue(name, Location);
             }
             set
             {
-                Params.SetValue(name, value, HttpParamLocation.Body);
+                Params.SetValue(name, value, Location);
             }
         }
 

@@ -26,6 +26,7 @@ namespace blqw.Web
             PathParams = new HttpStringParams(@params, HttpParamLocation.Path);
             Params = new HttpParams(@params);
             _AllParams = @params;
+            Timeout = new TimeSpan(0, 0, 15);
         }
 
         /// <summary>
@@ -78,7 +79,20 @@ namespace blqw.Web
             }
         }
         public Encoding Encoding { get; set; }
-        public HttpMethod Method { get; set; }
+        HttpMethod _Method;
+        public HttpMethod Method
+        {
+            get { return _Method ?? HttpMethod.Get; }
+            set
+            {
+                _Method = value;
+                if (_Method == HttpMethod.Post
+                    && _AllParams.Contains("Content-Type", HttpParamLocation.Header) == false)
+                {
+                    Body.ContentType = HttpContentType.Form;
+                }
+            }
+        }
         public string Path { get; set; }
         public TimeSpan Timeout { get; set; }
         public Version Version { get; set; }
@@ -102,8 +116,11 @@ namespace blqw.Web
                 }
                 return url;
             }
-
-            if(Uri.TryCreate(baseUrl, path, out url))
+            if ( string.IsNullOrWhiteSpace(path))
+            {
+                return baseUrl;
+            }
+            if (Uri.TryCreate(baseUrl, path, out url))
             {
                 return url;
             }

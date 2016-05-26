@@ -48,6 +48,7 @@
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="EncodeURI.cs" />
+    <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />
     <Compile Include="Sealed\HttpBody.cs" />
     <Compile Include="Interface\IHttpBodyParser.cs" />
     <Compile Include="Interface\IHttpParameterCollection.cs" />
@@ -67,7 +68,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sealed\HttpRequest.cs" />
     <Compile Include="Sealed\HttpRequestData.cs" />
+    <Compile Include="Sealed\HttpResponse.cs" />
     <Compile Include="Sealed\HttpStringParams.cs" />
+    <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

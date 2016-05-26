@@ -14,46 +14,74 @@ namespace blqw.Web
     {
         static readonly Regex _ParseRegex = new Regex(@"^\s*(?<type>[^\\\s]+)\s*/\s*(?<format>[^;\s]+)\s*(;\s*charset\s*=\s*(?<charset>[^\s]*)\s*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
 
-        public static bool TryParse(string contentType, Encoding defaultEncoding, out HttpContentType result)
-        {
-            if (defaultEncoding == null)
-            {
-                throw new ArgumentNullException(nameof(defaultEncoding));
-            }
 
+        /// <summary>
+        /// application/x-www-form-urlencoded
+        /// </summary>
+        public static readonly HttpContentType Form = "application/x-www-form-urlencoded";
+        /// <summary>
+        /// application/json;charset=utf-8
+        /// </summary>
+        public static readonly HttpContentType Json = "application/json;charset=utf-8";
+        /// <summary>
+        /// application/octet-stream
+        /// </summary>
+        public static readonly HttpContentType OctetStream = "application/octet-stream";
+        /// <summary>
+        /// text/xml;charset=utf-8
+        /// </summary>
+        public static readonly HttpContentType XML = "text/xml;charset=utf-8";
+        /// <summary>
+        /// application/x-protobuf
+        /// </summary>
+        public static readonly HttpContentType Protobuf = "application/x-protobuf";
+        /// <summary>
+        /// text/plain;charset=utf-8
+        /// </summary>
+        public static readonly HttpContentType UTF8Text = "text/plain;charset=utf-8";
+        /// <summary>
+        /// text/plain;
+        /// </summary>
+        public static readonly HttpContentType Text = "text/plain";
+
+
+        public static bool TryParse(string contentType, out HttpContentType result)
+        {
+            if (contentType == null)
+            {
+                result = default(HttpContentType);
+                return false;
+            }
             var m = _ParseRegex.Match(contentType);
             if (m.Success)
             {
                 var g = m.Groups;
                 var charset = g["charset"]?.Value;
-                if (charset != null)
+                Encoding encoding = null;
+                if (string.IsNullOrEmpty(charset) == false)
                 {
-                    defaultEncoding = Encoding.GetEncoding(charset);
+                    encoding = Encoding.GetEncoding(charset);
                 }
 
-                result = new HttpContentType(
-                                g["type"].Value,
-                                g["format"].Value,
-                                defaultEncoding);
+                result = new HttpContentType(g["type"].Value, g["format"].Value, encoding);
                 return true;
             }
             else if (string.IsNullOrWhiteSpace(contentType))
             {
-                result = new HttpContentType("unknown", "unknown", defaultEncoding);
+                result = Text;
                 return true;
             }
             else
             {
                 result = default(HttpContentType);
                 return false;
-                throw new FormatException($"{nameof(contentType)} 格式有误");
             }
         }
 
-        public static HttpContentType Parse(string contentType, Encoding defaultEncoding)
+        public static HttpContentType Parse(string contentType)
         {
             HttpContentType result;
-            if (TryParse(contentType, defaultEncoding, out result))
+            if (TryParse(contentType, out result))
             {
                 return result;
             }
@@ -67,7 +95,11 @@ namespace blqw.Web
 
         public static implicit operator HttpContentType(string value)
         {
-            return Parse(value, Encoding.UTF8);
+            if (value == null)
+            {
+                return Text;
+            }
+            return Parse(value);
         }
 
         public HttpContentType(string type, string format, Encoding charset)
@@ -85,6 +117,10 @@ namespace blqw.Web
 
         public override string ToString()
         {
+            if (Charset == null)
+            {
+                return $"{Type}/{Format}";
+            }
             return $"{Type}/{Format};charset={Charset.WebName}";
         }
 
@@ -103,6 +139,30 @@ namespace blqw.Web
                 return $"{Type}/{Format}";
             }
             return null;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is HttpContentType == false)
+            {
+                return false;
+            }
+            return ToString().Equals(obj.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool operator ==(HttpContentType a, HttpContentType b)
+        {
+            return a.ToString().Equals(b.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool operator !=(HttpContentType a, HttpContentType b)
+        {
+            return !a.ToString().Equals(b.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }

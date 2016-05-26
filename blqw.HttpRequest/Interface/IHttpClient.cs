@@ -18,7 +18,7 @@ namespace blqw.Web
         Task<IHttpResponse> SendAsync(IHttpRequest request);
         Task<IHttpResponse> SendAsync(IHttpRequest request, TimeSpan timeout);
 
-        IAsyncResult BeginSend(AsyncCallback callback, object state);
+        IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state);
 
         IHttpResponse EndSend(IAsyncResult asyncResult);
     }

@@ -15,7 +15,16 @@ namespace blqw.Web
         /// <returns></returns>
         public static IHttpBodyParser Get(string type, string format)
         {
-            throw new NotImplementedException();
+            switch (format?.ToLowerInvariant())
+            {
+                case "x-www-form-urlencoded":
+                    return HttpFormBodyParser.Instance;
+                case "html":
+                case "plain":
+                    return HttpTextBodyParser.Instance;
+                default:
+                    throw new NotImplementedException("暂不支持");
+            }
         }
     }
 }
