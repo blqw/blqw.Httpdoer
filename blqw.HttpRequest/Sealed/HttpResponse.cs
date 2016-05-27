@@ -11,7 +11,7 @@ namespace blqw.Web
     internal sealed class HttpResponse : IHttpResponse
     {
         public HttpBody Body { get; set; }
-        public CookieContainer Cookie { get; set; }
+        public CookieCollection Cookies { get; set; }
         public Exception Exception { get; set; }
         public HttpHeaders Headers { get; set; }
         public bool IsSuccessStatusCode { get; set; }
@@ -25,7 +25,7 @@ namespace blqw.Web
             }
             if (Exception != null)
             {
-                Trace.WriteLine(Exception.Message, "HttpRequest.Error");
+                Trace.WriteLine(Exception, "HttpRequest.Error");
             }
             return this;
         }

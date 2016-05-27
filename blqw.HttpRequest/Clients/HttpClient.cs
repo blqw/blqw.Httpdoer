@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,20 +21,14 @@ namespace blqw.Web
         public static string GetString(this IHttpRequest request)
         {
             var res = Sync.Send(request);
-            if (res.Exception != null)
-            {
-                throw res.Exception;
-            }
-            return res.Body.ToString();
+            var str = res.Body.ToString();
+            Trace.WriteLine(str, "HttpRequest.Result");
+            return str;
         }
 
         public static byte[] GetBytes(this IHttpRequest request)
         {
             var res = Sync.Send(request);
-            if (res.Exception != null)
-            {
-                throw res.Exception;
-            }
             return res.Body.ResponseBody;
         }
 

@@ -66,16 +66,16 @@ namespace blqw.Web
         public HttpParams Params { get; }
 
         public Uri BaseUrl { get; set; }
-        CookieContainer _Cookie;
-        public CookieContainer Cookie
+        CookieContainer _Cookies;
+        public CookieContainer Cookies
         {
             get
             {
-                return _Cookie ?? (_Cookie = new CookieContainer());
+                return _Cookies ?? (_Cookies = new CookieContainer());
             }
             set
             {
-                _Cookie = value;
+                _Cookies = value;
             }
         }
         public Encoding Encoding { get; set; }
@@ -116,7 +116,7 @@ namespace blqw.Web
                 }
                 return url;
             }
-            if ( string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return baseUrl;
             }
@@ -143,6 +143,33 @@ namespace blqw.Web
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        
+        /// <summary>
+        /// 最后一次响应
+        /// </summary>
+        public IHttpResponse Response { get; set; }
+
+        /// <summary>
+        /// 是否使用 Cookie
+        /// </summary>
+        public bool UseCookies { get; set; }
+
+
+        public Exception Exception
+        {
+            get
+            {
+                return Response?.Exception;
+            }
+        }
+
+        public HttpStatusCode StatusCode
+        {
+            get
+            {
+                return Response?.StatusCode ?? 0;
+            }
         }
     }
 }

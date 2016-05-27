@@ -33,7 +33,7 @@ namespace blqw.Web
         /// <summary>
         /// Cookie
         /// </summary>
-        CookieContainer Cookie { get; set; }
+        CookieContainer Cookies { get; set; }
         /// <summary>
         /// HTTP 参数,根据 Method 和 Path 来确定参数位置
         /// </summary>
@@ -70,5 +70,15 @@ namespace blqw.Web
         /// 获取或设置 HTTP 消息版本。默认值为 1.1。
         /// </summary>
         Version Version { get; set; }
+
+        /// <summary>
+        /// 最后一次响应
+        /// </summary>
+        IHttpResponse Response { get; set; }
+
+        /// <summary>
+        /// 是否使用 Cookie
+        /// </summary>
+        bool UseCookies { get; set; }
     }
 }

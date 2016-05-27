@@ -37,7 +37,10 @@ namespace blqw.Web
         HttpBody IHttpBodyParser.Deserialize(byte[] bytes, IFormatProvider formatProvider)
         {
             var param = Deserialize(bytes, formatProvider);
-            return new HttpBody(bytes, param);
+            return new HttpBody(bytes, param)
+            {
+                ContentType = formatProvider is HttpContentType ? (HttpContentType)formatProvider : null
+            };
         }
     }
 }

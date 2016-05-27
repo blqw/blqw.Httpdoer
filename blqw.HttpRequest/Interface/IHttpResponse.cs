@@ -23,7 +23,7 @@ namespace blqw.Web
         /// <summary>
         /// Cookie
         /// </summary>
-        CookieContainer Cookie { get; }
+        CookieCollection Cookies { get; }
 
         /// <summary>
         /// HTTP 响应的状态代码

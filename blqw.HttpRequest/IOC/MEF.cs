@@ -130,7 +130,6 @@ namespace blqw.HttpRequestComponent
                     {
                         if (System.Text.RegularExpressions.Regex.IsMatch(type.FullName, "[^a-zA-Z_`0-9.+]"))
                         {
-                            Console.WriteLine(type.Name);
                             continue;
                         }
                         list.Add(new TypeCatalog(type));

@@ -59,11 +59,8 @@ namespace blqw.Web
         {
             if (ResponseBody != null)
             {
-                var charset = ContentType.GetFormat(typeof(Encoding)) as Encoding;
-                if (charset != null)
-                {
-                    return charset.GetString(ResponseBody);
-                }
+                var charset = ContentType.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
+                return charset.GetString(ResponseBody);
             }
             return ToString(null);
         }

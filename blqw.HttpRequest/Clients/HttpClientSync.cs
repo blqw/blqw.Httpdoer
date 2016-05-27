@@ -41,7 +41,7 @@ namespace blqw.Web
                 var response = (HttpWebResponse)www.GetResponse();
                 send = timer.ElapsedMilliseconds;
                 timer.Restart();
-                return Transfer(response).WriteLog();
+                return request.Response = Transfer(response).WriteLog();
             }
             catch (WebException ex)
             {
@@ -49,7 +49,7 @@ namespace blqw.Web
                 timer.Restart();
                 var res = Transfer((HttpWebResponse)ex.Response);
                 res.Exception = ex;
-                return res.WriteLog();
+                return request.Response = res.WriteLog();
             }
             finally
             {
@@ -80,7 +80,12 @@ namespace blqw.Web
             {
                 www.ProtocolVersion = HttpVersion.Version10;
             }
-            www.CookieContainer = request.Cookie;
+
+            if (request.UseCookies)
+            {
+                www.CookieContainer = request.Cookies;
+            }
+            
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
@@ -145,8 +150,7 @@ namespace blqw.Web
             using (response)
             {
                 res.Body = parser.Deserialize(GetBytes(response), contentType);
-                res.Cookie = new CookieContainer();
-                res.Cookie.Add(response.Cookies);
+                res.Cookies = response.Cookies;
                 res.StatusCode = response.StatusCode;
                 res.IsSuccessStatusCode = (int)response.StatusCode >= 200 && (int)response.StatusCode <= 299;
             }
@@ -191,15 +195,7 @@ namespace blqw.Web
 
 
 
-
-
-
-
-
-
-
-
-
+        #region NotImplemented
         public IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state)
         {
             throw new NotImplementedException();
@@ -209,7 +205,7 @@ namespace blqw.Web
         {
             throw new NotImplementedException();
         }
-        
+
         public Task<IHttpResponse> SendAsync(IHttpRequest request)
         {
             throw new NotImplementedException();
@@ -224,5 +220,6 @@ namespace blqw.Web
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
