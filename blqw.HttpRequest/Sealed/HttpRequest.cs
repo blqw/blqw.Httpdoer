@@ -79,14 +79,14 @@ namespace blqw.Web
             }
         }
         public Encoding Encoding { get; set; }
-        HttpMethod _Method;
-        public HttpMethod Method
+        HttpRequestMethod _Method;
+        public HttpRequestMethod Method
         {
-            get { return _Method ?? HttpMethod.Get; }
+            get { return _Method; }
             set
             {
                 _Method = value;
-                if (_Method == HttpMethod.Post
+                if (_Method == HttpRequestMethod.Post
                     && _AllParams.Contains("Content-Type", HttpParamLocation.Header) == false)
                 {
                     Body.ContentType = HttpContentType.Form;

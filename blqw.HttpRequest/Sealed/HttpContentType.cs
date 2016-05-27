@@ -126,9 +126,10 @@ namespace blqw.Web
 
         public object GetFormat(Type formatType)
         {
-            if (formatType == typeof(IHttpBodyParser))
+            if (formatType == typeof(IHttpBodyParser)
+                || formatType == typeof(ICustomFormatter))
             {
-                return HttpBodyParsers.Get(Type, Format);
+                return HttpBodyParserFactory.Get(Type, Format);
             }
             else if (formatType == typeof(Encoding))
             {
@@ -163,6 +164,11 @@ namespace blqw.Web
         public override int GetHashCode()
         {
             return ToString().GetHashCode();
+        }
+
+        public HttpContentType ChangeCharset(Encoding charset)
+        {
+            return new HttpContentType(Type, Form, charset);
         }
     }
 }

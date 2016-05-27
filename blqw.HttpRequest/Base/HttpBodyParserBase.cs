@@ -28,5 +28,10 @@ namespace blqw.Web
             return charset.GetString(bytes);
 
         }
+
+        protected Encoding GetEncoding(IFormatProvider formatProvider)
+        {
+            return formatProvider?.GetFormat(typeof(Encoding)) as Encoding;
+        }
     }
 }

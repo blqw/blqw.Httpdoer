@@ -77,7 +77,7 @@ namespace blqw.Web
                     case HttpParamLocation.Auto:
                         if (_Path.Contains("{" + param.Name + "}"))
                             goto case HttpParamLocation.Path;
-                        else if (request.Method == HttpMethod.Get)
+                        else if (request.Method == HttpRequestMethod.Get)
                             goto case HttpParamLocation.Query;
                         else
                             goto case HttpParamLocation.Body;

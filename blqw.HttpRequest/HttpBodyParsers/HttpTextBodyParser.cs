@@ -27,8 +27,7 @@ namespace blqw.Web
             {
                 return EmptyBytes;
             }
-            var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding
-                           ?? Encoding.UTF8;
+            var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             return charset.GetBytes(text);
         }
 

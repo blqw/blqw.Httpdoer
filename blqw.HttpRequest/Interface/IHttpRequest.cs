@@ -50,7 +50,7 @@ namespace blqw.Web
         /// <summary> 
         /// 请求方式
         /// </summary>
-        HttpMethod Method { get; set; }
+        HttpRequestMethod Method { get; set; }
         /// <summary> 
         /// 请求编码
         /// </summary>

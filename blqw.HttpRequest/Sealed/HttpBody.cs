@@ -63,7 +63,7 @@ namespace blqw.Web
             {
                 formatProvider = ContentType;
             }
-            var parser = formatProvider.GetFormat(typeof(IHttpBodyParser)) as ICustomFormatter;
+            var parser = formatProvider.GetFormat(typeof(ICustomFormatter)) as ICustomFormatter;
             if (parser == null)
             {
                 return null;
