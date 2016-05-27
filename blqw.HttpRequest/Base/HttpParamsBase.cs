@@ -49,5 +49,15 @@ namespace blqw.Web
         {
             return GetEnumerator();
         }
+
+
+        public void Clear()
+        {
+            var keys = Params.Where(it => it.Location == Location).Select(it=>it.Name).ToArray();
+            for (int i = 0,length = keys.Length; i < length; i++)
+            {
+                Params.Remove(keys[i], Location);
+            }
+        }
     }
 }
