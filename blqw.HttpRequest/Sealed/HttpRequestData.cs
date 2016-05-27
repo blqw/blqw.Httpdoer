@@ -10,7 +10,7 @@ namespace blqw.Web
     public struct HttpRequestData
     {
         [ThreadStatic]
-        static StringBuilder _Buffer;
+        static HttpQueryBuilder _QueryBuilder;
 
         public HttpRequestData(IHttpRequest request)
             : this()
@@ -20,13 +20,13 @@ namespace blqw.Web
             {
                 throw new UriFormatException("url不能为空");
             }
-            if (_Buffer == null)
+            if (_QueryBuilder == null)
             {
-                _Buffer = new StringBuilder();
+                _QueryBuilder = new HttpQueryBuilder();
             }
             else
             {
-                _Buffer.Clear();
+                _QueryBuilder.Clear();
             }
 
             var provider = request.Body.ContentType;
@@ -36,30 +36,31 @@ namespace blqw.Web
                 throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
             }
             _Path = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
-            var fragment = url.Fragment;
-            if (url.Query.Length == 0)
-            {
-                _Buffer.Append("?");
-            }
-            else
-            {
-                _Buffer.Append(url.Query);
-            }
+
             Body = parser.Serialize(null, GetBodyParams(request), provider);
-            string query;
-            if (_Buffer.Length == 1)
+            string query = _QueryBuilder.ToString();
+
+            if ((query?.Length).GetValueOrDefault(0) == 0)
             {
-                query = fragment;
+                Url = url;
             }
             else
             {
-                query = _Buffer.Append(fragment).ToString();
+                if (url.Query.Length == 0)
+                {
+                    query = "?" + query + url.Fragment;
+                }
+                else
+                {
+                    query = url.Query + "&" + query + url.Fragment;
+                }
+                if (Uri.TryCreate(url, query, out url) == false)
+                {
+                    throw new UriFormatException();
+                }
+                Url = url;
             }
-            if (Uri.TryCreate(url, query, out url) == false)
-            {
-                throw new UriFormatException();
-            }
-            Url = url;
+           
         }
 
         private string _Path;
@@ -82,7 +83,7 @@ namespace blqw.Web
                         else
                             goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
-                        AppendObject(_Buffer, param.Name, param.Value);
+                        _QueryBuilder.AppendObject(param.Name, param.Value);
                         break;
                     case HttpParamLocation.Body:
                         yield return new KeyValuePair<string, object>(param.Name, param.Value);
@@ -98,77 +99,9 @@ namespace blqw.Web
             }
         }
 
-        private static void AppendObject(StringBuilder buffer, string preName, object obj)
+        public override string ToString()
         {
-            var str = obj as string
-                ?? (obj as IFormattable)?.ToString(null, null)
-                ?? (obj as IConvertible)?.ToString(null);
-            if (str != null || obj == null)
-            {
-                if (preName != null)
-                {
-                    AppendEscape(buffer, preName);
-                    buffer.Append('=');
-                }
-                AppendEscape(buffer, str);
-                buffer.Append('&');
-                return;
-            }
-
-            var props = obj.GetType().GetProperties();
-            if (props.Length == 0)
-            {
-                if (preName != null)
-                {
-                    AppendEscape(buffer, preName);
-                    buffer.Append('=');
-                }
-                AppendEscape(buffer, obj.ToString());
-                buffer.Append('&');
-                return;
-            }
-
-            foreach (var p in props)
-            {
-                AppendObject(buffer, ConcatName(preName, p.Name), p.GetValue(obj));
-            }
+            return Url?.ToString() ?? "http://";
         }
-        
-        private static void AppendEscape(StringBuilder buffer, string str)
-        {
-            const int max = 32766;
-            if (str == null)
-            {
-                return;
-            }
-            var length = str.Length;
-            if (length < max)
-            {
-                buffer.Append(Uri.EscapeDataString(str));
-                return;
-            }
-            int i = 0;
-            length -= max;
-            for (; i < length; i += max)
-            {
-                var s = str.Substring(i, max);
-                buffer.Append(Uri.EscapeDataString(s));
-            }
-            buffer.Append(Uri.EscapeDataString(str.Substring(i, length - i + max)));
-        }
-        
-        /// <summary> 
-        /// 连接参数名,如果存在前缀的话 组成 `前缀.参数名` 的格式
-        /// </summary>
-        /// <param name="pre">参数名前缀</param>
-        /// <param name="name">参数名</param>
-        /// <returns></returns>
-        /// <remarks>周子鉴 2015.08.01</remarks>
-        private static string ConcatName(string pre, string name)
-        {
-            return pre == null ? name : pre + "." + name;
-        }
-
-
     }
 }

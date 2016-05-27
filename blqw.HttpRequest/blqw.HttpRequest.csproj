@@ -48,11 +48,13 @@
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="EncodeURI.cs" />
+    <Compile Include="HttpBodyParsers\HttpBodyDefaultParser.cs" />
     <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpJsonBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpProtobufBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpXMLBodyParser.cs" />
     <Compile Include="Interface\IHttpBodyParserFactory.cs" />
+    <Compile Include="Sealed\HttpQueryBuilder.cs" />
     <Compile Include="Sealed\HttpRequestMethod.cs" />
     <Compile Include="Sealed\HttpBody.cs" />
     <Compile Include="Interface\IHttpBodyParser.cs" />

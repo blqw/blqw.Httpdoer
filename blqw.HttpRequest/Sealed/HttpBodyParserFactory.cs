@@ -33,15 +33,7 @@ namespace blqw.Web
                     }
                 }
             }
-            else
-            {
-                var parser = Default.Create(type, format);
-                if (parser != null)
-                {
-                    return parser;
-                }
-            }
-            throw new NotImplementedException($"无法获取 {type}/{format} 类型的解析器");
+            return HttpBodyDefaultParser.Instance;
         }
 
         public IHttpBodyParser Create(string type, string format)
@@ -60,6 +52,7 @@ namespace blqw.Web
                 default:
                     return null;
             }
+
         }
     }
 }
