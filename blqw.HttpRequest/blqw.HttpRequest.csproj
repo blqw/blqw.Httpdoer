@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
+    <Compile Include="Clients\HttpClient.cs" />
     <Compile Include="EncodeURI.cs" />
     <Compile Include="HttpBodyParsers\HttpBodyDefaultParser.cs" />
     <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />
@@ -56,17 +57,17 @@
     <Compile Include="Interface\IHttpBodyParserFactory.cs" />
     <Compile Include="Sealed\HttpQueryBuilder.cs" />
     <Compile Include="Sealed\HttpRequestMethod.cs" />
-    <Compile Include="Sealed\HttpBody.cs" />
+    <Compile Include="Params\HttpBody.cs" />
     <Compile Include="Interface\IHttpBodyParser.cs" />
     <Compile Include="Interface\IHttpParameterCollection.cs" />
     <Compile Include="Sealed\HttpBodyParserFactory.cs" />
-    <Compile Include="Sealed\HttpClientSync.cs" />
+    <Compile Include="Clients\HttpClientSync.cs" />
     <Compile Include="Sealed\HttpContentType.cs" />
-    <Compile Include="Sealed\HttpHeaders.cs" />
-    <Compile Include="Sealed\HttpParamLocation.cs" />
-    <Compile Include="Sealed\HttpParameterCollection.cs" />
-    <Compile Include="Sealed\HttpParams.cs" />
-    <Compile Include="Sealed\HttpParamValue.cs" />
+    <Compile Include="Params\HttpHeaders.cs" />
+    <Compile Include="Params\HttpParamLocation.cs" />
+    <Compile Include="Params\HttpParameterCollection.cs" />
+    <Compile Include="Params\HttpParams.cs" />
+    <Compile Include="Params\HttpParamValue.cs" />
     <Compile Include="Interface\IHttpClient.cs" />
     <Compile Include="Interface\IHttpRequest.cs" />
     <Compile Include="Interface\IHttpResponse.cs" />
@@ -76,7 +77,7 @@
     <Compile Include="Sealed\HttpRequest.cs" />
     <Compile Include="Sealed\HttpRequestData.cs" />
     <Compile Include="Sealed\HttpResponse.cs" />
-    <Compile Include="Sealed\HttpStringParams.cs" />
+    <Compile Include="Params\HttpStringParams.cs" />
     <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
   </ItemGroup>
   <ItemGroup>

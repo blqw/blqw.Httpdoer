@@ -37,15 +37,12 @@ namespace Demo
             //};
             www.Query["Text"] = "'hello world'";
             www.Query["To"] = "'zh-CHS'";
-            www.Headers.Clear();
             www.Headers["Authorization"] = AUTH_TOKEN;
-
-            var client = new HttpClientSync();
-            var str = client.Send(www);
-            //var str = www.GetString().Result;
+           
+            var str = www.GetString();
 
             Console.WriteLine();
-            //Console.WriteLine(GetText(str));
+            Console.WriteLine(GetText(str));
         }
 
        

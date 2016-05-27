@@ -11,7 +11,7 @@ namespace blqw.Web
         public abstract IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
         public abstract byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
 
-        public  virtual string Format(string format, object arg, IFormatProvider formatProvider)
+        public virtual string Format(string format, object arg, IFormatProvider formatProvider)
         {
             if (arg == null)
             {
@@ -32,6 +32,12 @@ namespace blqw.Web
         protected Encoding GetEncoding(IFormatProvider formatProvider)
         {
             return formatProvider?.GetFormat(typeof(Encoding)) as Encoding;
+        }
+
+        HttpBody IHttpBodyParser.Deserialize(byte[] bytes, IFormatProvider formatProvider)
+        {
+            var param = Deserialize(bytes, formatProvider);
+            return new HttpBody(bytes, param);
         }
     }
 }
