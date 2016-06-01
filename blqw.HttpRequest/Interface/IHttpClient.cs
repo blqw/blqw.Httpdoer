@@ -15,8 +15,6 @@ namespace blqw.Web
         IHttpResponse Send(IHttpRequest request);
 
         Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken);
-        Task<IHttpResponse> SendAsync(IHttpRequest request);
-        Task<IHttpResponse> SendAsync(IHttpRequest request, TimeSpan timeout);
 
         IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state);
 

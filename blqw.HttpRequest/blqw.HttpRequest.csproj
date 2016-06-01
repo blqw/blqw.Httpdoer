@@ -35,8 +35,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,7 +48,11 @@
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="Clients\HttpClient.cs" />
-    <Compile Include="EncodeURI.cs" />
+    <Compile Include="Clients\HttpClientAsync.cs" />
+    <Compile Include="HttpBodyParsers\HttpNullBodyParser.cs" />
+    <Compile Include="HttpParamsExtensions.cs" />
+    <Compile Include="Reflection\PropertyGetter.cs" />
+    <Compile Include="Sealed\EncodeURI.cs" />
     <Compile Include="HttpBodyParsers\HttpBodyDefaultParser.cs" />
     <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpJsonBodyParser.cs" />

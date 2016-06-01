@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 
 namespace blqw.HttpRequestComponent
 {
@@ -19,17 +21,34 @@ namespace blqw.HttpRequestComponent
             MEFPart.Import(typeof(Component));
         }
 
+        /// <summary>
+        /// 获取转换器
+        /// </summary>
         [Import]
-        public readonly static IFormatterConverter Converter = new FormatterConverter();
-        
-        static readonly JavaScriptSerializer JSON = new JavaScriptSerializer();
+        static readonly IFormatterConverter Converter;
+
+        public static string ToString(object obj)
+        {
+            if (obj == null)
+            {
+                return null;
+            }
+            return Converter?.ToString(obj) ?? obj + "";
+        }
+
+        static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> _JsonSerializer = new ConcurrentDictionary<Type, DataContractJsonSerializer>();
+
         /// <summary> 用于将Json字符串转为实体对象的方法
         /// </summary>
         [Import("ToJsonObject")]
         public readonly static Func<Type, string, object> ToJsonObject =
             delegate (Type type, string json)
             {
-                return JSON.Deserialize(json, type);
+                var ser = _JsonSerializer.GetOrAdd(type, t => new DataContractJsonSerializer(t));
+                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    return ser.ReadObject(ms);
+                }
             };
 
         /// <summary> 用于将Json字符串转为实体对象的方法
@@ -38,7 +57,17 @@ namespace blqw.HttpRequestComponent
         public readonly static Func<object, string> ToJsonString =
             delegate (object obj)
             {
-                return JSON.Serialize(obj);
+                if (obj == null)
+                {
+                    return "null";
+                }
+                var type = obj.GetType();
+                var ser = _JsonSerializer.GetOrAdd(type, t => new DataContractJsonSerializer(t));
+                using (var ms = new MemoryStream())
+                {
+                    ser.WriteObject(ms, type);
+                    return Encoding.UTF8.GetString(ms.ToArray());
+                }
             };
 
 

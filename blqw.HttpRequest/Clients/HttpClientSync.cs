@@ -41,13 +41,13 @@ namespace blqw.Web
                 var response = (HttpWebResponse)www.GetResponse();
                 send = timer.ElapsedMilliseconds;
                 timer.Restart();
-                return request.Response = Transfer(response).WriteLog();
+                return request.Response = Transfer(request.UseCookies, response).WriteLog();
             }
             catch (WebException ex)
             {
                 err = timer.ElapsedMilliseconds;
                 timer.Restart();
-                var res = Transfer((HttpWebResponse)ex.Response);
+                var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
                 return request.Response = res.WriteLog();
             }
@@ -85,7 +85,7 @@ namespace blqw.Web
             {
                 www.CookieContainer = request.Cookies;
             }
-            
+
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
@@ -138,7 +138,7 @@ namespace blqw.Web
             }
         }
 
-        private HttpResponse Transfer(HttpWebResponse response)
+        private HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
             var contentType = (HttpContentType)response.ContentType;
             var parser = contentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
@@ -150,7 +150,10 @@ namespace blqw.Web
             using (response)
             {
                 res.Body = parser.Deserialize(GetBytes(response), contentType);
-                res.Cookies = response.Cookies;
+                if (useCookies)
+                {
+                    res.Cookies = response.Cookies;
+                }                
                 res.StatusCode = response.StatusCode;
                 res.IsSuccessStatusCode = (int)response.StatusCode >= 200 && (int)response.StatusCode <= 299;
             }
@@ -172,6 +175,9 @@ namespace blqw.Web
             }
         }
 
+        [ThreadStatic]
+        static byte[] _buffer;
+
         /// <summary> 
         /// 读取流中的所有字节
         /// </summary>
@@ -179,21 +185,19 @@ namespace blqw.Web
         private static IEnumerable<byte> ReadAll(Stream stream)
         {
             int length = 1024;
-            byte[] buffer = new byte[length];
+            if (_buffer == null)
+            {
+                _buffer = new byte[length];
+            }
             int index = 0;
-            while ((index = stream.Read(buffer, 0, length)) > 0)
+            while ((index = stream.Read(_buffer, 0, length)) > 0)
             {
                 for (int i = 0; i < index; i++)
                 {
-                    yield return buffer[i];
+                    yield return _buffer[i];
                 }
             }
         }
-
-
-
-
-
 
         #region NotImplemented
         public IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state)
@@ -202,16 +206,6 @@ namespace blqw.Web
         }
 
         public IHttpResponse EndSend(IAsyncResult asyncResult)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IHttpResponse> SendAsync(IHttpRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IHttpResponse> SendAsync(IHttpRequest request, TimeSpan timeout)
         {
             throw new NotImplementedException();
         }

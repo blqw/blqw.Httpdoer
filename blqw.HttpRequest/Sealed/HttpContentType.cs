@@ -13,8 +13,7 @@ namespace blqw.Web
     public struct HttpContentType : IFormatProvider
     {
         static readonly Regex _ParseRegex = new Regex(@"^\s*(?<type>[^\\\s]+)\s*/\s*(?<format>[^;\s]+)\s*(;\s*charset\s*=\s*(?<charset>[^\s]*)\s*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
-
-
+        
         /// <summary>
         /// application/x-www-form-urlencoded
         /// </summary>
@@ -43,6 +42,10 @@ namespace blqw.Web
         /// text/plain;
         /// </summary>
         public static readonly HttpContentType Text = "text/plain";
+        /// <summary>
+        /// text/plain;
+        /// </summary>
+        public static readonly HttpContentType Undefined = null;
 
 
         public static bool TryParse(string contentType, out HttpContentType result)
@@ -97,7 +100,7 @@ namespace blqw.Web
         {
             if (value == null)
             {
-                return Text;
+                return Undefined;
             }
             return Parse(value);
         }

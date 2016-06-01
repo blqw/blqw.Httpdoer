@@ -18,31 +18,16 @@ namespace Demo
         {
             Debug.Listeners.Add(new ConsoleTraceListener());
 
-            
-            //var www = new HttpRequest("http://localhost:27214/api/values");
-            //www.Timeout = new TimeSpan(0, 0, 5);
-            //www.QueryString.Add("id", "1");
-            //var task = www.GetString();
-            //www.Abort();
-            //task.Wait();
-            //var www = new HttpRequest("https://api.datamarket.azure.com");
-            //www.Method = HttpRequestMethod.Get;
-            //www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-            ////www.AcceptCookie = true;
-            ////www.AcceptHeader = true;
-            ////www.QueryString += new
-            ////{
-            ////    Text = "'hello world'",
-            ////    To = "'zh-CHS'"
-            ////};
-            //www.Query["Text"] = "'hello world'";
-            //www.Query["To"] = "'zh-CHS'";
-            //www.Headers["Authorization"] = AUTH_TOKEN;
 
-            //var str = www.GetString();
+            var www = new HttpRequest("https://api.datamarket.azure.com");
+            www.Method = HttpRequestMethod.Get;
+            www.Path = "Bing/MicrosoftTranslator/v1/Translate";
+            www.Query.AddModel(new { Text = "'hello world'", To = "'zh-CHS'" });
+            www.Headers["Authorization"] = AUTH_TOKEN;
+            var str = www.GetStringAsync().Result;
 
-            //Console.WriteLine();
-            //Console.WriteLine(GetText(str));
+            Console.WriteLine();
+            Console.WriteLine(GetText(str));
 
 
         }
