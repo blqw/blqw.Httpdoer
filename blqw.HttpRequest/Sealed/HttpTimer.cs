@@ -13,15 +13,20 @@ namespace blqw.Web
     struct HttpTimer
     {
         Stopwatch _Watch;
-        long ready; //本地操作耗时
-        long send;  //发送请求耗时
-        long end;   //
-        long err;   //异常操作耗时
+        long _Ready; //本地操作耗时
+        long _Send;  //发送请求耗时
+        long _End;   //
+        long _Err;   //异常操作耗时
         public static HttpTimer Start()
         {
-            var timer = new HttpTimer();
-            timer._Watch = Stopwatch.StartNew();
-            return timer;
+            return new HttpTimer()
+            {
+                _Ready = -1,
+                _Send = -1,
+                _End = -1,
+                _Err = -1,
+                _Watch = Stopwatch.StartNew(),
+            };
         }
 
         /// <summary>
@@ -30,12 +35,8 @@ namespace blqw.Web
         public void Readied()
         {
             _Watch.Stop();
-            ready = _Watch.ElapsedMilliseconds;
+            _Ready = _Watch.ElapsedMilliseconds;
             _Watch.Restart();
-            ready = -1;
-            send = -1;
-            end = -1;
-            err = -1;
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace blqw.Web
         public void Sent()
         {
             _Watch.Stop();
-            send = _Watch.ElapsedMilliseconds;
+            _Send = _Watch.ElapsedMilliseconds;
             _Watch.Restart();
         }
 
@@ -54,7 +55,7 @@ namespace blqw.Web
         public void Error()
         {
             _Watch.Stop();
-            err = _Watch.ElapsedMilliseconds;
+            _Err = _Watch.ElapsedMilliseconds;
             _Watch.Restart();
         }
 
@@ -64,22 +65,22 @@ namespace blqw.Web
         public void Ending()
         {
             _Watch.Stop();
-            end = _Watch.ElapsedMilliseconds;
+            _End = _Watch.ElapsedMilliseconds;
         }
 
         public override string ToString()
         {
-            if (send >= 0)
+            if (_Send >= 0)
             {
-                return $"init:{ready} ms, send:{send} ms, end:{end} ms";
+                return $"ready:{_Ready} ms, send:{_Send} ms, end:{_End} ms";
             }
-            else if(err >= 0)
+            else if (_Err >= 0)
             {
-                return $"init:{ready} ms, err:{err} ms, end:{end} ms";
+                return $"ready:{_Ready} ms, err:{_Err} ms, end:{_End} ms";
             }
             else
             {
-                return $"init:{ready} ms";
+                return $"ready:{_Ready} ms";
             }
         }
     }

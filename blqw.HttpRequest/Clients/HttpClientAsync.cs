@@ -30,28 +30,22 @@ namespace blqw.Web
 
         public async Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken)
         {
-            var timer = Stopwatch.StartNew();
+            var timer = HttpTimer.Start();
             var www = GetRequest(request);
-            long init = timer.ElapsedMilliseconds;
-            timer.Restart();
-            long send = 0;
-            long end = 0;
-            long err = 0;
+            timer.Readied();
             try
             {
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Clinet.SendAsync(www, source2.Token);
-                    send = timer.ElapsedMilliseconds;
-                    timer.Restart();
+                    timer.Sent();
                     return request.Response = (await Transfer(request.UseCookies, response));
                 }
             }
             catch (Exception ex)
             {
-                err = timer.ElapsedMilliseconds;
-                timer.Restart();
+                timer.Error();
                 if (ex is TaskCanceledException)
                 {
                     ex = new TimeoutException("请求已超时");
@@ -62,16 +56,8 @@ namespace blqw.Web
             }
             finally
             {
-                end = timer.ElapsedMilliseconds;
-                timer.Stop();
-                if (send > 0)
-                {
-                    request.Logger.Debug($"init:{init} ms, send:{send} ms, end:{end} ms");
-                }
-                else
-                {
-                    request.Logger.Debug($"init:{init} ms, err:{err} ms, end:{end} ms");
-                }
+                timer.Ending();
+                request.Logger.Debug(timer.ToString());
             }
         }
 
