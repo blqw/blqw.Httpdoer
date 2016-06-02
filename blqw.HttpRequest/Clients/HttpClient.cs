@@ -113,15 +113,18 @@ namespace blqw.Web
         }
         #endregion
 
+        #region Begin...End
 
         public static IAsyncResult BeginSend(this IHttpRequest request, AsyncCallback callback, object state)
         {
-            throw new NotImplementedException();
+            return Sync.BeginSend(request, callback, state);
         }
-        public static IHttpResponse EndSend(this IAsyncResult asyncResult)
+
+        public static IHttpResponse EndSend(this IHttpRequest request, IAsyncResult asyncResult)
         {
-            throw new NotImplementedException();
+            return Sync.EndSend(asyncResult);
         }
-        
+
+        #endregion
     }
 }

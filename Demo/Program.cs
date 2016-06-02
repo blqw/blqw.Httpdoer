@@ -24,12 +24,20 @@ namespace Demo
             www.Path = "Bing/MicrosoftTranslator/v1/Translate";
             www.Query.AddModel(new { Text = "'hello world'", To = "'zh-CHS'" });
             www.Headers["Authorization"] = AUTH_TOKEN;
-            var str = www.GetStringAsync().Result;
 
-            Console.WriteLine();
-            Console.WriteLine(GetText(str));
+            www.BeginSend(ar =>
+            {
+                var res = www.EndSend(ar);
+                var str = res.Body.ToString();
+                Console.WriteLine(GetText(str));
+            }, null);
 
+            //var str = www.GetString();
 
+            //Console.WriteLine();
+            //Console.WriteLine(GetText(str));
+
+            Console.Read();
         }
 
 

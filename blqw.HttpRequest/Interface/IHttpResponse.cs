@@ -29,8 +29,7 @@ namespace blqw.Web
         /// HTTP 响应的状态代码
         /// </summary>
         HttpStatusCode StatusCode { get; }
-
-        /// <summary>
+/// <summary>
         /// 获取一个值，该值指示 HTTP 响应是否成功。StatusCode 在 200-299 范围中，则为 true；否则为 false
         /// </summary>
         bool IsSuccessStatusCode { get; }

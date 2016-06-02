@@ -83,6 +83,7 @@
     <Compile Include="Sealed\HttpResponse.cs" />
     <Compile Include="Params\HttpStringParams.cs" />
     <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
+    <Compile Include="Sealed\HttpTimer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Old\" />

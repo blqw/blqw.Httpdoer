@@ -29,40 +29,26 @@ namespace blqw.Web
 
         public IHttpResponse Send(IHttpRequest request)
         {
-            var timer = Stopwatch.StartNew();
+            var timer = HttpTimer.Start();
             var www = GetRequest(request);
-            long init = timer.ElapsedMilliseconds;
-            timer.Restart();
-            long send = 0;
-            long end = 0;
-            long err = 0;
+            timer.Readied();
             try
             {
                 var response = (HttpWebResponse)www.GetResponse();
-                send = timer.ElapsedMilliseconds;
-                timer.Restart();
+                timer.Sent();
                 return request.Response = Transfer(request.UseCookies, response).WriteLog();
             }
             catch (WebException ex)
             {
-                err = timer.ElapsedMilliseconds;
-                timer.Restart();
+                timer.Error();
                 var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
                 return request.Response = res.WriteLog();
             }
             finally
             {
-                end = timer.ElapsedMilliseconds;
-                timer.Stop();
-                if (send > 0)
-                {
-                    Trace.WriteLine($"init:{init} ms, send:{send} ms, end:{end} ms", "HttpRequest.Timing");
-                }
-                else
-                {
-                    Trace.WriteLine($"init:{init} ms, err:{err} ms, end:{end} ms", "HttpRequest.Timing");
-                }
+                timer.Ending();
+                Trace.WriteLine(timer.ToString(), "HttpRequest.Timing");
             }
         }
 
@@ -138,7 +124,7 @@ namespace blqw.Web
             }
         }
 
-        private HttpResponse Transfer(bool useCookies, HttpWebResponse response)
+        private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
             var contentType = (HttpContentType)response.ContentType;
             var parser = contentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
@@ -153,14 +139,14 @@ namespace blqw.Web
                 if (useCookies)
                 {
                     res.Cookies = response.Cookies;
-                }                
+                }
                 res.StatusCode = response.StatusCode;
                 res.IsSuccessStatusCode = (int)response.StatusCode >= 200 && (int)response.StatusCode <= 299;
             }
             return res;
         }
 
-        private byte[] GetBytes(HttpWebResponse response)
+        private static byte[] GetBytes(HttpWebResponse response)
         {
             using (var stream = response.GetResponseStream())
             {
@@ -200,20 +186,135 @@ namespace blqw.Web
         }
 
         #region NotImplemented
-        public IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IHttpResponse EndSend(IAsyncResult asyncResult)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
         #endregion
+
+        public IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state)
+        {
+            var result = new HttpClientBeginResult(callback, state);
+            result.Request = request;
+            return result;
+        }
+
+        public IHttpResponse EndSend(IAsyncResult asyncResult)
+        {
+            var result = asyncResult as HttpClientBeginResult;
+            if (result == null)
+            {
+                throw new ArgumentException("类型错误或值为null",nameof(asyncResult));
+            }
+            if (result.IsCompleted == false)
+            {
+                result.Callback(asyncResult);
+            }
+            return result.Response;
+        }
+
+
+
+        class HttpClientBeginResult : IAsyncResult
+        {
+            private object _State;
+            private IAsyncResult _AsyncResult;
+            private AsyncCallback _AsyncCallback;
+            private HttpTimer _Timer;
+            private HttpWebRequest _WebRequest;
+            private IHttpRequest _Request;
+            public IHttpResponse Response { get; private set; }
+            public HttpClientBeginResult(AsyncCallback callback, object state)
+            {
+                _AsyncCallback = callback;
+                _State = state;
+                _Timer = HttpTimer.Start();
+            }
+
+            public IHttpRequest Request
+            {
+                get
+                {
+                    return _Request;
+                }
+                set
+                {
+                    _Request = value;
+                    _WebRequest = GetRequest(value);
+                    _Timer.Readied();
+                    _AsyncResult = _WebRequest.BeginGetResponse(Callback, _State);
+                }
+            }
+
+            public void Callback(IAsyncResult ar)
+            {
+                if (IsCompleted)
+                {
+                    return;
+                }
+                lock (this)
+                {
+                    if (IsCompleted)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
+                        _Timer.Sent();
+                        Response = _Request.Response = Transfer(_Request.UseCookies, response).WriteLog();
+                    }
+                    catch (WebException ex)
+                    {
+                        _Timer.Error();
+                        var res = Transfer(_Request.UseCookies, (HttpWebResponse)ex.Response);
+                        res.Exception = ex;
+                        Response = _Request.Response = res.WriteLog();
+                    }
+                    finally
+                    {
+                        _Timer.Ending();
+                        Trace.WriteLine(_Timer.ToString(), "HttpRequest.Timing");
+                        IsCompleted = true;
+                    }
+                }
+                _AsyncCallback(this);
+            }
+
+            
+
+            public void Readied()
+            {
+                _Timer.Readied();
+            }
+
+            public object AsyncState
+            {
+                get
+                {
+                    return _AsyncResult.AsyncState;
+                }
+            }
+
+            public WaitHandle AsyncWaitHandle
+            {
+                get
+                {
+                    return _AsyncResult.AsyncWaitHandle;
+                }
+            }
+
+            public bool CompletedSynchronously
+            {
+                get
+                {
+                    return _AsyncResult.CompletedSynchronously;
+                }
+            }
+
+            public bool IsCompleted { get; set; }
+
+        }
     }
 }

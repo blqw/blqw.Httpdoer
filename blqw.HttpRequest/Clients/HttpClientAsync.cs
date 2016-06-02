@@ -166,12 +166,9 @@ namespace blqw.Web
                     return HttpMethod.Get;
             }
         }
+        
 
-
-
-
-
-
+        #region NotImplementedException
 
         public IAsyncResult BeginSend(IHttpRequest request, AsyncCallback callback, object state)
         {
@@ -188,5 +185,6 @@ namespace blqw.Web
             throw new NotImplementedException();
         }
 
+        #endregion
     }
 }
