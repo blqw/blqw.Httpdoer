@@ -16,18 +16,5 @@ namespace blqw.Web
         public HttpHeaders Headers { get; set; }
         public bool IsSuccessStatusCode { get; set; }
         public HttpStatusCode StatusCode { get; set; }
-
-        public HttpResponse WriteLog()
-        {
-            if (IsSuccessStatusCode == false)
-            {
-                Trace.WriteLine((int)StatusCode, "HttpRequest.StatusCode");
-            }
-            if (Exception != null)
-            {
-                Trace.WriteLine(Exception, "HttpRequest.Error");
-            }
-            return this;
-        }
     }
 }

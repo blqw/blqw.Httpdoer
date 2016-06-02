@@ -36,19 +36,19 @@ namespace blqw.Web
             {
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
-                return request.Response = Transfer(request.UseCookies, response).WriteLog();
+                return request.Response = Transfer(request.UseCookies, response);
             }
             catch (WebException ex)
             {
                 timer.Error();
                 var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
-                return request.Response = res.WriteLog();
+                return request.Response = res;
             }
             finally
             {
                 timer.Ending();
-                Trace.WriteLine(timer.ToString(), "HttpRequest.Timing");
+                request.Logger.Debug(timer.ToString());
             }
         }
 
@@ -56,7 +56,7 @@ namespace blqw.Web
         {
             var data = new HttpRequestData(request);
 
-            Trace.WriteLine(data.Url.ToString(), "HttpRequest.Url");
+            request.Logger.Debug(data.Url.ToString());
             var www = WebRequest.CreateHttp(data.Url);
             if (request.Version != null)
             {
@@ -263,19 +263,19 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
                         _Timer.Sent();
-                        Response = _Request.Response = Transfer(_Request.UseCookies, response).WriteLog();
+                        Response = _Request.Response = Transfer(_Request.UseCookies, response);
                     }
                     catch (WebException ex)
                     {
                         _Timer.Error();
                         var res = Transfer(_Request.UseCookies, (HttpWebResponse)ex.Response);
                         res.Exception = ex;
-                        Response = _Request.Response = res.WriteLog();
+                        Response = _Request.Response = res;
                     }
                     finally
                     {
                         _Timer.Ending();
-                        Trace.WriteLine(_Timer.ToString(), "HttpRequest.Timing");
+                        Request.Logger.Debug(_Timer.ToString());
                         IsCompleted = true;
                     }
                 }

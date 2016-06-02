@@ -45,7 +45,7 @@ namespace blqw.Web
                     var response = await _Clinet.SendAsync(www, source2.Token);
                     send = timer.ElapsedMilliseconds;
                     timer.Restart();
-                    return request.Response = (await Transfer(request.UseCookies, response)).WriteLog();
+                    return request.Response = (await Transfer(request.UseCookies, response));
                 }
             }
             catch (Exception ex)
@@ -56,10 +56,9 @@ namespace blqw.Web
                 {
                     ex = new TimeoutException("请求已超时");
                 }
-                Trace.WriteLine(ex.Message, "HttpRequest.Error");
                 var res = new HttpResponse();
                 res.Exception = ex;
-                return request.Response = res.WriteLog();
+                return request.Response = res;
             }
             finally
             {
@@ -67,11 +66,11 @@ namespace blqw.Web
                 timer.Stop();
                 if (send > 0)
                 {
-                    Trace.WriteLine($"init:{init} ms, send:{send} ms, end:{end} ms", "HttpRequest.Timing");
+                    request.Logger.Debug($"init:{init} ms, send:{send} ms, end:{end} ms");
                 }
                 else
                 {
-                    Trace.WriteLine($"init:{init} ms, err:{err} ms, end:{end} ms", "HttpRequest.Timing");
+                    request.Logger.Debug($"init:{init} ms, err:{err} ms, end:{end} ms");
                 }
             }
         }
@@ -110,7 +109,7 @@ namespace blqw.Web
         {
             var data = new HttpRequestData(request);
 
-            Trace.WriteLine(data.Url.ToString(), "HttpRequest.Url");
+            request.Logger.Debug(data.Url.ToString());
             var www = new HttpRequestMessage(GetHttpMethod(request.Method), data.Url);
             if (request.Version != null)
             {

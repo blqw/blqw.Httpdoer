@@ -11,15 +11,13 @@ namespace blqw.Web
 {
     public static class HttpClient
     {
-
         static HttpClient()
         {
             ServicePointManager.MaxServicePointIdleTime = 30000;
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
             ServicePointManager.SetTcpKeepAlive(true, 30000, 30000);
         }
-
-
+        
         #region 同步
         static readonly IHttpClient Sync = new HttpClientSync();
 
@@ -32,7 +30,7 @@ namespace blqw.Web
         {
             var res = Sync.Send(request);
             var str = res.Body.ToString();
-            Trace.WriteLine(str, "HttpRequest.Result");
+            request.Logger.Debug(str);
             return str;
         }
 
@@ -68,7 +66,7 @@ namespace blqw.Web
         {
             var res = await Async.SendAsync(request, CancellationToken.None);
             var str = res.Body.ToString();
-            Trace.WriteLine(str, "HttpRequest.Result");
+            request.Logger.Debug(str);
             return str;
         }
 
@@ -84,7 +82,7 @@ namespace blqw.Web
             {
                 var res = await Async.SendAsync(request, tokenSource.Token);
                 var str = res.Body.ToString();
-                Trace.WriteLine(str, "HttpRequest.Result");
+                request.Logger.Debug(str);
                 return str;
             }
         }
@@ -102,7 +100,7 @@ namespace blqw.Web
         {
             var res = await Async.SendAsync(request, cancellationToken);
             var str = res.Body.ToString();
-            Trace.WriteLine(str, "HttpRequest.Result");
+            request.Logger.Debug(str);
             return str;
         }
 

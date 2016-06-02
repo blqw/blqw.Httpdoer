@@ -16,8 +16,7 @@ namespace Demo
 
         static void Main(string[] args)
         {
-            Debug.Listeners.Add(new ConsoleTraceListener());
-
+            Debug.Listeners.Add(new ConsoleTraceListener());            
 
             var www = new HttpRequest("https://api.datamarket.azure.com");
             www.Method = HttpRequestMethod.Get;
@@ -25,17 +24,16 @@ namespace Demo
             www.Query.AddModel(new { Text = "'hello world'", To = "'zh-CHS'" });
             www.Headers["Authorization"] = AUTH_TOKEN;
 
-            www.BeginSend(ar =>
-            {
-                var res = www.EndSend(ar);
-                var str = res.Body.ToString();
-                Console.WriteLine(GetText(str));
-            }, null);
+            //www.BeginSend(ar =>
+            //{
+            //    var res = www.EndSend(ar);
+            //    var str = res.Body.ToString();
+            //    Console.WriteLine(GetText(str));
+            //}, null);
 
-            //var str = www.GetString();
-
-            //Console.WriteLine();
-            //Console.WriteLine(GetText(str));
+            var str = www.GetString();
+            Console.WriteLine();
+            Console.WriteLine(GetText(str));
 
             Console.Read();
         }

@@ -80,5 +80,10 @@ namespace blqw.Web
         /// 是否使用 Cookie
         /// </summary>
         bool UseCookies { get; set; }
+
+        /// <summary>
+        /// 设置或获取日志记录器
+        /// </summary>
+        IHttpLogger Logger { get; set; }
     }
 }

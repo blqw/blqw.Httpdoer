@@ -14,6 +14,8 @@ namespace blqw.Web
     /// </summary>
     public sealed class HttpRequest : IHttpRequest
     {
+        public static IHttpLogger DefaultLogger = HttpDefaultLogger.Instance;
+
         /// <summary>
         /// 初始化http请求
         /// </summary>
@@ -27,6 +29,7 @@ namespace blqw.Web
             Params = new HttpParams(@params);
             _AllParams = @params;
             Timeout = new TimeSpan(0, 0, 15);
+            Logger = DefaultLogger;
         }
 
         /// <summary>
@@ -144,17 +147,38 @@ namespace blqw.Web
         {
             return GetEnumerator();
         }
-        
+
+        IHttpResponse _Response;
         /// <summary>
         /// 最后一次响应
         /// </summary>
-        public IHttpResponse Response { get; set; }
+        public IHttpResponse Response
+        {
+            get
+            {
+                return _Response;
+            }
+            set
+            {
+                _Response = value;
+                if (value != null)
+                {
+                    if (value.IsSuccessStatusCode == false)
+                    {
+                        Logger.Debug(((int)StatusCode).ToString());
+                    }
+                    if (value.Exception != null)
+                    {
+                        Logger.Error(value.Exception.Message);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 是否使用 Cookie
         /// </summary>
         public bool UseCookies { get; set; }
-
 
         public Exception Exception
         {
@@ -171,5 +195,7 @@ namespace blqw.Web
                 return Response?.StatusCode ?? 0;
             }
         }
+
+        public IHttpLogger Logger { get; set; }
     }
 }

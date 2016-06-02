@@ -164,7 +164,7 @@ namespace blqw.HttpRequestComponent
             }
             catch (CompositionException ex)
             {
-                Trace.WriteLine(ex.ToString(), "MEF组合失败");
+                Trace.TraceError(ex.ToString());
             }
             Import(instance.GetType(), instance);
         }
