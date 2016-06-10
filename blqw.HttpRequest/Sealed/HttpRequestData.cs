@@ -15,7 +15,7 @@ namespace blqw.Web
         public HttpRequestData(IHttpRequest request)
             : this()
         {
-            var url = request.GetURL();
+            var url = URIEx.GetFullURL(request.BaseUrl, request.Path);
             if (url == null)
             {
                 throw new UriFormatException("url不能为空");
@@ -60,7 +60,7 @@ namespace blqw.Web
                 }
                 Url = url;
             }
-           
+
         }
 
         private string _Path;

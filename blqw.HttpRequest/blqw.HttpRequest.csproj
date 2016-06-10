@@ -45,12 +45,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\Get.cs" />
+    <Compile Include="Attributes\Header.cs" />
+    <Compile Include="Attributes\HttpDelete.cs" />
+    <Compile Include="Attributes\HttpGet.cs" />
+    <Compile Include="Attributes\HttpPost.cs" />
+    <Compile Include="Attributes\HttpPut.cs" />
+    <Compile Include="Attributes\HttpVerb.cs" />
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="Clients\HttpClient.cs" />
     <Compile Include="Clients\HttpClientAsync.cs" />
     <Compile Include="HttpBodyParsers\HttpNullBodyParser.cs" />
     <Compile Include="HttpParamsExtensions.cs" />
+    <Compile Include="Interface\IHttpRequestBase.cs" />
     <Compile Include="Interface\IHttpLogger.cs" />
     <Compile Include="Reflection\PropertyGetter.cs" />
     <Compile Include="Sealed\EncodeURI.cs" />
@@ -87,9 +95,7 @@
     <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
     <Compile Include="Sealed\HttpTimer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Old\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

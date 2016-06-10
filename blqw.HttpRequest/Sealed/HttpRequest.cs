@@ -12,7 +12,7 @@ namespace blqw.Web
     /// <summary>
     /// 表示一个 HTTP 请求
     /// </summary>
-    public sealed class HttpRequest : IHttpRequest
+    public class HttpRequest : IHttpRequest
     {
         public static IHttpLogger DefaultLogger = HttpDefaultLogger.Instance;
 
@@ -100,42 +100,12 @@ namespace blqw.Web
         public TimeSpan Timeout { get; set; }
         public Version Version { get; set; }
 
-        public Uri GetURL()
-        {
-            Uri baseUrl = BaseUrl;
-            var path = Path;
-
-            if (path == null && baseUrl == null)
-            {
-                return null;
-            }
-
-            Uri url;
-            if (baseUrl == null)
-            {
-                if (Uri.TryCreate(path, UriKind.Absolute, out url) == false)
-                {
-                    throw new UriFormatException("UrlError");
-                }
-                return url;
-            }
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return baseUrl;
-            }
-            if (Uri.TryCreate(baseUrl, path, out url))
-            {
-                return url;
-            }
-
-            throw new UriFormatException("UrlError");
-        }
 
         static readonly char[] _TrimChars = new[] { '&' };
 
         public override string ToString()
         {
-            return GetURL()?.ToString() ?? "http://";
+            return URIEx.GetFullURL(BaseUrl, Path)?.ToString() ?? "http://";
         }
 
         public IEnumerator<HttpParamValue> GetEnumerator()

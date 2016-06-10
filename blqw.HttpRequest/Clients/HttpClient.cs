@@ -49,6 +49,7 @@ namespace blqw.Web
         {
             return SendAsync(request, CancellationToken.None);
         }
+
         public static Task<IHttpResponse> SendAsync(this IHttpRequest request, TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
@@ -121,6 +122,16 @@ namespace blqw.Web
         public static IHttpResponse EndSend(this IHttpRequest request, IAsyncResult asyncResult)
         {
             return Sync.EndSend(asyncResult);
+        }
+
+        #endregion
+
+        #region Factory
+
+
+        public static T Create<T>(string domain)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

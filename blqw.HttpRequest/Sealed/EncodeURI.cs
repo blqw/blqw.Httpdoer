@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public static class EncodeURI
+    public static class URIEx
     {
-        public static string Component(string str)
+        public static string Encode(string str)
         {
             if (str == null || str.Length == 0)
             {
@@ -32,7 +32,7 @@ namespace blqw.Web
             fixed (char* p = str)
             {
                 int s = 0;
-                for (int i = 0; i < length; )
+                for (int i = 0; i < length;)
                 {
                     var c = p[i];
                     if (c == '%')
@@ -98,6 +98,34 @@ namespace blqw.Web
         private static readonly char[] HexUpperChars = {
                                    '0', '1', '2', '3', '4', '5', '6', '7',
                                    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+        public static Uri GetFullURL(Uri baseUrl, string path)
+        {
+            if (path == null && baseUrl == null)
+            {
+                return null;
+            }
+
+            Uri url;
+            if (baseUrl == null)
+            {
+                if (Uri.TryCreate(path, UriKind.Absolute, out url) == false)
+                {
+                    throw new UriFormatException($"{nameof(path)}错误:不是url");
+                }
+                return url;
+            }
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return baseUrl;
+            }
+            if (Uri.TryCreate(baseUrl, path, out url))
+            {
+                return url;
+            }
+            throw new UriFormatException($"{nameof(baseUrl)} + {nameof(path)}错误:不是url");
+        }
+
 
         struct SBBuffer
         {
