@@ -39,7 +39,7 @@ namespace blqw.Web
             var res = Sync.Send(request);
             return res.Body.ResponseBody;
         }
-
+        
         #endregion
 
         #region 异步

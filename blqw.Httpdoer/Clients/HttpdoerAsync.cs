@@ -65,16 +65,11 @@ namespace blqw.Web
         private async Task<HttpResponse> Transfer(bool useCookies, HttpResponseMessage response)
         {
             var contentType = (HttpContentType)response.Content.Headers.ContentType.ToString();
-            var parser = contentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
-            if (parser == null)
-            {
-                throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
-            }
             var res = new HttpResponse();
             using (response)
             {                
                 var body = await response.Content.ReadAsByteArrayAsync();
-                res.Body = parser.Deserialize( body, contentType);
+                res.Body = new HttpBody(contentType, body);
                 if (useCookies)
                 {
                     var cookieHeader = response.Headers.GetValues("Set-Cookie");

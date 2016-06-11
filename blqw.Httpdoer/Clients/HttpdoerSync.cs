@@ -127,15 +127,10 @@ namespace blqw.Web
         private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
             var contentType = (HttpContentType)response.ContentType;
-            var parser = contentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
-            if (parser == null)
-            {
-                throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
-            }
             var res = new HttpResponse();
             using (response)
             {
-                res.Body = parser.Deserialize(GetBytes(response), contentType);
+                res.Body = new HttpBody(contentType, GetBytes(response));
                 if (useCookies)
                 {
                     res.Cookies = response.Cookies;

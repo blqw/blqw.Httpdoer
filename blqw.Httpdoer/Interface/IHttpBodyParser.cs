@@ -25,6 +25,6 @@ namespace blqw.Web
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        HttpBody Deserialize(byte[] bytes, IFormatProvider formatProvider);
+        IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
     }
 }

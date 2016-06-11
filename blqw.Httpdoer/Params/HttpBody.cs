@@ -18,14 +18,11 @@ namespace blqw.Web
 
         }
 
-        public HttpBody(byte[] responseBody, IEnumerable<KeyValuePair<string, object>> body)
-            : base(new HttpParameterCollection())
+        public HttpBody(HttpContentType contentType, byte[] responseBody)
+            : base(new LazyHttpParameterCollection(contentType, responseBody, HttpParamLocation.Body))
         {
-            foreach (var item in body)
-            {
-                base[item.Key] = item.Value;
-            }
             ResponseBody = responseBody;
+            ContentType = contentType;
         }
 
         public override HttpParamLocation Location

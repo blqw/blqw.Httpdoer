@@ -33,14 +33,5 @@ namespace blqw.Web
         {
             return formatProvider?.GetFormat(typeof(Encoding)) as Encoding;
         }
-
-        HttpBody IHttpBodyParser.Deserialize(byte[] bytes, IFormatProvider formatProvider)
-        {
-            var param = Deserialize(bytes, formatProvider);
-            return new HttpBody(bytes, param)
-            {
-                ContentType = formatProvider is HttpContentType ? (HttpContentType)formatProvider : null
-            };
-        }
     }
 }
