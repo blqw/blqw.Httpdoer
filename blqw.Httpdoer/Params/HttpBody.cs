@@ -76,5 +76,11 @@ namespace blqw.Web
             return parser.Format(format, this, formatProvider);
         }
 
+        public T ToObject<T>()
+        {
+            var parser = ContentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
+            var body = ResponseBody ?? parser.Serialize(null, this, ContentType);
+            return parser.Deserialize<T>(body, ContentType);
+        }
     }
 }

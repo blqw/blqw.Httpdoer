@@ -13,11 +13,13 @@ namespace Demo
         static void Main(string[] args)
         {
             Debug.Listeners.Add(new ConsoleTraceListener());
-            
-            Console.WriteLine();
-            Console.WriteLine(Bind.Translate2("hello world"));
+            while (true)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Bind.Translate("hello world"));
 
-            Console.Read();
+                Console.Read();
+            }
         }
 
 

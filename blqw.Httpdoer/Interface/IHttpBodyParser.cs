@@ -24,7 +24,16 @@ namespace blqw.Web
         /// 将字节流转换为键值对枚举
         /// </summary>
         /// <param name="bytes"></param>
+        /// <param name="formatProvider">它提供有关当前实例的格式信息</param>
         /// <returns></returns>
         IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
+
+        /// <summary>
+        /// 将字节流转换为指定对象
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="formatProvider">它提供有关当前实例的格式信息</param>
+        /// <returns></returns>
+        T Deserialize<T>(byte[] bytes, IFormatProvider formatProvider);
     }
 }

@@ -10,6 +10,10 @@ namespace blqw.Web
     {
         public abstract IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider);
         public abstract byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
+        public virtual T Deserialize<T>(byte[] bytes, IFormatProvider formatProvider)
+        {
+            throw new NotImplementedException();
+        }
 
         public virtual string Format(string format, object arg, IFormatProvider formatProvider)
         {
@@ -33,5 +37,6 @@ namespace blqw.Web
         {
             return formatProvider?.GetFormat(typeof(Encoding)) as Encoding;
         }
+
     }
 }

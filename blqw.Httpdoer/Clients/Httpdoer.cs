@@ -39,7 +39,12 @@ namespace blqw.Web
             var res = Sync.Send(request);
             return res.Body.ResponseBody;
         }
-        
+
+        public static T GetObject<T>(this IHttpRequest request)
+        {
+            var res = Sync.Send(request);
+            return res.Body.ToObject<T>();
+        }
         #endregion
 
         #region 异步
@@ -77,6 +82,12 @@ namespace blqw.Web
             return res.Body.ResponseBody;
         }
 
+        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request)
+        {
+            var res = await Async.SendAsync(request, CancellationToken.None);
+            return res.Body.ToObject<T>();
+        }
+
         public static async Task<string> GetStringAsync(this IHttpRequest request, TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
@@ -97,6 +108,15 @@ namespace blqw.Web
             }
         }
 
+        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request, TimeSpan timeout)
+        {
+            using (var tokenSource = new CancellationTokenSource(timeout))
+            {
+                var res = await Async.SendAsync(request, tokenSource.Token);
+                return res.Body.ToObject<T>();
+            }
+        }
+
         public static async Task<string> GetStringAsync(this IHttpRequest request, CancellationToken cancellationToken)
         {
             var res = await Async.SendAsync(request, cancellationToken);
@@ -109,6 +129,12 @@ namespace blqw.Web
         {
             var res = await Async.SendAsync(request, cancellationToken);
             return res.Body.ResponseBody;
+        }
+
+        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request, CancellationToken cancellationToken)
+        {
+            var res = await Async.SendAsync(request, cancellationToken);
+            return res.Body.ToObject<T>();
         }
         #endregion
 

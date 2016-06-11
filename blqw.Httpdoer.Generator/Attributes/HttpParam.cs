@@ -8,7 +8,7 @@ namespace blqw.Web.Generator
 {
     public abstract class HttpParamAttribute : Attribute
     {
-        public string Name { get; internal set; }
+        public string Name { get; private set; }
 
         public HttpParamAttribute(string name)
         {

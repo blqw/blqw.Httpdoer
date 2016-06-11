@@ -41,10 +41,11 @@ namespace Demo
         public static string Translate2(string text)
         {
             var domain = "https://api.datamarket.azure.com";
-            var trans = (ITranslate)new JKFLDHKJFSF();
-            ((IHttpRequest)trans).BaseUrl = new Uri(domain, UriKind.Absolute);
+            var trans = HttpGenerator.Create<ITranslate>(domain);
+            //((IHttpRequest)trans).BaseUrl = new Uri(domain, UriKind.Absolute);
             //var trans = HttpClient.Create<ITranslate>(domain);
-            return GetText(trans.Translate(AUTH_TOKEN, $"'{text}'", "'zh-CHS'"));
+            var xml = trans.Translate(AUTH_TOKEN, $"'{text}'", "'zh-CHS'");
+            return GetText(xml);
         }
 
     }

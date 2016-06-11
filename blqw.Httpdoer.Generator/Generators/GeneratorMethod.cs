@@ -1,0 +1,129 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+
+namespace blqw.Web.Generator
+{
+    struct GeneratorMethod
+    {
+        public GeneratorMethod(MethodInfo method)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            else if (method.IsGenericMethodDefinition)
+            {
+                throw new ArgumentException("不能是泛型定义方法", nameof(method));
+            }
+            var verb = method.GetCustomAttribute<HttpVerbAttribute>();
+            HttpMethod = verb?.Method ?? HttpRequestMethod.Get;
+            Template = verb?.Template ?? "";
+            ReturnType = method.ReturnType;
+            IsAsync = typeof(Task).IsAssignableFrom(ReturnType);
+            Params = method.GetParameters().Select(it => new GeneratorParam(it)).ToArray();
+            MethodName = method.Name;
+            InterfaceType = method.DeclaringType;
+        }
+
+        public Type ReturnType { get; private set; }
+        public Type InterfaceType { get; private set; }
+        public string MethodName { get; private set; }
+        public GeneratorParam[] Params { get; private set; }
+
+        public bool IsAsync { get; private set; }
+        public string Template { get; private set; }
+        public HttpRequestMethod HttpMethod { get; private set; }
+
+        const string CODE_TEMPLATE = @"
+        %async% %ResultType% %InterfaceName%.%MethodName%(%MethodArgs%)
+        {
+            Method = HttpRequestMethod.%HttpMethod%;
+            Path = ""%Template%"";
+            %Params%;
+            %return% %await% Httpdoer.%Invoker%(this);
+        }
+";
+
+        static readonly Regex _Regex = new Regex(@"(?<=%)\w+(?=%)", RegexOptions.Compiled);
+
+        public override string ToString()
+        {
+            return _Regex.Replace(CODE_TEMPLATE, MatchEvaluator);
+        }
+
+        string MatchEvaluator(Match m)
+        {
+            switch (m.Value)
+            {
+                case "async":
+                    return IsAsync ? "async" : "";
+                case "ResultType":
+                    return ReturnType.GetFriendlyName();
+                case "InterfaceName":
+                    return InterfaceType.GetFriendlyName();
+                case "MethodName":
+                    return MethodName;
+                case "MethodArgs":
+                    return string.Join(", ", Params.Select(GetMethodArgumentDefinition));
+                case "HttpMethod":
+                    return HttpMethod.ToString();
+                case "Template":
+                    return Template.Replace("\n", "%0A")
+                                   .Replace("\r", "%0D")
+                                   .Replace("\"", "%22");
+                case "Params":
+                    return string.Join(";", Params.Select(GetAddParamDefinition));
+                case "return":
+                    return ReturnType != null && ReturnType != typeof(void) && ReturnType != typeof(Task) ? "return" : "";
+                case "await":
+                    return IsAsync ? "await" : "";
+                case "Invoker":
+                    var type = ReturnType;
+                    var async = "";
+                    if (IsAsync)
+                    {
+                        if (type == typeof(Task))
+                        {
+                            type = null;
+                        }
+                        else
+                        {
+                            type = type.GetGenericArguments()[0];
+                        }
+                        async = "Async";
+                    }
+                    if (type == typeof(string))
+                    {
+                        return "GetString" + async;
+                    }
+                    else if (type == typeof(byte[]))
+                    {
+                        return "GetBytes" + async;
+                    }
+                    else if (type != null && type != typeof(void))
+                    {
+                        return "Send" + async;
+                    }
+                    return $"GetObject{async}<{type.GetFriendlyName()}>";
+                default:
+                    return "";
+            }
+        }
+
+        public static string GetMethodArgumentDefinition(GeneratorParam p)
+        {
+            return $"{p.ParamType.GetFriendlyName()} {p.VarName}";
+        }
+
+        public static string GetAddParamDefinition(GeneratorParam p)
+        {
+            return $@"AddParam(""{p.ParamName}"", {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
+        }
+    }
+}

@@ -24,5 +24,12 @@ namespace blqw.Web
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             return charset.GetBytes(json);
         }
+
+        public override T Deserialize<T>(byte[] bytes, IFormatProvider formatProvider)
+        {
+            var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
+            var json = charset.GetString(bytes);
+            return (T)Component.ToJsonObject(typeof(T), json);
+        }
     }
 }

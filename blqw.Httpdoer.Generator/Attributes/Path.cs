@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blqw.Web.Generator.Attributes
+namespace blqw.Web.Generator
 {
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     public sealed class PathAttribute : HttpParamAttribute

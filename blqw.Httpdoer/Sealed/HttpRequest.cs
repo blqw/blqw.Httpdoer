@@ -167,5 +167,10 @@ namespace blqw.Web
         }
 
         public IHttpLogger Logger { get; set; }
+
+        protected void AddParam(string name, object value, HttpParamLocation location)
+        {
+            _AllParams.AddValue(name, value, location);
+        }
     }
 }
