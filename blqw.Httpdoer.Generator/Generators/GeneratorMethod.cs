@@ -43,14 +43,21 @@ namespace blqw.Web.Generator
         const string CODE_TEMPLATE = @"
         %async% %ResultType% %InterfaceName%.%MethodName%(%MethodArgs%)
         {
-            Method = HttpRequestMethod.%HttpMethod%;
-            Path = ""%Template%"";
-            %Params%;
-            %return% %await% Httpdoer.%Invoker%(this);
+            try
+            {
+                Method = HttpRequestMethod.%HttpMethod%;
+                Path = ""%Template%"";
+                %Params%;
+                %return% %await% Httpdoer.%Invoker%(this);
+            }
+            finally
+            {
+                %RemoveParams%
+            }
         }
 ";
 
-        static readonly Regex _Regex = new Regex(@"(?<=%)\w+(?=%)", RegexOptions.Compiled);
+        static readonly Regex _Regex = new Regex(@"%\w+%", RegexOptions.Compiled);
 
         public override string ToString()
         {
@@ -59,7 +66,8 @@ namespace blqw.Web.Generator
 
         string MatchEvaluator(Match m)
         {
-            switch (m.Value)
+
+            switch (m.Value.Substring(1, m.Value.Length - 2))
             {
                 case "async":
                     return IsAsync ? "async" : "";
@@ -78,7 +86,7 @@ namespace blqw.Web.Generator
                                    .Replace("\r", "%0D")
                                    .Replace("\"", "%22");
                 case "Params":
-                    return string.Join(";", Params.Select(GetAddParamDefinition));
+                    return string.Join(";", Params.Select(GetSetParamDefinition));
                 case "return":
                     return ReturnType != null && ReturnType != typeof(void) && ReturnType != typeof(Task) ? "return" : "";
                 case "await":
@@ -111,6 +119,8 @@ namespace blqw.Web.Generator
                         return "Send" + async;
                     }
                     return $"GetObject{async}<{type.GetFriendlyName()}>";
+                case "RemoveParams":
+
                 default:
                     return "";
             }
@@ -121,9 +131,14 @@ namespace blqw.Web.Generator
             return $"{p.ParamType.GetFriendlyName()} {p.VarName}";
         }
 
-        public static string GetAddParamDefinition(GeneratorParam p)
+        public static string GetSetParamDefinition(GeneratorParam p)
         {
-            return $@"AddParam(""{p.ParamName}"", {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
+            return $@"SetParam(""{p.ParamName}"", {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
+        }
+
+        public static string GetRemoveParamDefinition(GeneratorParam p)
+        {
+            return $@"SetParam(""{p.ParamName}"", null, HttpParamLocation.{p.Location.ToString()})";
         }
     }
 }

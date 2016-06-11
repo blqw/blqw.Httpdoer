@@ -16,7 +16,7 @@ namespace Demo
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine(Bind.Translate("hello world"));
+                Console.WriteLine(Bind.Translate2("hello world"));
 
                 Console.Read();
             }

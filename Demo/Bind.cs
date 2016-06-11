@@ -42,8 +42,6 @@ namespace Demo
         {
             var domain = "https://api.datamarket.azure.com";
             var trans = HttpGenerator.Create<ITranslate>(domain);
-            //((IHttpRequest)trans).BaseUrl = new Uri(domain, UriKind.Absolute);
-            //var trans = HttpClient.Create<ITranslate>(domain);
             var xml = trans.Translate(AUTH_TOKEN, $"'{text}'", "'zh-CHS'");
             return GetText(xml);
         }

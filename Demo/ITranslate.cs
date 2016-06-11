@@ -11,7 +11,6 @@ namespace Demo
     public interface ITranslate
     {
         [HttpGet("Bing/MicrosoftTranslator/v1/Translate")]
-        //[ContentType(HttpContentTypes.Form)]
         string Translate([Header("Authorization")]string token, string Text, string To);
     }
 
@@ -26,6 +25,7 @@ namespace Demo
             Params["To"] = To;
             Headers["Authorization"] = token;
             return Httpdoer.GetString(this);
+            
         }
     }
 
