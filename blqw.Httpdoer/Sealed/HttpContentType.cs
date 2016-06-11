@@ -39,11 +39,11 @@ namespace blqw.Web
         /// </summary>
         public static readonly HttpContentType UTF8Text = "text/plain;charset=utf-8";
         /// <summary>
-        /// text/plain;
+        /// text/plain
         /// </summary>
         public static readonly HttpContentType Text = "text/plain";
         /// <summary>
-        /// text/plain;
+        /// null
         /// </summary>
         public static readonly HttpContentType Undefined = null;
 
@@ -91,6 +91,7 @@ namespace blqw.Web
             throw new FormatException($"{nameof(contentType)} 格式有误");
         }
 
+        #region 转换
         public static implicit operator string(HttpContentType value)
         {
             return value.ToString();
@@ -104,6 +105,72 @@ namespace blqw.Web
             }
             return Parse(value);
         }
+
+        public static implicit operator HttpContentTypes(HttpContentType value)
+        {
+            if (value == Form)
+            {
+                return HttpContentTypes.Form;
+            }
+            else if (value == Json)
+            {
+                return HttpContentTypes.Json;
+            }
+            else if (value == OctetStream)
+            {
+                return HttpContentTypes.OctetStream;
+            }
+            else if (value == XML)
+            {
+                return HttpContentTypes.XML;
+            }
+            else if (value == Protobuf)
+            {
+                return HttpContentTypes.Protobuf;
+            }
+            else if (value == UTF8Text)
+            {
+                return HttpContentTypes.UTF8Text;
+            }
+            else if (value == Text)
+            {
+                return HttpContentTypes.Text;
+            }
+            else if (value == Undefined)
+            {
+                return HttpContentTypes.Undefined;
+            }
+            else
+            {
+                throw new InvalidCastException();
+            }
+        }
+
+        public static implicit operator HttpContentType(HttpContentTypes value)
+        {
+            switch (value)
+            {
+                case HttpContentTypes.Form:
+                    return Form;
+                case HttpContentTypes.Json:
+                    return Json;
+                case HttpContentTypes.OctetStream:
+                    return OctetStream;
+                case HttpContentTypes.XML:
+                    return XML;
+                case HttpContentTypes.Protobuf:
+                    return Protobuf;
+                case HttpContentTypes.UTF8Text:
+                    return UTF8Text;
+                case HttpContentTypes.Text:
+                    return Text;
+                case HttpContentTypes.Undefined:
+                default:
+                    return Undefined;
+            }
+        }
+
+        #endregion
 
         public HttpContentType(string type, string format, Encoding charset)
         {

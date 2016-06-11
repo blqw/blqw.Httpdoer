@@ -125,15 +125,6 @@ namespace blqw.Web
         }
 
         #endregion
-
-        #region Factory
-
-
-        public static T Create<T>(string domain)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
+        
     }
 }
