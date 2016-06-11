@@ -7,7 +7,7 @@
     <ProjectGuid>{944F1950-E158-4DBD-928D-895420F12161}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>blqw.Web</RootNamespace>
+    <RootNamespace>blqw.Web.Generator</RootNamespace>
     <AssemblyName>blqw.Httper.Generator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,14 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\Get.cs" />
+    <Compile Include="Attributes\Body.cs" />
+    <Compile Include="Attributes\ContentType.cs" />
+    <Compile Include="Attributes\Path.cs" />
+    <Compile Include="Attributes\Query.cs" />
     <Compile Include="Attributes\Header.cs" />
     <Compile Include="Attributes\HttpDelete.cs" />
     <Compile Include="Attributes\HttpGet.cs" />
+    <Compile Include="Attributes\HttpParam.cs" />
     <Compile Include="Attributes\HttpPost.cs" />
     <Compile Include="Attributes\HttpPut.cs" />
     <Compile Include="Attributes\HttpVerb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="HttpGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">

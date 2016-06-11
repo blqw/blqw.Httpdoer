@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace blqw.Web.Generator
 {
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public sealed class HeaderAttribute : HttpParamAttribute
+    public sealed class BodyAttribute : HttpParamAttribute
     {
-        public HeaderAttribute()
+        public BodyAttribute()
         {
         }
 
-        public HeaderAttribute(string paramName) : base(paramName)
+        public BodyAttribute(string paramName) : base(paramName)
         {
         }
 
@@ -21,7 +21,7 @@ namespace blqw.Web.Generator
         {
             get
             {
-                return HttpParamLocation.Header;
+                return HttpParamLocation.Body;
             }
         }
     }

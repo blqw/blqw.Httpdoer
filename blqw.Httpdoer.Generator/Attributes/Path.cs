@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blqw.Web.Generator
+namespace blqw.Web.Generator.Attributes
 {
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public sealed class HeaderAttribute : HttpParamAttribute
+    public sealed class PathAttribute : HttpParamAttribute
     {
-        public HeaderAttribute()
+        public PathAttribute()
         {
         }
 
-        public HeaderAttribute(string paramName) : base(paramName)
+        public PathAttribute(string paramName) : base(paramName)
         {
         }
 
@@ -21,7 +21,7 @@ namespace blqw.Web.Generator
         {
             get
             {
-                return HttpParamLocation.Header;
+                return HttpParamLocation.Path;
             }
         }
     }

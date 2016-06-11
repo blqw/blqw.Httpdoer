@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blqw.Web
+namespace blqw.Web.Generator
 {
     public sealed class HttpPutAttribute : HttpVerbAttribute
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blqw.Web
+namespace blqw.Web.Generator
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface, Inherited = true, AllowMultiple = false)]
     public abstract class HttpVerbAttribute : Attribute
