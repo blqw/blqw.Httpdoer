@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,7 +38,7 @@ namespace blqw.Web.Generator
             buffer.AppendFormat(CODE_CLONE, className);
             buffer.AppendLine();
 
-            foreach (var method in interfaceType.GetMethods())
+            foreach (var method in GetAllMethods(interfaceType))
             {
                 var m = new GeneratorMethod(method);
                 buffer.AppendLine(m.ToString());
@@ -51,5 +52,19 @@ namespace blqw.Web.Generator
             return (ICloneable)DyCompiler.CompileObject(code, usingTypes.ToArray());
         }
 
+        private static IEnumerable<MethodInfo> GetAllMethods(Type interfaceType)
+        {
+            foreach (var method in interfaceType.GetMethods())
+            {
+                yield return method;
+            }
+            foreach (var i in interfaceType.GetInterfaces())
+            {
+                foreach (var method in i.GetMethods())
+                {
+                    yield return method;
+                }
+            }
+        }
     }
 }

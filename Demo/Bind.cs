@@ -46,5 +46,12 @@ namespace Demo
             return GetText(xml);
         }
 
+        public static async Task<string> TranslateAsync(string text)
+        {
+            var domain = "https://api.datamarket.azure.com";
+            var trans = HttpGenerator.Create<ITranslate>(domain);
+            var xml = await trans.TranslateAsync(AUTH_TOKEN, $"'{text}'", "'zh-CHS'");
+            return GetText(xml);
+        }
     }
 }

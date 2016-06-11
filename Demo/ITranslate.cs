@@ -8,25 +8,15 @@ using System.Threading.Tasks;
 
 namespace Demo
 {
-    public interface ITranslate
+    public interface ITranslate : ITranslateAsync
     {
         [HttpGet("Bing/MicrosoftTranslator/v1/Translate")]
         string Translate([Header("Authorization")]string token, string Text, string To);
     }
 
-    public class JKFLDHKJFSF : HttpRequest, ITranslate
+    public interface ITranslateAsync
     {
-        string ITranslate.Translate(string token, string Text, string To)
-        {
-            Method = HttpRequestMethod.Get;
-            Path = "Bing/MicrosoftTranslator/v1/Translate";
-            
-            Params["Text"] = Text;
-            Params["To"] = To;
-            Headers["Authorization"] = token;
-            return Httpdoer.GetString(this);
-            
-        }
+        [HttpGet("Bing/MicrosoftTranslator/v1/Translate")]
+        Task<string> TranslateAsync([Header]string Authorization, string Text, string To);
     }
-
 }

@@ -20,10 +20,11 @@ namespace blqw.Web
                 }
                 var res = new HttpResponse();
                 var @params = parser.Deserialize(body, contentType);
-                foreach (var item in parser.Deserialize(body, contentType))
-                {
-                    SetValue(item.Key, item.Value, location);
-                }
+                if (@params != null)
+                    foreach (var item in @params)
+                    {
+                        SetValue(item.Key, item.Value, location);
+                    }
                 _Initialization = null;
             };
         }

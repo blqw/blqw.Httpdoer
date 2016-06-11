@@ -52,7 +52,7 @@ namespace blqw.Web.Generator
             }
             finally
             {
-                %RemoveParams%
+                %RemoveParams%;
             }
         }
 ";
@@ -120,7 +120,7 @@ namespace blqw.Web.Generator
                     }
                     return $"GetObject{async}<{type.GetFriendlyName()}>";
                 case "RemoveParams":
-
+                    return string.Join(";", Params.Select(GetRemoveParamDefinition));
                 default:
                     return "";
             }

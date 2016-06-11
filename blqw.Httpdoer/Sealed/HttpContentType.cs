@@ -99,7 +99,7 @@ namespace blqw.Web
 
         public static implicit operator HttpContentType(string value)
         {
-            if (value == null)
+            if (string.IsNullOrEmpty(value))
             {
                 return Undefined;
             }
@@ -189,6 +189,10 @@ namespace blqw.Web
         {
             if (Charset == null)
             {
+                if (Type == null && Format == null)
+                {
+                    return "";
+                }
                 return $"{Type}/{Format}";
             }
             return $"{Type}/{Format};charset={Charset.WebName}";

@@ -64,7 +64,7 @@ namespace blqw.Web
 
         private async Task<HttpResponse> Transfer(bool useCookies, HttpResponseMessage response)
         {
-            var contentType = (HttpContentType)response.Content.Headers.ContentType.ToString();
+            var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
             var res = new HttpResponse();
             using (response)
             {                
