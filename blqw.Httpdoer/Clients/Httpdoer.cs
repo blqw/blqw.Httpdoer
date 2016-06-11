@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public static class HttpClient
+    public static class Httpdoer
     {
-        static HttpClient()
+        static Httpdoer()
         {
             ServicePointManager.MaxServicePointIdleTime = 30000;
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
@@ -19,7 +19,7 @@ namespace blqw.Web
         }
         
         #region 同步
-        static readonly IHttpClient Sync = new HttpClientSync();
+        static readonly IHttpdoer Sync = new HttpdoerSync();
 
         public static IHttpResponse Send(this IHttpRequest request)
         {
@@ -43,7 +43,7 @@ namespace blqw.Web
         #endregion
 
         #region 异步
-        static readonly IHttpClient Async = new HttpClientAsync();
+        static readonly IHttpdoer Async = new HttpdoerAsync();
 
         public static Task<IHttpResponse> SendAsync(this IHttpRequest request)
         {

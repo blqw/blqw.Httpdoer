@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public sealed class HttpClientAsync : IHttpClient
+    public sealed class HttpdoerAsync : IHttpdoer
     {
-        static readonly System.Net.Http.HttpClient _Clinet = GetOnlyHttpClient();
+        static readonly System.Net.Http.HttpClient _Client = GetOnlyHttpClient();
 
         private static System.Net.Http.HttpClient GetOnlyHttpClient()
         {
@@ -38,7 +38,7 @@ namespace blqw.Web
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
-                    var response = await _Clinet.SendAsync(www, source2.Token);
+                    var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
                     return request.Response = (await Transfer(request.UseCookies, response));
                 }

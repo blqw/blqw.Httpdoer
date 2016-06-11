@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\blqw.HttpRequest\blqw.HttpRequest.csproj">
+    <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">
       <Project>{135d11d6-46e5-41bf-9db2-6f033293b260}</Project>
-      <Name>blqw.HttpRequest</Name>
+      <Name>blqw.Httpdoer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

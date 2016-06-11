@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public sealed class HttpClientSync : IHttpClient
+    public sealed class HttpdoerSync : IHttpdoer
     {
-        static HttpClientSync()
+        static HttpdoerSync()
         {
             //用于https的请求验证票据
             ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;

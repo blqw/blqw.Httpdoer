@@ -12,11 +12,10 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            Debug.Listeners.Add(new ConsoleTraceListener());            
-
-           
+            Debug.Listeners.Add(new ConsoleTraceListener());
+            
             Console.WriteLine();
-            Console.WriteLine(Bind.Translate("hello world"));
+            Console.WriteLine(Bind.Translate2("hello world"));
 
             Console.Read();
         }
