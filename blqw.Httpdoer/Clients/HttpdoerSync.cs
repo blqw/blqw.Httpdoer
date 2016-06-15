@@ -22,7 +22,7 @@ namespace blqw.Web
         }
 
         static readonly Action<WebHeaderCollection, string, string> HeaderAddInternal = (Action<WebHeaderCollection, string, string>)
-            (typeof(WebHeaderCollection).GetMethod("AddInternal", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(string), typeof(string) }, null)
+            (typeof(WebHeaderCollection).GetMethod("ChangeInternal", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(string), typeof(string) }, null)
             ??
             typeof(WebHeaderCollection).GetMethod("AddWithoutValidate", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(string), typeof(string) }, null)).CreateDelegate(typeof(Action<WebHeaderCollection, string, string>));
 
@@ -77,6 +77,14 @@ namespace blqw.Web
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
             www.Method = GetMethodName(request.Method);
 
+            //必须要先设置头再设置body,否则头会被清掉
+            foreach (var header in request.Headers)
+            {
+                //防止中文引起的头信息乱码
+                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
+                HeaderAddInternal(www.Headers, header.Key, transfer);
+            }
+
             if (data.Body?.Length > 0)
             {
                 www.ContentLength = data.Body.Length;
@@ -84,12 +92,6 @@ namespace blqw.Web
                 {
                     req.Write(data.Body, 0, data.Body.Length);
                 }
-            }
-            foreach (var header in request.Headers)
-            {
-                //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
-                HeaderAddInternal(www.Headers, header.Key, transfer);
             }
 
             return www;
@@ -126,6 +128,10 @@ namespace blqw.Web
 
         private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
+            if (response == null)
+            {
+                return null;
+            }
             var contentType = (HttpContentType)response.ContentType;
             var res = new HttpResponse();
             using (response)
