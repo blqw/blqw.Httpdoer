@@ -135,7 +135,7 @@ namespace blqw.Web
         {
             if (response == null)
             {
-                return null;
+                return new HttpResponse() { StatusCode = 0 };
             }
             var contentType = (HttpContentType)response.ContentType;
             var res = new HttpResponse();

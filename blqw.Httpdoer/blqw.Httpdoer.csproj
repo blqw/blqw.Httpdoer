@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>blqw.Web</RootNamespace>
-    <AssemblyName>blqw.HttpRequest</AssemblyName>
+    <AssemblyName>blqw.Httpdoer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

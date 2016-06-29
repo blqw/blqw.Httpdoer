@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>blqw.Web.Extensions</RootNamespace>
-    <AssemblyName>blqw.Web.Extensions</AssemblyName>
+    <AssemblyName>blqw.Httpdoer.Extensions</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,6 +32,10 @@
   <ItemGroup>
     <Reference Include="blqw.DyCompiler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\blqw.DyCompiler.1.0.0\lib\net45\blqw.DyCompiler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="blqw.Httpdoer, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.Httpdoer.1.0.1\lib\net45\blqw.Httpdoer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -64,12 +68,8 @@
     <Compile Include="TypeName.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">
-      <Project>{135d11d6-46e5-41bf-9db2-6f033293b260}</Project>
-      <Name>blqw.Httpdoer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="blqw.Httpdoer.Extensions.nuspec" />
+    <None Include="nuget-pack.bat" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
