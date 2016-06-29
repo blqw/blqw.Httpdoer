@@ -1,5 +1,6 @@
 ﻿using blqw.HttpRequestComponent;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -30,7 +31,15 @@ namespace blqw.Reflection
         [Import("CreateGetter")]
         static Func<MemberInfo, Func<object, object>> CreateGetter;
 
+
+        static readonly ConcurrentDictionary<PropertyInfo, PropertyGetter> PropertiesCache = new ConcurrentDictionary<PropertyInfo, PropertyGetter>();
         public static PropertyGetter Get(PropertyInfo property)
+        {
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            return PropertiesCache.GetOrAdd(property, Create);
+        }
+
+        private static PropertyGetter Create(PropertyInfo property)
         {
             var getter = new PropertyGetter();
             getter.Name = property.Name;
@@ -50,6 +59,20 @@ namespace blqw.Reflection
             }
             return getter;
         }
+
+        static readonly ConcurrentDictionary<Type, List<PropertyGetter>> TypesCache = new ConcurrentDictionary<Type, List<PropertyGetter>>();
+        public static List<PropertyGetter> Get(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            return TypesCache.GetOrAdd(type, Create);
+        }
+
+        private static List<PropertyGetter> Create(Type type)
+        {
+            return type.GetProperties().Select(Get).ToList();
+        }
+
+
 
         /// <summary>
         /// 属性名

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public static class Httpdoer
+    public sealed class Httpdoer : HttpRequest
     {
         static Httpdoer()
         {
@@ -17,38 +17,42 @@ namespace blqw.Web
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
             ServicePointManager.SetTcpKeepAlive(true, 30000, 30000);
         }
-        
-        #region 同步
-        static readonly IHttpdoer Sync = new HttpdoerSync();
 
-        public static IHttpResponse Send(this IHttpRequest request)
+        #region 同步
+        static readonly IHttpClient Sync = new HttpClientSync();
+
+        public IHttpResponse Send()
         {
-            return Sync.Send(request);
+            return Sync.Send(this);
         }
 
-        public static string GetString(this IHttpRequest request)
+        public string GetString()
         {
-            var res = Sync.Send(request);
-            var str = res.Body.ToString();
-            request.Logger.Debug(str);
+            var res = Sync.Send(this);
+            var str = res.Body?.ToString();
+            this.Logger?.Debug(str);
             return str;
         }
 
-        public static byte[] GetBytes(this IHttpRequest request)
+        public byte[] GetBytes()
         {
-            var res = Sync.Send(request);
-            return res.Body.ResponseBody;
+            var res = Sync.Send(this);
+            return res.Body?.ResponseBody;
         }
 
-        public static T GetObject<T>(this IHttpRequest request)
+        public T GetObject<T>()
         {
-            var res = Sync.Send(request);
+            var res = Sync.Send(this);
+            if (res.Body == null)
+            {
+                return default(T);
+            }
             return res.Body.ToObject<T>();
         }
         #endregion
 
         #region 异步
-        static readonly IHttpdoer Async = new HttpdoerAsync();
+        static readonly IHttpClient Async = new HttpClientAsync();
 
         public static Task<IHttpResponse> SendAsync(this IHttpRequest request)
         {
@@ -71,20 +75,24 @@ namespace blqw.Web
         public static async Task<string> GetStringAsync(this IHttpRequest request)
         {
             var res = await Async.SendAsync(request, CancellationToken.None);
-            var str = res.Body.ToString();
-            request.Logger.Debug(str);
+            var str = res.Body?.ToString();
+            request.Logger?.Debug(str);
             return str;
         }
 
         public static async Task<byte[]> GetBytesAsync(this IHttpRequest request)
         {
             var res = await Async.SendAsync(request, CancellationToken.None);
-            return res.Body.ResponseBody;
+            return res.Body?.ResponseBody;
         }
 
         public static async Task<T> GetObjectAsync<T>(this IHttpRequest request)
         {
             var res = await Async.SendAsync(request, CancellationToken.None);
+            if (res.Body == null)
+            {
+                return default(T);
+            }
             return res.Body.ToObject<T>();
         }
 
@@ -93,8 +101,8 @@ namespace blqw.Web
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
                 var res = await Async.SendAsync(request, tokenSource.Token);
-                var str = res.Body.ToString();
-                request.Logger.Debug(str);
+                var str = res.Body?.ToString();
+                request.Logger?.Debug(str);
                 return str;
             }
         }
@@ -104,7 +112,7 @@ namespace blqw.Web
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
                 var res = await Async.SendAsync(request, tokenSource.Token);
-                return res.Body.ResponseBody;
+                return res.Body?.ResponseBody;
             }
         }
 
@@ -113,6 +121,10 @@ namespace blqw.Web
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
                 var res = await Async.SendAsync(request, tokenSource.Token);
+                if (res.Body == null)
+                {
+                    return default(T);
+                }
                 return res.Body.ToObject<T>();
             }
         }
@@ -120,20 +132,24 @@ namespace blqw.Web
         public static async Task<string> GetStringAsync(this IHttpRequest request, CancellationToken cancellationToken)
         {
             var res = await Async.SendAsync(request, cancellationToken);
-            var str = res.Body.ToString();
-            request.Logger.Debug(str);
+            var str = res.Body?.ToString();
+            request.Logger?.Debug(str);
             return str;
         }
 
         public static async Task<byte[]> GetBytesAsync(this IHttpRequest request, CancellationToken cancellationToken)
         {
             var res = await Async.SendAsync(request, cancellationToken);
-            return res.Body.ResponseBody;
+            return res.Body?.ResponseBody;
         }
 
         public static async Task<T> GetObjectAsync<T>(this IHttpRequest request, CancellationToken cancellationToken)
         {
             var res = await Async.SendAsync(request, cancellationToken);
+            if (res.Body == null)
+            {
+                return default(T);
+            }
             return res.Body.ToObject<T>();
         }
         #endregion
@@ -151,6 +167,6 @@ namespace blqw.Web
         }
 
         #endregion
-        
+
     }
 }

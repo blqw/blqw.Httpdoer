@@ -1,4 +1,6 @@
-﻿using System;
+﻿using blqw.Reflection;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -48,8 +50,25 @@ namespace blqw.Web
                 return;
             }
 
-            var props = obj.GetType().GetProperties();
-            if (props.Length == 0)
+            var array = (obj as IEnumerable)?.GetEnumerator()
+                        ?? obj as IEnumerator;
+            if (array != null)
+            {
+                if (array.MoveNext())
+                {
+                    AppendObject(buffer, preName + "[]", array.Current);
+                    while (array.MoveNext())
+                    {
+                        buffer.Append('&');
+                        AppendObject(buffer, preName + "[]", array.Current);
+                    }
+                }
+                return;
+            }
+
+            var props = PropertyGetter.Get(obj.GetType());
+            var pCount = props.Count;
+            if (pCount == 0)
             {
                 if (preName != null)
                 {
@@ -60,21 +79,11 @@ namespace blqw.Web
                 return;
             }
 
-            var ee = props.GetEnumerator();
-            if (ee.MoveNext())
+            AppendObject(buffer, ConcatName(preName, props[0].Name), props[0].GetValue(obj));
+            for (int i = 1; i < pCount; i++)
             {
-                var p = (PropertyInfo)ee.Current;
-                AppendObject(buffer, ConcatName(preName, p.Name), p.GetValue(obj));
-                while (ee.MoveNext())
-                {
-                    p = (PropertyInfo)ee.Current;
-                    buffer.Append('&');
-                    AppendObject(buffer, ConcatName(preName, p.Name), p.GetValue(obj));
-                }
-            }
-            foreach (var p in props)
-            {
-                AppendObject(buffer, ConcatName(preName, p.Name), p.GetValue(obj));
+                buffer.Append('&');
+                AppendObject(buffer, ConcatName(preName, props[i].Name), props[i].GetValue(obj));
             }
         }
 
@@ -110,7 +119,7 @@ namespace blqw.Web
         /// <remarks>周子鉴 2015.08.01</remarks>
         private static string ConcatName(string pre, string name)
         {
-            return pre == null ? name : pre + "." + name;
+            return pre == null ? name : $"{pre}[{name}]";
         }
     }
 }

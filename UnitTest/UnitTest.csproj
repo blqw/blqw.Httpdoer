@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="blqw.Json, Version=2.7.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.Json.2.7.6\lib\net45\blqw.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -57,14 +61,17 @@
     <Compile Include="UnitTest2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\blqw.HttpRequest\blqw.HttpRequest.csproj">
+    <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">
       <Project>{135d11d6-46e5-41bf-9db2-6f033293b260}</Project>
-      <Name>blqw.HttpRequest</Name>
+      <Name>blqw.Httpdoer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Demo\Demo.csproj">
       <Project>{2367158e-b52a-410f-a627-2dbe30112ac5}</Project>
       <Name>Demo</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

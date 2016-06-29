@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public sealed class HttpdoerAsync : IHttpdoer
+    public sealed class HttpClientAsync : IHttpClient
     {
         static readonly System.Net.Http.HttpClient _Client = GetOnlyHttpClient();
 
@@ -31,10 +31,10 @@ namespace blqw.Web
         public async Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken)
         {
             var timer = HttpTimer.Start();
-            var www = GetRequest(request);
-            timer.Readied();
             try
             {
+                var www = GetRequest(request);
+                timer.Readied();
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
@@ -64,6 +64,10 @@ namespace blqw.Web
 
         private async Task<HttpResponse> Transfer(bool useCookies, HttpResponseMessage response)
         {
+            if (response == null)
+            {
+                return new HttpResponse() { StatusCode = 0 };
+            }
             var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
             var res = new HttpResponse();
             using (response)
@@ -107,7 +111,7 @@ namespace blqw.Web
             foreach (var header in request.Headers)
             {
                 //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
+                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value.ToString()));
                 if (!www.Headers.TryAddWithoutValidation(header.Key, transfer))
                 {
                     www.Content?.Headers.TryAddWithoutValidation(header.Key, transfer);

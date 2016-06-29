@@ -48,7 +48,7 @@
     <Compile Include="Base\HttpBodyParserBase.cs" />
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="Clients\Httpdoer.cs" />
-    <Compile Include="Clients\HttpdoerAsync.cs" />
+    <Compile Include="Clients\HttpClientAsync.cs" />
     <Compile Include="HttpBodyParsers\HttpNullBodyParser.cs" />
     <Compile Include="HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpRequestBase.cs" />
@@ -70,14 +70,14 @@
     <Compile Include="Interface\IHttpBodyParser.cs" />
     <Compile Include="Interface\IHttpParameterCollection.cs" />
     <Compile Include="Sealed\HttpBodyParserFactory.cs" />
-    <Compile Include="Clients\HttpdoerSync.cs" />
+    <Compile Include="Clients\HttpClientSync.cs" />
     <Compile Include="Sealed\HttpContentType.cs" />
     <Compile Include="Params\HttpHeaders.cs" />
     <Compile Include="Params\HttpParamLocation.cs" />
     <Compile Include="Params\HttpParameterCollection.cs" />
     <Compile Include="Params\HttpParams.cs" />
     <Compile Include="Params\HttpParamValue.cs" />
-    <Compile Include="Interface\IHttpdoer.cs" />
+    <Compile Include="Interface\IHttpClient.cs" />
     <Compile Include="Interface\IHttpRequest.cs" />
     <Compile Include="Interface\IHttpResponse.cs" />
     <Compile Include="IOC\Component.cs" />
@@ -90,7 +90,10 @@
     <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
     <Compile Include="Sealed\HttpTimer.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="blqw.Httpdoer.nuspec" />
+    <None Include="nuget-pack.bat" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

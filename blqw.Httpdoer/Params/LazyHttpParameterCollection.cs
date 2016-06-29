@@ -31,12 +31,6 @@ namespace blqw.Web
 
         Action _Initialization;
 
-        void IHttpParameterCollection.AddValue(HttpParamValue value)
-        {
-            _Initialization?.Invoke();
-            AddValue(value);
-        }
-
         void IHttpParameterCollection.AddValue(string name, object value, HttpParamLocation location)
         {
             _Initialization?.Invoke();
@@ -58,7 +52,7 @@ namespace blqw.Web
         IEnumerator<HttpParamValue> IEnumerable<HttpParamValue>.GetEnumerator()
         {
             _Initialization?.Invoke();
-            return Values.GetEnumerator();
+            return base.GetEnumerator();
         }
 
         object IHttpParameterCollection.GetValue(string name, HttpParamLocation location)
@@ -67,18 +61,18 @@ namespace blqw.Web
             return GetValue(name, location);
         }
 
+        IList IHttpParameterCollection.GetValues(string name, HttpParamLocation location)
+        {
+            _Initialization?.Invoke();
+            return Get(name, location).Values.AsReadOnly();
+        }
+
         void IHttpParameterCollection.Remove(string name, HttpParamLocation location)
         {
             _Initialization?.Invoke();
             Remove(name, location);
         }
-
-        void IHttpParameterCollection.SetValue(HttpParamValue value)
-        {
-            _Initialization?.Invoke();
-            SetValue(value);
-        }
-
+        
         void IHttpParameterCollection.SetValue(string name, object value, HttpParamLocation location)
         {
             _Initialization?.Invoke();

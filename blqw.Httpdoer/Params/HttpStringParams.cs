@@ -23,6 +23,22 @@ namespace blqw.Web
                 return _Location;
             }
         }
-        
+
+        public override string this[string name]
+        {
+            get
+            {
+                var r = Params.Get(name, Location);
+                if (r.IsArray)
+                {
+                    return string.Join(",", r.Values);
+                }
+                return (string)r.Value;
+            }
+            set
+            {
+                base[name] = value;
+            }
+        }
     }
 }

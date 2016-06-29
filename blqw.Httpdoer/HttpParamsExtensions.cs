@@ -128,12 +128,11 @@ namespace blqw.Web
             {
                 return;
             }
-            var props = model.GetType().GetProperties();
-            for (int i = 0, length = props.Length; i < length; i++)
+            var props = PropertyGetter.Get(model.GetType());
+            for (int i = 0, length = props.Count; i < length; i++)
             {
                 var p = props[i];
-                var getter = PropertyGetter.Get(p);
-                param[getter.Name] = Component.ToString(getter.GetValue(model));
+                param[p.Name] = Component.ToString(p.GetValue(model));
             }
         }
 
@@ -152,12 +151,11 @@ namespace blqw.Web
             {
                 return;
             }
-            var props = model.GetType().GetProperties();
-            for (int i = 0, length = props.Length; i < length; i++)
+            var props = PropertyGetter.Get(model.GetType());
+            for (int i = 0, length = props.Count; i < length; i++)
             {
                 var p = props[i];
-                var getter = PropertyGetter.Get(p);
-                param[getter.Name] = getter.GetValue(model);
+                param[p.Name] = p.GetValue(model);
             }
         }
     }

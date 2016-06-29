@@ -10,7 +10,7 @@ namespace blqw.Web
     /// <summary>
     /// 用于 HTTP 请求的发送和接收
     /// </summary>
-    public interface IHttpdoer
+    public interface IHttpClient
     {
         IHttpResponse Send(IHttpRequest request);
 
