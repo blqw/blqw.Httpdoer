@@ -36,8 +36,10 @@ namespace blqw.Web
                 throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
             }
             _Path = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
-
+            Headers = new Dictionary<string, string>();
+            request.Tracking?.OnParamsExtracting(request);
             Body = parser.Serialize(null, GetBodyParams(request), provider);
+            request.Tracking?.OnParamsExtracted(request);
             string query = _QueryBuilder.ToString();
 
             if ((query?.Length).GetValueOrDefault(0) == 0)
@@ -69,29 +71,41 @@ namespace blqw.Web
 
         public byte[] Body { get; private set; }
 
+        public Dictionary<string, string> Headers { get; private set; }
+
         private IEnumerable<KeyValuePair<string, object>> GetBodyParams(IHttpRequest request)
         {
             foreach (var param in request)
             {
+                var name = param.Name;
+                var value = param.Value;
                 switch (param.Location)
                 {
                     case HttpParamLocation.Auto:
-                        if (_Path.Contains("{" + param.Name + "}"))
+                        if (_Path.Contains("{" + name + "}"))
                             goto case HttpParamLocation.Path;
                         else if (request.Method == HttpRequestMethod.Get)
                             goto case HttpParamLocation.Query;
                         else
                             goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
-                        _QueryBuilder.AppendObject(param.Name, param.Value);
+                        request.Tracking?.OnQueryParamFound(request, ref name, ref value);
+                        if (name != null && value != null)
+                            _QueryBuilder.AppendObject(name, value);
                         break;
                     case HttpParamLocation.Body:
-                        yield return new KeyValuePair<string, object>(param.Name, param.Value);
+                        request.Tracking?.OnBodyParamFound(request, ref name, ref value);
+                        if (name != null)
+                            yield return new KeyValuePair<string, object>(name, value);
                         break;
                     case HttpParamLocation.Path:
-                        _Path.Replace("{" + param.Name + "}", param.Value?.ToString());
+                        request.Tracking?.OnPathParamFound(request, ref name, ref value);
+                        _Path.Replace("{" + name + "}", value?.ToString());
                         break;
                     case HttpParamLocation.Header:
+                        request.Tracking?.OnHeaderFound(request, ref name, ref value);
+                        if (name != null)
+                            Headers.Add(name, value?.ToString());
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));

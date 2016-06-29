@@ -9,13 +9,21 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    public sealed class Httpdoer : HttpRequest
+    public class Httpdoer : HttpRequest
     {
         static Httpdoer()
         {
             ServicePointManager.MaxServicePointIdleTime = 30000;
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
             ServicePointManager.SetTcpKeepAlive(true, 30000, 30000);
+        }
+
+        public Httpdoer(string baseUrl) : base(baseUrl)
+        {
+        }
+
+        public Httpdoer()
+        {
         }
 
         #region 同步
@@ -30,7 +38,7 @@ namespace blqw.Web
         {
             var res = Sync.Send(this);
             var str = res.Body?.ToString();
-            this.Logger?.Debug(str);
+            Logger?.Debug(str);
             return str;
         }
 
@@ -54,41 +62,41 @@ namespace blqw.Web
         #region 异步
         static readonly IHttpClient Async = new HttpClientAsync();
 
-        public static Task<IHttpResponse> SendAsync(this IHttpRequest request)
+        public Task<IHttpResponse> SendAsync()
         {
-            return SendAsync(request, CancellationToken.None);
+            return SendAsync(CancellationToken.None);
         }
 
-        public static Task<IHttpResponse> SendAsync(this IHttpRequest request, TimeSpan timeout)
+        public Task<IHttpResponse> SendAsync(TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                return SendAsync(request, tokenSource.Token);
+                return SendAsync(tokenSource.Token);
             }
         }
-        public static Task<IHttpResponse> SendAsync(this IHttpRequest request, CancellationToken cancellationToken)
+        public Task<IHttpResponse> SendAsync(CancellationToken cancellationToken)
         {
-            return Async.SendAsync(request, cancellationToken);
+            return Async.SendAsync(this, cancellationToken);
         }
 
 
-        public static async Task<string> GetStringAsync(this IHttpRequest request)
+        public async Task<string> GetStringAsync()
         {
-            var res = await Async.SendAsync(request, CancellationToken.None);
+            var res = await Async.SendAsync(this, CancellationToken.None);
             var str = res.Body?.ToString();
-            request.Logger?.Debug(str);
+            Logger?.Debug(str);
             return str;
         }
 
-        public static async Task<byte[]> GetBytesAsync(this IHttpRequest request)
+        public async Task<byte[]> GetBytesAsync()
         {
-            var res = await Async.SendAsync(request, CancellationToken.None);
-            return res.Body?.ResponseBody;
+            var res = await Async.SendAsync(this, CancellationToken.None);
+            return res.Body.ResponseBody;
         }
 
-        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request)
+        public async Task<T> GetObjectAsync<T>()
         {
-            var res = await Async.SendAsync(request, CancellationToken.None);
+            var res = await Async.SendAsync(this, CancellationToken.None);
             if (res.Body == null)
             {
                 return default(T);
@@ -96,31 +104,31 @@ namespace blqw.Web
             return res.Body.ToObject<T>();
         }
 
-        public static async Task<string> GetStringAsync(this IHttpRequest request, TimeSpan timeout)
+        public async Task<string> GetStringAsync(TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                var res = await Async.SendAsync(request, tokenSource.Token);
+                var res = await Async.SendAsync(this, tokenSource.Token);
                 var str = res.Body?.ToString();
-                request.Logger?.Debug(str);
+                Logger?.Debug(str);
                 return str;
             }
         }
 
-        public static async Task<byte[]> GetBytesAsync(this IHttpRequest request, TimeSpan timeout)
+        public async Task<byte[]> GetBytesAsync(TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                var res = await Async.SendAsync(request, tokenSource.Token);
+                var res = await Async.SendAsync(this, tokenSource.Token);
                 return res.Body?.ResponseBody;
             }
         }
 
-        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request, TimeSpan timeout)
+        public async Task<T> GetObjectAsync<T>(TimeSpan timeout)
         {
             using (var tokenSource = new CancellationTokenSource(timeout))
             {
-                var res = await Async.SendAsync(request, tokenSource.Token);
+                var res = await Async.SendAsync(this, tokenSource.Token);
                 if (res.Body == null)
                 {
                     return default(T);
@@ -129,23 +137,23 @@ namespace blqw.Web
             }
         }
 
-        public static async Task<string> GetStringAsync(this IHttpRequest request, CancellationToken cancellationToken)
+        public async Task<string> GetStringAsync(CancellationToken cancellationToken)
         {
-            var res = await Async.SendAsync(request, cancellationToken);
+            var res = await Async.SendAsync(this, cancellationToken);
             var str = res.Body?.ToString();
-            request.Logger?.Debug(str);
+            Logger?.Debug(str);
             return str;
         }
 
-        public static async Task<byte[]> GetBytesAsync(this IHttpRequest request, CancellationToken cancellationToken)
+        public async Task<byte[]> GetBytesAsync(CancellationToken cancellationToken)
         {
-            var res = await Async.SendAsync(request, cancellationToken);
+            var res = await Async.SendAsync(this, cancellationToken);
             return res.Body?.ResponseBody;
         }
 
-        public static async Task<T> GetObjectAsync<T>(this IHttpRequest request, CancellationToken cancellationToken)
+        public async Task<T> GetObjectAsync<T>(CancellationToken cancellationToken)
         {
-            var res = await Async.SendAsync(request, cancellationToken);
+            var res = await Async.SendAsync(this, cancellationToken);
             if (res.Body == null)
             {
                 return default(T);
@@ -156,17 +164,16 @@ namespace blqw.Web
 
         #region Begin...End
 
-        public static IAsyncResult BeginSend(this IHttpRequest request, AsyncCallback callback, object state)
+        public IAsyncResult BeginSend(AsyncCallback callback, object state)
         {
-            return Sync.BeginSend(request, callback, state);
+            return Sync.BeginSend(this, callback, state);
         }
 
-        public static IHttpResponse EndSend(this IHttpRequest request, IAsyncResult asyncResult)
+        public IHttpResponse EndSend(IAsyncResult asyncResult)
         {
             return Sync.EndSend(asyncResult);
         }
 
         #endregion
-
     }
 }

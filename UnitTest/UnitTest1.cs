@@ -13,7 +13,7 @@ namespace UnitTest
         [TestMethod]
         public void 基本功能测试()
         {
-            var www = new HttpRequest("https://api.datamarket.azure.com");
+            var www = new Httpdoer("https://api.datamarket.azure.com");
             www.Method = HttpRequestMethod.Get;
             www.Path = "Bing/MicrosoftTranslator/v1/Translate";
             www.Query.AddModel(new

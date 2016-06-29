@@ -110,7 +110,7 @@ namespace UnitTest
                 }
             };
 
-            var www = new HttpRequest("www.baidu.com");
+            var www = new Httpdoer("www.baidu.com");
             //www.Timeout = new TimeSpan(0,0,1);
             www.Headers.KeepAlive = true;
             www.Cookies.Add(new Uri("http://www.baidu.com"), new Cookie("sessionid", "123456789"));

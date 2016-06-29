@@ -61,5 +61,10 @@ namespace blqw.Web
         /// 设置或获取日志记录器
         /// </summary>
         IHttpLogger Logger { get; set; }
+
+        /// <summary>
+        /// 获取或设置用于触发一系列事件的跟踪对象
+        /// </summary>
+        IHttpTracking Tracking { get; set; }
     }
 }

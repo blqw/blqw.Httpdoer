@@ -53,6 +53,7 @@
     <Compile Include="HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpRequestBase.cs" />
     <Compile Include="Interface\IHttpLogger.cs" />
+    <Compile Include="Interface\IHttpTracking.cs" />
     <Compile Include="Params\LazyHttpParameterCollection.cs" />
     <Compile Include="Reflection\PropertyGetter.cs" />
     <Compile Include="Sealed\EncodeURI.cs" />
@@ -83,17 +84,16 @@
     <Compile Include="IOC\Component.cs" />
     <Compile Include="IOC\MEF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sealed\HttpRequest.cs" />
+    <Compile Include="Base\HttpRequest.cs" />
     <Compile Include="Sealed\HttpRequestData.cs" />
     <Compile Include="Sealed\HttpResponse.cs" />
     <Compile Include="Params\HttpStringParams.cs" />
     <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
     <Compile Include="Sealed\HttpTimer.cs" />
+    <Compile Include="Sealed\HttpTracking.cs" />
+    <Compile Include="Sealed\HttpTrackingHandler.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="blqw.Httpdoer.nuspec" />
-    <None Include="nuget-pack.bat" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

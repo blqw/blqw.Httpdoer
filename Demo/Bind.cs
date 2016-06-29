@@ -15,11 +15,12 @@ namespace Demo
 
         public static string Translate(string text)
         {
-            var www = new HttpRequest("https://api.datamarket.azure.com");
+            var www = new Httpdoer("https://api.datamarket.azure.com");
             www.Method = HttpRequestMethod.Get;
             www.Path = "Bing/MicrosoftTranslator/v1/Translate";
             www.Query.AddModel(new { Text = $"'{text}'", To = "'zh-CHS'" });
             www.Headers["Authorization"] = AUTH_TOKEN;
+            
             return GetText(www.GetString());
         }
 

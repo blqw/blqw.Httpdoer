@@ -135,11 +135,11 @@ namespace blqw.Web
                 {
                     if (value.IsSuccessStatusCode == false)
                     {
-                        Logger.Debug(((int)StatusCode).ToString());
+                        Logger?.Debug(((int)StatusCode).ToString());
                     }
                     if (value.Exception != null)
                     {
-                        Logger.Error(value.Exception.Message);
+                        Logger?.Error(value.Exception.Message);
                     }
                 }
             }
@@ -167,6 +167,8 @@ namespace blqw.Web
         }
 
         public IHttpLogger Logger { get; set; }
+
+        public IHttpTracking Tracking { get; set; }
 
         protected void SetParam(string name, object value, HttpParamLocation location)
         {

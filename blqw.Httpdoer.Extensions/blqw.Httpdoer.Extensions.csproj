@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2367158E-B52A-410F-A627-2DBE30112AC5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{944F1950-E158-4DBD-928D-895420F12161}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Demo</RootNamespace>
-    <AssemblyName>Demo</AssemblyName>
+    <RootNamespace>blqw.Web.Extensions</RootNamespace>
+    <AssemblyName>blqw.Web.Extensions</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="blqw.DyCompiler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.DyCompiler.1.0.0\lib\net45\blqw.DyCompiler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,24 +44,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bind.cs" />
-    <Compile Include="ITranslate.cs" />
-    <Compile Include="IMyTestApi.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Attributes\Body.cs" />
+    <Compile Include="Attributes\ContentType.cs" />
+    <Compile Include="Attributes\Path.cs" />
+    <Compile Include="Attributes\Query.cs" />
+    <Compile Include="Attributes\Header.cs" />
+    <Compile Include="Attributes\HttpDelete.cs" />
+    <Compile Include="Attributes\HttpGet.cs" />
+    <Compile Include="Attributes\HttpParam.cs" />
+    <Compile Include="Attributes\HttpPost.cs" />
+    <Compile Include="Attributes\HttpPut.cs" />
+    <Compile Include="Attributes\HttpVerb.cs" />
+    <Compile Include="Attributes\Tracking.cs" />
+    <Compile Include="Generators\GeneratorClass.cs" />
+    <Compile Include="Generators\GeneratorMethod.cs" />
+    <Compile Include="Generators\GeneratorParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="HttpGenerator.cs" />
+    <Compile Include="TypeName.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\blqw.Httpdoer.Extensions\blqw.Httpdoer.Extensions.csproj">
-      <Project>{944f1950-e158-4dbd-928d-895420f12161}</Project>
-      <Name>blqw.Httpdoer.Extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">
       <Project>{135d11d6-46e5-41bf-9db2-6f033293b260}</Project>
       <Name>blqw.Httpdoer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

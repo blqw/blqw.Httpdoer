@@ -20,9 +20,6 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
-#### 2016.06.27 
-* 更名为Httpdoer
-
 #### 2016.04.15
 * 更新MEF  
 

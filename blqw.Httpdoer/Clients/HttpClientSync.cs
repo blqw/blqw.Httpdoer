@@ -32,31 +32,36 @@ namespace blqw.Web
             var timer = HttpTimer.Start();
             try
             {
+                request.Tracking?.OnInitialize(request);
                 var www = GetRequest(request);
                 timer.Readied();
+                request.Tracking?.OnSending(request);
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
-                return request.Response = Transfer(request.UseCookies, response);
+                request.Response = Transfer(request.UseCookies, response);
+                request.Tracking?.OnEnd(request, request.Response);
             }
             catch (WebException ex)
             {
                 timer.Error();
                 var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
-                return request.Response = res;
+                request.Response = res;
+                request.Tracking?.OnError(request, res);
             }
             finally
             {
                 timer.Ending();
-                request.Logger.Debug(timer.ToString());
+                request.Logger?.Debug(timer.ToString());
             }
+            return request.Response;
         }
 
         private static HttpWebRequest GetRequest(IHttpRequest request)
         {
             var data = new HttpRequestData(request);
 
-            request.Logger.Debug(data.Url.ToString());
+            request.Logger?.Debug(data.Url.ToString());
             var www = WebRequest.CreateHttp(data.Url);
             if (request.Version != null)
             {
@@ -78,10 +83,10 @@ namespace blqw.Web
             www.Method = GetMethodName(request.Method);
 
             //必须要先设置头再设置body,否则头会被清掉
-            foreach (var header in request.Headers)
+            foreach (var header in data.Headers)
             {
                 //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value.ToString()));
+                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
                 HeaderAddInternal(www.Headers, header.Key, transfer);
             }
 
@@ -130,7 +135,7 @@ namespace blqw.Web
         {
             if (response == null)
             {
-                return new HttpResponse() { StatusCode = 0 };
+                return null;
             }
             var contentType = (HttpContentType)response.ContentType;
             var res = new HttpResponse();
@@ -206,7 +211,7 @@ namespace blqw.Web
             var result = asyncResult as HttpClientBeginResult;
             if (result == null)
             {
-                throw new ArgumentException("类型错误或值为null", nameof(asyncResult));
+                throw new ArgumentException("类型错误或值为null",nameof(asyncResult));
             }
             if (result.IsCompleted == false)
             {
@@ -242,8 +247,10 @@ namespace blqw.Web
                 set
                 {
                     _Request = value;
+                    value.Tracking?.OnInitialize(value);
                     _WebRequest = GetRequest(value);
                     _Timer.Readied();
+                    value.Tracking?.OnSending(value);
                     _AsyncResult = _WebRequest.BeginGetResponse(Callback, _State);
                 }
             }
@@ -265,6 +272,7 @@ namespace blqw.Web
                         var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
                         _Timer.Sent();
                         Response = _Request.Response = Transfer(_Request.UseCookies, response);
+                        _Request.Tracking?.OnEnd(_Request, Response);
                     }
                     catch (WebException ex)
                     {
@@ -272,18 +280,19 @@ namespace blqw.Web
                         var res = Transfer(_Request.UseCookies, (HttpWebResponse)ex.Response);
                         res.Exception = ex;
                         Response = _Request.Response = res;
+                        _Request.Tracking?.OnError(_Request, Response);
                     }
                     finally
                     {
                         _Timer.Ending();
-                        Request.Logger.Debug(_Timer.ToString());
+                        Request.Logger?.Debug(_Timer.ToString());
                         IsCompleted = true;
                     }
                 }
                 _AsyncCallback(this);
             }
 
-
+            
 
             public void Readied()
             {

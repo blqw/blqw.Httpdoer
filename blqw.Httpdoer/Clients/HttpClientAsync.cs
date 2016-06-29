@@ -33,14 +33,17 @@ namespace blqw.Web
             var timer = HttpTimer.Start();
             try
             {
+                request.Tracking?.OnInitialize(request);
                 var www = GetRequest(request);
                 timer.Readied();
+                request.Tracking?.OnSending(request);
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
-                    return request.Response = (await Transfer(request.UseCookies, response));
+                    request.Response = (await Transfer(request.UseCookies, response));
+                    request.Tracking?.OnEnd(request, request.Response);
                 }
             }
             catch (Exception ex)
@@ -52,26 +55,24 @@ namespace blqw.Web
                 }
                 var res = new HttpResponse();
                 res.Exception = ex;
-                return request.Response = res;
+                request.Response = res;
+                request.Tracking?.OnError(request, res);
             }
             finally
             {
                 timer.Ending();
-                request.Logger.Debug(timer.ToString());
+                request.Logger?.Debug(timer.ToString());
             }
+            return request.Response;
         }
 
 
         private async Task<HttpResponse> Transfer(bool useCookies, HttpResponseMessage response)
         {
-            if (response == null)
-            {
-                return new HttpResponse() { StatusCode = 0 };
-            }
             var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
             var res = new HttpResponse();
             using (response)
-            {                
+            {
                 var body = await response.Content.ReadAsByteArrayAsync();
                 res.Body = new HttpBody(contentType, body);
                 if (useCookies)
@@ -93,8 +94,7 @@ namespace blqw.Web
         private HttpRequestMessage GetRequest(IHttpRequest request)
         {
             var data = new HttpRequestData(request);
-
-            request.Logger.Debug(data.Url.ToString());
+            request.Logger?.Debug(data.Url.ToString());
             var www = new HttpRequestMessage(GetHttpMethod(request.Method), data.Url);
             if (request.Version != null)
             {
@@ -108,10 +108,10 @@ namespace blqw.Web
             {
                 www.Content = new ByteArrayContent(data.Body ?? _BytesEmpty);
             }
-            foreach (var header in request.Headers)
+            foreach (var header in data.Headers)
             {
                 //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value.ToString()));
+                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
                 if (!www.Headers.TryAddWithoutValidation(header.Key, transfer))
                 {
                     www.Content?.Headers.TryAddWithoutValidation(header.Key, transfer);
@@ -121,9 +121,10 @@ namespace blqw.Web
             return www;
         }
 
-        static readonly System.Net.CookieContainer _LocalCookies = new System.Net.CookieContainer();
+        static readonly CookieContainer _LocalCookies = new CookieContainer();
         static readonly byte[] _BytesEmpty = new byte[0];
         static readonly HttpMethod _HttpMethod_CONNECT = new HttpMethod("CONNECT");
+
         /// <summary> 获取 HttpMethod
         /// </summary>
         public HttpMethod GetHttpMethod(HttpRequestMethod method)
@@ -150,7 +151,7 @@ namespace blqw.Web
                     return HttpMethod.Get;
             }
         }
-        
+
 
         #region NotImplementedException
 
