@@ -93,7 +93,10 @@
     <Compile Include="Sealed\HttpTracking.cs" />
     <Compile Include="Sealed\HttpTrackingHandler.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="blqw.Httpdoer.nuspec" />
+    <None Include="nuget-pack.bat" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
