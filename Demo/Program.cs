@@ -8,52 +8,52 @@ using System.Threading.Tasks;
 
 namespace Demo
 {
-    class Program
+    internal class Program
     {
-        const string START = "<d:Text m:type=\"Edm.String\">";
-        const string END = "</d:Text>";
-        const string AUTH_TOKEN = "Basic NjBhYzBhNmQtMzkwMi00YTYwLTlhODItOWVhMDU1OTA0OGVhOmVKNk1UY3FRa2tVMlZISWVrcWFLdFBBVi9yQW56Zi9RVGIzY1NCcHFSQkU9";
-
+        class User
+        {
+            public User(string ak)
+            {
+                this.ak = Guid.Parse(ak);
+            }
+            public Guid ak { get; set; }
+        }
         static void Main(string[] args)
         {
             Debug.Listeners.Add(new ConsoleTraceListener());
-            //var www = new HttpRequest("http://localhost:27214/api/values");
-            //www.Timeout = new TimeSpan(0,0,5);
-            //www.QueryString.Add("id", "1");
-            //var task = www.GetString();
-            //www.Abort();
-            //task.Wait();
-            var www = new HttpRequest("https://api.datamarket.azure.com");
-            www.Method = HttpRequestMethod.GET;
-            www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-            www.AcceptCookie = true;
-            www.AcceptHeader = true;
-            www.QueryString += new
+            while (true)
             {
-                Text = "'hello world'",
-                To = "'zh-CHS'"
-            };
+                //Console.WriteLine();
+                Console.WriteLine(Bind.Translate("hello world"));
+                //var user = new User("03f53a51-3291-11e6-b28c-288023a0fe60");
 
-            www.Headers.Add("Authorization", AUTH_TOKEN);
+                //var www = new Httpdoer("http://cmd-internal.tops001.com");
+                //www.Path = "/test/getuser";
+                //www.Body.ContentType = "dfsfdasfdsafdsafdsa/json";
+                //www.Method = HttpRequestMethod.Post;
+                //www.Body.AddModel(user);
 
-            var str = www.GetString().Result;
 
-            Console.WriteLine();
-            Console.WriteLine(GetText(str));
-        }
 
-       
 
-        static string GetText(string str)
-        {
-            var start = str.IndexOf(START);
-            if (start < 0)
-            {
-                return "翻译失败";
+
+
+
+
+
+
+
+
+
+                //var client = HttpGenerator.Create<IMyTestApi>("http://cmd-internal.tops001.com");
+                //var user = client.GetUser(Guid.Parse("03f53a51-3291-11e6-b28c-288023a0fe60"));
+
+
+                Console.Read();
             }
-            start += START.Length;
-            var end = str.IndexOf(END, start);
-            return str.Substring(start, end - start);
         }
+
+
+
     }
 }

@@ -13,18 +13,18 @@ namespace UnitTest
         [TestMethod]
         public void 基本功能测试()
         {
-            var www = new HttpRequest("https://api.datamarket.azure.com");
-            www.Method = HttpRequestMethod.GET;
+            var www = new Httpdoer("https://api.datamarket.azure.com");
+            www.Method = HttpRequestMethod.Get;
             www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-            www.QueryString += new
+            www.Query.AddModel(new
             {
                 Text = "'hello world'",
                 To = "'zh-CHS'"
-            };
+            });
 
-            www.Headers.Add("Authorization", AUTH_TOKEN);
+            www.Headers["Authorization"] = AUTH_TOKEN;
 
-            var str = www.GetString().Result;
+            var str = www.GetString();
 
             Assert.AreEqual("世界您好", GetText(str));
         }
