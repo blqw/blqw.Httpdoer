@@ -26,5 +26,10 @@ namespace blqw.Web
         /// 请求方式
         /// </summary>
         HttpRequestMethod Method { get; set; }
+
+        /// <summary>
+        /// 完整路径
+        /// </summary>
+        Uri FullUrl { get; }
     }
 }

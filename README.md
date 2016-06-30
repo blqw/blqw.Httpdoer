@@ -20,6 +20,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.06.30
+* 输出注释文件
+* IHttpRequest增加一个属性FullUrl
+
 #### 2016.04.15
 * 更新MEF  
 

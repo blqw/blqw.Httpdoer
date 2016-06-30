@@ -170,6 +170,14 @@ namespace blqw.Web
 
         public IHttpTracking Tracking { get; set; }
 
+        public Uri FullUrl
+        {
+            get
+            {
+                return URIEx.GetFullURL(BaseUrl, Path);
+            }
+        }
+
         protected void SetParam(string name, object value, HttpParamLocation location)
         {
             _AllParams.SetValue(name, value, location);
