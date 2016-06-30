@@ -37,9 +37,9 @@ namespace blqw.Web
             }
             _Path = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
             Headers = new Dictionary<string, string>();
-            request.Tracking?.OnParamsExtracting(request);
+            (request as IHttpTracking)?.OnParamsExtracting(request);
             Body = parser.Serialize(null, GetBodyParams(request), provider);
-            request.Tracking?.OnParamsExtracted(request);
+            (request as IHttpTracking)?.OnParamsExtracted(request);
             string query = _QueryBuilder.ToString();
 
             if ((query?.Length).GetValueOrDefault(0) == 0)
@@ -89,21 +89,21 @@ namespace blqw.Web
                         else
                             goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
-                        request.Tracking?.OnQueryParamFound(request, ref name, ref value);
+                        (request as IHttpTracking)?.OnQueryParamFound(request, ref name, ref value);
                         if (name != null && value != null)
                             _QueryBuilder.AppendObject(name, value);
                         break;
                     case HttpParamLocation.Body:
-                        request.Tracking?.OnBodyParamFound(request, ref name, ref value);
+                        (request as IHttpTracking)?.OnBodyParamFound(request, ref name, ref value);
                         if (name != null)
                             yield return new KeyValuePair<string, object>(name, value);
                         break;
                     case HttpParamLocation.Path:
-                        request.Tracking?.OnPathParamFound(request, ref name, ref value);
+                        (request as IHttpTracking)?.OnPathParamFound(request, ref name, ref value);
                         _Path.Replace("{" + name + "}", value?.ToString());
                         break;
                     case HttpParamLocation.Header:
-                        request.Tracking?.OnHeaderFound(request, ref name, ref value);
+                        (request as IHttpTracking)?.OnHeaderFound(request, ref name, ref value);
                         if (name != null)
                             Headers.Add(name, value?.ToString());
                         break;

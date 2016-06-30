@@ -33,17 +33,17 @@ namespace blqw.Web
             var timer = HttpTimer.Start();
             try
             {
-                request.Tracking?.OnInitialize(request);
+                (request as IHttpTracking)?.OnInitialize(request);
                 var www = GetRequest(request);
                 timer.Readied();
-                request.Tracking?.OnSending(request);
+                (request as IHttpTracking)?.OnSending(request);
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
                     request.Response = (await Transfer(request.UseCookies, response));
-                    request.Tracking?.OnEnd(request, request.Response);
+                    (request as IHttpTracking)?.OnEnd(request, request.Response);
                 }
             }
             catch (Exception ex)
@@ -56,12 +56,12 @@ namespace blqw.Web
                 var res = new HttpResponse();
                 res.Exception = ex;
                 request.Response = res;
-                request.Tracking?.OnError(request, res);
+                (request as IHttpTracking)?.OnError(request, res);
             }
             finally
             {
                 timer.Ending();
-                request.Logger?.Debug(timer.ToString());
+                (request as IHttpLogger)?.Debug(timer.ToString());
             }
             return request.Response;
         }
@@ -98,7 +98,7 @@ namespace blqw.Web
         private HttpRequestMessage GetRequest(IHttpRequest request)
         {
             var data = new HttpRequestData(request);
-            request.Logger?.Debug(data.Url.ToString());
+             (request as IHttpLogger)?.Debug(data.Url.ToString());
             var www = new HttpRequestMessage(GetHttpMethod(request.Method), data.Url);
             if (request.Version != null)
             {

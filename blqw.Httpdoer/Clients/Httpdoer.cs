@@ -38,7 +38,7 @@ namespace blqw.Web
         {
             var res = Sync.Send(this);
             var str = res.Body?.ToString();
-            Logger?.Debug(str);
+            Debug(str);
             return str;
         }
 
@@ -84,7 +84,7 @@ namespace blqw.Web
         {
             var res = await Async.SendAsync(this, CancellationToken.None);
             var str = res.Body?.ToString();
-            Logger?.Debug(str);
+            Debug(str);
             return str;
         }
 
@@ -110,7 +110,7 @@ namespace blqw.Web
             {
                 var res = await Async.SendAsync(this, tokenSource.Token);
                 var str = res.Body?.ToString();
-                Logger?.Debug(str);
+                Debug(str);
                 return str;
             }
         }
@@ -141,7 +141,7 @@ namespace blqw.Web
         {
             var res = await Async.SendAsync(this, cancellationToken);
             var str = res.Body?.ToString();
-            Logger?.Debug(str);
+            Debug(str);
             return str;
         }
 

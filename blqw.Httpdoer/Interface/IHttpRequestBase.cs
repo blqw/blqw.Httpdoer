@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
+    /// <summary>
+    /// 请求基类
+    /// </summary>
     public interface IHttpRequestBase
     {
         /// <summary>
@@ -60,11 +63,11 @@ namespace blqw.Web
         /// <summary>
         /// 设置或获取日志记录器
         /// </summary>
-        IHttpLogger Logger { get; set; }
+        List<IHttpLogger> Loggers { get; }
 
         /// <summary>
         /// 获取或设置用于触发一系列事件的跟踪对象
         /// </summary>
-        IHttpTracking Tracking { get; set; }
+        List<IHttpTracking> Trackings { get; }
     }
 }

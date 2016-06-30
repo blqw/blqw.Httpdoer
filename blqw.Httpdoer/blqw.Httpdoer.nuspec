@@ -13,7 +13,9 @@
     <description>$description$</description>
     <releaseNotes>
       http请求客户端,支持rest
-      2016.06.30 IHttpRequest增加一个属性FullUrl
+      2016.06.30 
+      IHttpRequest增加一个属性FullUrl
+      现在可以绑定多个日志记录器和跟踪器
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>

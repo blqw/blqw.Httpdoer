@@ -32,14 +32,14 @@ namespace blqw.Web
             var timer = HttpTimer.Start();
             try
             {
-                request.Tracking?.OnInitialize(request);
+                (request as IHttpTracking)?.OnInitialize(request);
                 var www = GetRequest(request);
                 timer.Readied();
-                request.Tracking?.OnSending(request);
+                (request as IHttpTracking)?.OnSending(request);
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
                 request.Response = Transfer(request.UseCookies, response);
-                request.Tracking?.OnEnd(request, request.Response);
+                (request as IHttpTracking)?.OnEnd(request, request.Response);
             }
             catch (WebException ex)
             {
@@ -47,12 +47,12 @@ namespace blqw.Web
                 var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
                 request.Response = res;
-                request.Tracking?.OnError(request, res);
+                (request as IHttpTracking)?.OnError(request, res);
             }
             finally
             {
                 timer.Ending();
-                request.Logger?.Debug(timer.ToString());
+                (request as IHttpLogger)?.Debug(timer.ToString());
             }
             return request.Response;
         }
@@ -61,7 +61,7 @@ namespace blqw.Web
         {
             var data = new HttpRequestData(request);
 
-            request.Logger?.Debug(data.Url.ToString());
+            (request as IHttpLogger)?.Debug(data.Url.ToString());
             var www = WebRequest.CreateHttp(data.Url);
             if (request.Version != null)
             {
@@ -247,10 +247,10 @@ namespace blqw.Web
                 set
                 {
                     _Request = value;
-                    value.Tracking?.OnInitialize(value);
+                    (value as IHttpTracking)?.OnInitialize(value);
                     _WebRequest = GetRequest(value);
                     _Timer.Readied();
-                    value.Tracking?.OnSending(value);
+                    (value as IHttpTracking)?.OnSending(value);
                     _AsyncResult = _WebRequest.BeginGetResponse(Callback, _State);
                 }
             }
@@ -271,21 +271,21 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
                         _Timer.Sent();
-                        Response = _Request.Response = Transfer(_Request.UseCookies, response);
-                        _Request.Tracking?.OnEnd(_Request, Response);
+                        Response = Request.Response = Transfer(Request.UseCookies, response);
+                        (Request as IHttpTracking)?.OnEnd(Request, Response);
                     }
                     catch (WebException ex)
                     {
                         _Timer.Error();
-                        var res = Transfer(_Request.UseCookies, (HttpWebResponse)ex.Response);
+                        var res = Transfer(Request.UseCookies, (HttpWebResponse)ex.Response);
                         res.Exception = ex;
-                        Response = _Request.Response = res;
-                        _Request.Tracking?.OnError(_Request, Response);
+                        Response = Request.Response = res;
+                        (Request as IHttpTracking)?.OnError(Request, Response);
                     }
                     finally
                     {
                         _Timer.Ending();
-                        Request.Logger?.Debug(_Timer.ToString());
+                        (Request as IHttpLogger)?.Debug(_Timer.ToString());
                         IsCompleted = true;
                     }
                 }
