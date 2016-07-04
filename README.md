@@ -25,6 +25,7 @@ static void Main(string[] args)
 * 增加Stream解析器  
 * 增加`HttpBody.Wirte(byte[])`方法
 * 增加HttpRequest拓展方法
+* 优化部分逻辑
 
 #### 2016.06.30
 * 输出注释文件

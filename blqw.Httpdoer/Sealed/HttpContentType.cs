@@ -10,7 +10,7 @@ namespace blqw.Web
     /// <summary>
     /// 表示请求或响应的正文内容类型
     /// </summary>
-    public struct HttpContentType : IFormatProvider
+    public struct HttpContentType : IFormatProvider,IEquatable<HttpContentType>
     {
         static readonly Regex _ParseRegex = new Regex(@"^\s*(?<type>[^\\\s]+)\s*/\s*(?<format>[^;\s]+)\s*(;\s*charset\s*=\s*(?<charset>[^\s]*)\s*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
         
@@ -233,17 +233,17 @@ namespace blqw.Web
             {
                 return false;
             }
-            return ToString().Equals(obj.ToString(), StringComparison.OrdinalIgnoreCase);
+            return Equals((HttpContentType)obj);
         }
 
         public static bool operator ==(HttpContentType a, HttpContentType b)
         {
-            return a.ToString().Equals(b.ToString(), StringComparison.OrdinalIgnoreCase);
+            return a.Equals(b);
         }
 
         public static bool operator !=(HttpContentType a, HttpContentType b)
         {
-            return !a.ToString().Equals(b.ToString(), StringComparison.OrdinalIgnoreCase);
+            return !a.Equals(b);
         }
 
         public override int GetHashCode()
@@ -254,6 +254,14 @@ namespace blqw.Web
         public HttpContentType ChangeCharset(Encoding charset)
         {
             return new HttpContentType(Type, Form, charset);
+        }
+
+        public bool Equals(HttpContentType other)
+        {
+            return Charset == other.Charset
+                && string.Equals(Format, other.Format, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
+                && _Parser == other._Parser;
         }
     }
 }
