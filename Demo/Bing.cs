@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Demo
 {
-    public class Bind
+    public class Bing
     {
         const string START = "<d:Text m:type=\"Edm.String\">";
         const string END = "</d:Text>";

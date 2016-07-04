@@ -48,11 +48,12 @@ namespace blqw.Web.Extensions
         {
             try
             {
-                Tracking = %Tracking%;
+                if(%Tracking% != null)
+                    Trackings.Add(%Tracking%);
                 Method = HttpRequestMethod.%HttpMethod%;
                 Path = ""%Template%"";
                 %Params%;
-                %return% %await% %Invoker%();
+                %return% %await% HttpRequestExtensions.%Invoker%(this);
             }
             finally
             {

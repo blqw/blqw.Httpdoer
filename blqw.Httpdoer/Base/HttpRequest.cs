@@ -212,7 +212,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = loggers.Count; i < length; i++)
             {
-                loggers[i].Debug(message);
+                loggers[i]?.Debug(message);
             }
         }
 
@@ -225,7 +225,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = loggers.Count; i < length; i++)
             {
-                loggers[i].Information(message);
+                loggers[i]?.Information(message);
             }
         }
 
@@ -238,7 +238,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = loggers.Count; i < length; i++)
             {
-                loggers[i].Warning(message);
+                loggers[i]?.Warning(message);
             }
         }
 
@@ -251,7 +251,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = loggers.Count; i < length; i++)
             {
-                loggers[i].Error(message);
+                loggers[i]?.Error(message);
             }
         }
 
@@ -264,7 +264,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = loggers.Count; i < length; i++)
             {
-                loggers[i].Error(ex);
+                loggers[i]?.Error(ex);
             }
         }
 
@@ -277,7 +277,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnParamsExtracting(request);
+                trackings[i]?.OnParamsExtracting(request);
             }
         }
 
@@ -290,7 +290,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnParamsExtracted(request);
+                trackings[i]?.OnParamsExtracted(request);
             }
         }
 
@@ -303,7 +303,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnQueryParamFound(request, ref name, ref value);
+                trackings[i]?.OnQueryParamFound(request, ref name, ref value);
             }
         }
 
@@ -316,7 +316,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnBodyParamFound(request, ref name, ref value);
+                trackings[i]?.OnBodyParamFound(request, ref name, ref value);
             }
         }
 
@@ -329,7 +329,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnHeaderFound(request, ref name, ref value);
+                trackings[i]?.OnHeaderFound(request, ref name, ref value);
             }
         }
 
@@ -342,7 +342,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnPathParamFound(request,ref name,ref value);
+                trackings[i]?.OnPathParamFound(request,ref name,ref value);
             }
         }
 
@@ -355,7 +355,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnInitialize(request);
+                trackings[i]?.OnInitialize(request);
             }
         }
 
@@ -368,7 +368,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnError(request, response);
+                trackings[i]?.OnError(request, response);
             }
         }
 
@@ -381,7 +381,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnSending(request);
+                trackings[i]?.OnSending(request);
             }
         }
 
@@ -394,7 +394,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i].OnEnd(request, response);
+                trackings[i]?.OnEnd(request, response);
             }
         }
     }
