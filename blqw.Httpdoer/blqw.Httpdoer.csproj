@@ -51,7 +51,9 @@
     <Compile Include="Base\HttpParamsBase.cs" />
     <Compile Include="Clients\Httpdoer.cs" />
     <Compile Include="Clients\HttpClientAsync.cs" />
+    <Compile Include="HttpBodyParsers\HttpBodyParsers.cs" />
     <Compile Include="HttpBodyParsers\HttpNullBodyParser.cs" />
+    <Compile Include="HttpBodyParsers\HttpStreamBodyParser.cs" />
     <Compile Include="HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpRequestBase.cs" />
     <Compile Include="Interface\IHttpLogger.cs" />

@@ -22,6 +22,7 @@ static void Main(string[] args)
 ### 更新日志  
 #### 2016.07.04
 * 增加ContentType可以直接设定解析器  
+* 增加Stream解析器  
 
 #### 2016.06.30
 * 输出注释文件
