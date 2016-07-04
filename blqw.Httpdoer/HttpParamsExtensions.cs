@@ -158,5 +158,14 @@ namespace blqw.Web
                 param[p.Name] = p.GetValue(model);
             }
         }
+
+        public static void Wirte(this HttpBody body, byte[] bytes)
+        {
+            if (body == null)
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
+            body.Set(null, bytes);
+        }
     }
 }

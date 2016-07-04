@@ -23,6 +23,7 @@ static void Main(string[] args)
 #### 2016.07.04
 * 增加ContentType可以直接设定解析器  
 * 增加Stream解析器  
+* HttpBody增加`Wirte(byte[])`方法
 
 #### 2016.06.30
 * 输出注释文件
