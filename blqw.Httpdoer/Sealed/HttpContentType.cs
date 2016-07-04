@@ -177,7 +177,18 @@ namespace blqw.Web
             Type = type;
             Format = format;
             Charset = charset;
+            _Parser = null;
         }
+
+        public HttpContentType(string type, string format, Encoding charset, IHttpBodyParser parser)
+        {
+            Type = type;
+            Format = format;
+            Charset = charset;
+            _Parser = parser;
+        }
+
+        private readonly IHttpBodyParser _Parser;
 
         public string Type { get; }
 
@@ -203,7 +214,7 @@ namespace blqw.Web
             if (formatType == typeof(IHttpBodyParser)
                 || formatType == typeof(ICustomFormatter))
             {
-                return HttpBodyParserFactory.Get(Type, Format);
+                return _Parser ?? HttpBodyParserFactory.Get(Type, Format);
             }
             else if (formatType == typeof(Encoding))
             {

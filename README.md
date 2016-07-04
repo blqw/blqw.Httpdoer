@@ -20,9 +20,13 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.07.04
+* 增加ContentType可以直接设定解析器  
+
 #### 2016.06.30
 * 输出注释文件
 * IHttpRequest增加一个属性FullUrl
+* 现在可以绑定多个日志记录器和跟踪器
 
 #### 2016.04.15
 * 更新MEF  
