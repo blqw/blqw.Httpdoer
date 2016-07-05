@@ -100,7 +100,7 @@ namespace blqw.Web.Extensions
                     return IsAsync ? "await" : "";
                 case "Invoker":
                     var type = ReturnType;
-                    var async = "";
+                    var @async = "";
                     if (IsAsync)
                     {
                         if (type == typeof(Task))
@@ -111,21 +111,21 @@ namespace blqw.Web.Extensions
                         {
                             type = type.GetGenericArguments()[0];
                         }
-                        async = "Async";
+                        @async = "Async";
                     }
                     if (type == typeof(string))
                     {
-                        return "GetString" + async;
+                        return "GetString" + "";
                     }
                     else if (type == typeof(byte[]))
                     {
-                        return "GetBytes" + async;
+                        return "GetBytes" + "";
                     }
                     else if (type != null && type != typeof(void))
                     {
-                        return "Send" + async;
+                        return "Send" + "";
                     }
-                    return $"GetObject{async}<{type.GetFriendlyName()}>";
+                    return $"GetObject{""}<{type.GetFriendlyName()}>";
                 case "RemoveParams":
                     return string.Join(";", Params.Select(GetRemoveParamDefinition));
                 default:

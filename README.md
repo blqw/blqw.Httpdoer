@@ -20,6 +20,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.07.05
+* 更新IOC组件  
+
 #### 2016.07.04
 * 增加ContentType可以直接设定解析器  
 * 增加Stream解析器  

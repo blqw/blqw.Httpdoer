@@ -10,15 +10,15 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blqw.HttpRequestComponent
+namespace blqw.IOC
 {
     /// <summary> 组件/插件 等待IOC注入
     /// </summary>
-    class Component
+    class Components
     {
-        static Component()
+        static Components()
         {
-            MEFPart.Import(typeof(Component));
+            MEFLite.Import(typeof(Components));
         }
 
         /// <summary>

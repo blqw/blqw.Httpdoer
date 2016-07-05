@@ -1,4 +1,4 @@
-﻿using blqw.HttpRequestComponent;
+﻿using blqw.IOC;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace blqw.Reflection
 
         private static bool Initialize()
         {
-            MEFPart.Import(typeof(PropertyGetter));
+            MEFLite.Import(typeof(PropertyGetter));
             return true;
         }
         private PropertyGetter()

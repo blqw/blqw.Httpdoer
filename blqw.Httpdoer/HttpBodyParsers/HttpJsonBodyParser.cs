@@ -1,4 +1,4 @@
-﻿using blqw.HttpRequestComponent;
+﻿using blqw.IOC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +15,12 @@ namespace blqw.Web
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (Dictionary<string, object>)Component.ToJsonObject(typeof(Dictionary<string, object>), json);
+            return (Dictionary<string, object>)Components.ToJsonObject(typeof(Dictionary<string, object>), json);
         }
 
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
-            var json = Component.ToJsonString(body);
+            var json = Components.ToJsonString(body);
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             return charset.GetBytes(json);
         }
@@ -29,7 +29,7 @@ namespace blqw.Web
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (T)Component.ToJsonObject(typeof(T), json);
+            return (T)Components.ToJsonObject(typeof(T), json);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using blqw.HttpRequestComponent;
+﻿using blqw.IOC;
 using blqw.Reflection;
 using System;
 using System.Collections.Generic;
@@ -79,7 +79,7 @@ namespace blqw.Web
                 return;
             }
 
-            var nv = Component.ToJsonObject(typeof(NameValueCollection), json)
+            var nv = Components.ToJsonObject(typeof(NameValueCollection), json)
                         as NameValueCollection;
             for (int i = 0, length = nv.Count; i < length; i++)
             {
@@ -105,7 +105,7 @@ namespace blqw.Web
                 return;
             }
 
-            var dict = Component.ToJsonObject(typeof(Dictionary<string, object>), json)
+            var dict = Components.ToJsonObject(typeof(Dictionary<string, object>), json)
                         as Dictionary<string, object>;
             foreach (var item in dict)
             {
@@ -132,7 +132,7 @@ namespace blqw.Web
             for (int i = 0, length = props.Count; i < length; i++)
             {
                 var p = props[i];
-                param[p.Name] = Component.ToString(p.GetValue(model));
+                param[p.Name] = Components.ToString(p.GetValue(model));
             }
         }
 

@@ -1,4 +1,3 @@
-
 for /r . %%a in (*.nupkg) do (
 	del %%a
 )
