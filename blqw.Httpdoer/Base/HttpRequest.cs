@@ -12,7 +12,7 @@ namespace blqw.Web
     /// <summary>
     /// 表示一个 HTTP 请求
     /// </summary>
-    public class HttpRequest : IHttpRequest, IHttpLogger,IHttpTracking
+    public class HttpRequest : IHttpRequest, IHttpLogger, IHttpTracking
     {
         public static IHttpLogger DefaultLogger = HttpDefaultLogger.Instance;
 
@@ -92,10 +92,86 @@ namespace blqw.Web
             set
             {
                 _Method = value;
-                if (_Method == HttpRequestMethod.Post
-                    && _AllParams.Contains("Content-Type", HttpParamLocation.Header) == false)
+                switch (_Method)
                 {
-                    Body.ContentType = HttpContentType.Form;
+                    case HttpRequestMethod.Custom:
+                    case HttpRequestMethod.Get:
+                        HttpMethod = "GET";
+                        _Method = HttpRequestMethod.Get;
+                        break;
+                    case HttpRequestMethod.Post:
+                        HttpMethod = "POST";
+                        if (_AllParams.Contains("Content-Type", HttpParamLocation.Header) == false)
+                        {
+                            Body.ContentType = HttpContentType.Form;
+                        }
+                        break;
+                    case HttpRequestMethod.Head:
+                        HttpMethod = "Head";
+                        break;
+                    case HttpRequestMethod.Trace:
+                        HttpMethod = "Trace";
+                        break;
+                    case HttpRequestMethod.Put:
+                        HttpMethod = "PUT";
+                        break;
+                    case HttpRequestMethod.Delete:
+                        HttpMethod = "DELETE";
+                        break;
+                    case HttpRequestMethod.Options:
+                        HttpMethod = "OPTIONS";
+                        break;
+                    case HttpRequestMethod.Connect:
+                        HttpMethod = "CONNECT";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        string _HttpMethod;
+        public string HttpMethod
+        {
+            get
+            {
+                return _HttpMethod;
+            }
+            set
+            {
+                _HttpMethod = value?.ToUpperInvariant();
+                switch (_HttpMethod)
+                {
+                    case "GET":
+                        _Method = HttpRequestMethod.Get;
+                        break;
+                    case "POST":
+                        _Method = HttpRequestMethod.Post;
+                        if (_AllParams.Contains("Content-Type", HttpParamLocation.Header) == false)
+                        {
+                            Body.ContentType = HttpContentType.Form;
+                        }
+                        break;
+                    case "HEAD":
+                        _Method = HttpRequestMethod.Head;
+                        break;
+                    case "TRACE":
+                        _Method = HttpRequestMethod.Trace;
+                        break;
+                    case "PUT":
+                        _Method = HttpRequestMethod.Put;
+                        break;
+                    case "DELETE":
+                        _Method = HttpRequestMethod.Delete;
+                        break;
+                    case "OPTIONS":
+                        _Method = HttpRequestMethod.Options;
+                        break;
+                    case "CONNECT":
+                        _Method = HttpRequestMethod.Connect;
+                        break;
+                    default:
+                        _Method = HttpRequestMethod.Custom;
+                        break;
                 }
             }
         }
@@ -342,7 +418,7 @@ namespace blqw.Web
             }
             for (int i = 0, length = trackings.Count; i < length; i++)
             {
-                trackings[i]?.OnPathParamFound(request,ref name,ref value);
+                trackings[i]?.OnPathParamFound(request, ref name, ref value);
             }
         }
 
