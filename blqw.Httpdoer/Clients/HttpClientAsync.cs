@@ -99,7 +99,7 @@ namespace blqw.Web
         {
             var data = new HttpRequestData(request);
              (request as IHttpLogger)?.Debug(data.Url.ToString());
-            var www = new HttpRequestMessage(GetHttpMethod(request.Method), data.Url);
+            var www = new HttpRequestMessage(GetHttpMethod(request), data.Url);
             if (request.Version != null)
             {
                 www.Version = request.Version;
