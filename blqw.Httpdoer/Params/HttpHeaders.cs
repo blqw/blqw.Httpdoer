@@ -8,7 +8,7 @@ namespace blqw.Web
 {
     public class HttpHeaders : HttpParamsBase<string>
     {
-        static readonly string DefaultUserAgent = GetDefaultUserAgent();
+        internal static readonly string DefaultUserAgent = GetDefaultUserAgent();
 
         private static string GetDefaultUserAgent()
         {
@@ -31,12 +31,7 @@ namespace blqw.Web
         internal HttpHeaders(IHttpParameterCollection @params)
             : base(@params)
         {
-            Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-            AcceptEncoding = "gzip, deflate, sdch";
-            AcceptLanguage = "zh-CN,zh;q=0.8";
-            CacheControl = "max-age=0";
-            UserAgent = DefaultUserAgent;
-            KeepAlive = true;
+
         }
 
         public override HttpParamLocation Location

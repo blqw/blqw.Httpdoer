@@ -62,7 +62,13 @@ namespace blqw.Web
                 }
                 Url = url;
             }
-
+            //插入默认头
+            if (Headers.ContainsKey("Accept") == false) Headers[""] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            if (Headers.ContainsKey("Accept-Encoding") == false) Headers["Accept-Encoding"] = "gzip, deflate, sdch";
+            if (Headers.ContainsKey("Accept-Language") == false) Headers["Accept-Language"] = "zh-CN,zh;q=0.8";
+            if (Headers.ContainsKey("Cache-Control") == false) Headers["Cache-Control"] = "max-age=0";
+            if (Headers.ContainsKey("User-Agent") == false) Headers["User-Agent"] = HttpHeaders.DefaultUserAgent;
+            if (Headers.ContainsKey("Connection") == false) Headers["Connection"] = "keep-alive";
         }
 
         private string _Path;
