@@ -8,12 +8,12 @@ static void Main(string[] args)
     var www = new HttpRequest("https://api.datamarket.azure.com");
     www.Method = HttpRequestMethod.GET;
     www.Path = "Bing/MicrosoftTranslator/v1/Translate";
-    www.QueryString += new {
+    www.Query.AddModle(new {
         Text = "'hello world'",
         To = "'zh-CHS'"
-    };
+    });
     www.Headers.Add("Authorization", AUTH_TOKEN);            
-    var str = www.GetString().Result;            
+    var str = www.GetString();            
     Console.WriteLine();
     Console.WriteLine(GetText(str));
 }
@@ -24,6 +24,8 @@ static void Main(string[] args)
 * 增加自定义Method的功能  
 * 增加 Response.Headers 赋值
 * 修复当Cookie不存在时读取Cookie报错的问题
+* 优化默认Header的插入行为  
+* 修复其他小问题若干  
 
 #### 2016.07.05
 * 更新IOC组件  
