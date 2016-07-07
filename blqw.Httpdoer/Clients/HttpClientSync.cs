@@ -112,6 +112,14 @@ namespace blqw.Web
             var res = new HttpResponse();
             using (response)
             {
+                var headers = response.Headers;
+                foreach (var key in headers.AllKeys)
+                {
+                    foreach (var value in headers.GetValues(key))
+                    {
+                        res.Headers.Add(key, value);
+                    }
+                }
                 res.Body = new HttpBody(contentType, GetBytes(response));
                 if (useCookies)
                 {

@@ -20,6 +20,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.07.07
+* 增加自定义Method的功能  
+* 增加 Response.Headers 赋值
+
 #### 2016.07.05
 * 更新IOC组件  
 
