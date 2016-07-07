@@ -109,7 +109,10 @@ namespace blqw.Web
                 return new HttpResponse() { StatusCode = 0 };
             }
             var contentType = (HttpContentType)response.ContentType;
-            var res = new HttpResponse();
+            var res = new HttpResponse()
+            {
+                Headers = new HttpHeaders()
+            };
             using (response)
             {
                 var headers = response.Headers;
