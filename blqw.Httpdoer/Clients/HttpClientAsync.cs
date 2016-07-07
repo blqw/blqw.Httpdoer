@@ -131,9 +131,9 @@ namespace blqw.Web
 
         /// <summary> 获取 HttpMethod
         /// </summary>
-        public HttpMethod GetHttpMethod(HttpRequestMethod method)
+        public HttpMethod GetHttpMethod(IHttpRequest request)
         {
-            switch (method)
+            switch (request.Method)
             {
                 case HttpRequestMethod.Get:
                     return HttpMethod.Get;
@@ -151,6 +151,8 @@ namespace blqw.Web
                     return HttpMethod.Options;
                 case HttpRequestMethod.Connect:
                     return _HttpMethod_CONNECT;
+                case HttpRequestMethod.Custom:
+                    return new HttpMethod(request.HttpMethod);
                 default:
                     return HttpMethod.Get;
             }

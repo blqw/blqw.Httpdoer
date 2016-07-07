@@ -80,7 +80,7 @@ namespace blqw.Web
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
-            www.Method = GetMethodName(request.Method);
+            www.Method = request.HttpMethod;
 
             //必须要先设置头再设置body,否则头会被清掉
             foreach (var header in data.Headers)
@@ -101,36 +101,7 @@ namespace blqw.Web
 
             return www;
         }
-
-        /// <summary> 获取 HttpMethod
-        /// </summary>
-        /// <summary> 获取 HttpMethod 枚举的字符串
-        /// </summary>
-        private static string GetMethodName(HttpRequestMethod method)
-        {
-            switch (method)
-            {
-                case HttpRequestMethod.Get:
-                    return "GET";
-                case HttpRequestMethod.Post:
-                    return "POST";
-                case HttpRequestMethod.Head:
-                    return "HEAD";
-                case HttpRequestMethod.Trace:
-                    return "TRACE";
-                case HttpRequestMethod.Put:
-                    return "PUT";
-                case HttpRequestMethod.Delete:
-                    return "DELETE";
-                case HttpRequestMethod.Options:
-                    return "OPTIONS";
-                case HttpRequestMethod.Connect:
-                    return "CONNECT";
-                default:
-                    return "GET";
-            }
-        }
-
+        
         private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
             if (response == null)
