@@ -92,13 +92,16 @@ namespace blqw.Web
                 res.Body = new HttpBody(contentType, body);
                 if (useCookies)
                 {
-                    var cookieHeader = response.Headers.GetValues("Set-Cookie");
-                    var url = response.RequestMessage.RequestUri;
-                    foreach (var cookie in cookieHeader)
+                    IEnumerable<string> cookieHeader;
+                    if(response.Headers.TryGetValues("Set-Cookie", out cookieHeader))
                     {
-                        _LocalCookies.SetCookies(url, cookie);
+                        var url = response.RequestMessage.RequestUri;
+                        foreach (var cookie in cookieHeader)
+                        {
+                            _LocalCookies.SetCookies(url, cookie);
+                        }
+                        res.Cookies = _LocalCookies.GetCookies(url);
                     }
-                    res.Cookies = _LocalCookies.GetCookies(url);
                 }
                 res.StatusCode = response.StatusCode;
                 res.IsSuccessStatusCode = response.IsSuccessStatusCode;

@@ -23,6 +23,7 @@ static void Main(string[] args)
 #### 2016.07.07
 * 增加自定义Method的功能  
 * 增加 Response.Headers 赋值
+* 修复当Cookie不存在时读取Cookie报错的问题
 
 #### 2016.07.05
 * 更新IOC组件  
