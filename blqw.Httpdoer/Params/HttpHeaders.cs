@@ -22,6 +22,12 @@ namespace blqw.Web
             return $"{nf} ({windows}) {name.Name}/{name.Version.ToString()} ({Environment.MachineName}; {Environment.UserName})";
         }
 
+        internal HttpHeaders()
+            : base(new HttpParameterCollection())
+        {
+
+        }
+
         internal HttpHeaders(IHttpParameterCollection @params)
             : base(@params)
         {
