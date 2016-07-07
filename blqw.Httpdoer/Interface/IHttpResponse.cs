@@ -39,5 +39,14 @@ namespace blqw.Web
         /// </summary>
         Exception Exception { get; }
 
+        /// <summary>
+        /// 请求的原始数据
+        /// </summary>
+        string RequestRaw { get; }
+
+        /// <summary>
+        /// 返回的原始数据
+        /// </summary>
+        string ResponseRaw { get; }
     }
 }

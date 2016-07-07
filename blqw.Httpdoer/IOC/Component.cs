@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace blqw.IOC
 {
@@ -36,6 +37,13 @@ namespace blqw.IOC
             return Converter?.ToString(obj) ?? obj + "";
         }
 
+        static readonly JavaScriptSerializer JSON = new JavaScriptSerializer();
+        
+        public static object ToJsonObject1(Type type, string json)
+        {
+            return JSON.Deserialize(json, type);
+        }
+
         static readonly ConcurrentDictionary<Type, DataContractJsonSerializer> _JsonSerializer = new ConcurrentDictionary<Type, DataContractJsonSerializer>();
 
         /// <summary> 用于将Json字符串转为实体对象的方法
@@ -44,32 +52,13 @@ namespace blqw.IOC
         public readonly static Func<Type, string, object> ToJsonObject =
             delegate (Type type, string json)
             {
-                var ser = _JsonSerializer.GetOrAdd(type, t => new DataContractJsonSerializer(t));
-                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
-                {
-                    return ser.ReadObject(ms);
-                }
+                return JSON.Deserialize(json, type);
             };
 
         /// <summary> 用于将Json字符串转为实体对象的方法
         /// </summary>
         [Import("ToJsonString")]
-        public readonly static Func<object, string> ToJsonString =
-            delegate (object obj)
-            {
-                if (obj == null)
-                {
-                    return "null";
-                }
-                var type = obj.GetType();
-                var ser = _JsonSerializer.GetOrAdd(type, t => new DataContractJsonSerializer(t));
-                using (var ms = new MemoryStream())
-                {
-                    ser.WriteObject(ms, type);
-                    return Encoding.UTF8.GetString(ms.ToArray());
-                }
-            };
-
+        public readonly static Func<object, string> ToJsonString = JSON.Serialize;
 
     }
 }

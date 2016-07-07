@@ -15,6 +15,11 @@ namespace blqw.Web
         public Exception Exception { get; set; }
         public HttpHeaders Headers { get; set; }
         public bool IsSuccessStatusCode { get; set; }
+
+        public string RequestRaw { get; set; }
+
+        public string ResponseRaw { get; set; }
+
         public HttpStatusCode StatusCode { get; set; }
     }
 }

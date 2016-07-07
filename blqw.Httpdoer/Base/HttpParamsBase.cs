@@ -52,6 +52,7 @@ namespace blqw.Web
         public IReadOnlyList<T> GetValues(string name)
         {
             var values = Params.GetValues(name, Location);
+            if (values == null) return null;
             return values as IReadOnlyList<T>
                 ?? new CastList(values);
         }

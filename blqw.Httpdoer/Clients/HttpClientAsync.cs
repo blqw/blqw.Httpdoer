@@ -77,7 +77,9 @@ namespace blqw.Web
             var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
             var res = new HttpResponse()
             {
-                Headers = new HttpHeaders()
+                Headers = new HttpHeaders(),
+                RequestRaw = response.RequestMessage.ToString(),
+                ResponseRaw = response.ToString(),
             };
             using (response)
             {
@@ -94,7 +96,7 @@ namespace blqw.Web
                 if (useCookies)
                 {
                     IEnumerable<string> cookieHeader;
-                    if(response.Headers.TryGetValues("Set-Cookie", out cookieHeader))
+                    if (response.Headers.TryGetValues("Set-Cookie", out cookieHeader))
                     {
                         var url = response.RequestMessage.RequestUri;
                         foreach (var cookie in cookieHeader)
@@ -113,7 +115,7 @@ namespace blqw.Web
         private HttpRequestMessage GetRequest(IHttpRequest request)
         {
             var data = new HttpRequestData(request);
-             (request as IHttpLogger)?.Debug(data.Url.ToString());
+            (request as IHttpLogger)?.Debug(data.Url.ToString());
             var www = new HttpRequestMessage(GetHttpMethod(request), data.Url);
             if (request.Version != null)
             {
