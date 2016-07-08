@@ -19,7 +19,7 @@ namespace blqw.Web
         {
             if (arg == null)
             {
-                return string.Empty;
+                return null;
             }
             var body = arg as IEnumerable<KeyValuePair<string, object>>;
             if (body == null)
@@ -27,13 +27,12 @@ namespace blqw.Web
                 throw new FormatException(nameof(arg) + "必须是" + nameof(IEnumerable<KeyValuePair<string, object>>));
             }
             var bytes = Serialize(format, body, formatProvider);
-            if (bytes.Length == 0)
+            if (bytes?.Length > 0)
             {
-                return null;
+                var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.UTF8;
+                return charset.GetString(bytes);
             }
-            var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.UTF8;
-            return charset.GetString(bytes);
-
+            return null;
         }
 
         protected Encoding GetEncoding(IFormatProvider formatProvider)

@@ -30,16 +30,18 @@ namespace blqw.Web
         public IHttpResponse Send(IHttpRequest request)
         {
             var timer = HttpTimer.Start();
+            var data = default(HttpRequestData);
             try
             {
-                (request as IHttpTracking)?.OnInitialize(request);
-                var www = GetRequest(request);
+                request.OnInitialize();
+                data = new HttpRequestData(request);
+                var www = GetRequest(data);
                 timer.Readied();
-                (request as IHttpTracking)?.OnSending(request);
+                request.OnSending();
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
                 request.Response = Transfer(request.UseCookies, response);
-                (request as IHttpTracking)?.OnEnd(request, request.Response);
+                request.OnEnd(request.Response);
             }
             catch (WebException ex)
             {
@@ -47,40 +49,29 @@ namespace blqw.Web
                 var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
                 request.Response = res;
-                (request as IHttpTracking)?.OnError(request, res);
+                request.OnError(res);
             }
             finally
             {
                 timer.Ending();
-                (request as IHttpLogger)?.Debug(timer.ToString());
+                request.Debug(timer.ToString());
             }
+            ((HttpResponse)request.Response).RequestData = data;
             return request.Response;
         }
 
-        private static HttpWebRequest GetRequest(IHttpRequest request)
+        private static HttpWebRequest GetRequest(HttpRequestData data)
         {
-            var data = new HttpRequestData(request);
+            var request = data.Request;
 
-            (request as IHttpLogger)?.Debug(data.Url.ToString());
+            request.Debug(data.Url);
             var www = WebRequest.CreateHttp(data.Url);
-            if (request.Version != null)
-            {
-                www.ProtocolVersion = request.Version;
-            }
-            else if (data.Url.Scheme == Uri.UriSchemeHttps)
-            {
-                www.ProtocolVersion = HttpVersion.Version10;
-            }
-
-            if (request.UseCookies)
-            {
-                www.CookieContainer = request.Cookies;
-            }
-
+            www.KeepAlive = false;
+            request.Version = data.Version;
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
             www.Timeout = (int)request.Timeout.TotalMilliseconds;
-            www.Method = request.HttpMethod;
+            www.Method = data.Method;
 
             //必须要先设置头再设置body,否则头会被清掉
             foreach (var header in data.Headers)
@@ -99,9 +90,19 @@ namespace blqw.Web
                 }
             }
 
+            if (request.UseCookies)
+            {
+                www.CookieContainer = request.Cookies;
+                var cookie = request.Cookies.GetCookieHeader(data.Host);
+                if (string.IsNullOrWhiteSpace(cookie) == false)
+                {
+                    data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
+                }
+            }
+            
             return www;
         }
-        
+
         private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
         {
             if (response == null)
@@ -111,7 +112,7 @@ namespace blqw.Web
             var contentType = (HttpContentType)response.ContentType;
             var res = new HttpResponse()
             {
-                Headers = new HttpHeaders()
+                Headers = new HttpHeaders(),
             };
             using (response)
             {
@@ -129,6 +130,8 @@ namespace blqw.Web
                     res.Cookies = response.Cookies;
                 }
                 res.StatusCode = response.StatusCode;
+                res.Status = response.StatusDescription;
+                res.Version = $"{response.ResponseUri.Scheme.ToUpperInvariant()}/{response.ProtocolVersion}";
                 res.IsSuccessStatusCode = (int)response.StatusCode >= 200 && (int)response.StatusCode <= 299;
             }
             return res;
@@ -193,7 +196,7 @@ namespace blqw.Web
             var result = asyncResult as HttpClientBeginResult;
             if (result == null)
             {
-                throw new ArgumentException("类型错误或值为null",nameof(asyncResult));
+                throw new ArgumentException("类型错误或值为null", nameof(asyncResult));
             }
             if (result.IsCompleted == false)
             {
@@ -212,6 +215,7 @@ namespace blqw.Web
             private HttpTimer _Timer;
             private HttpWebRequest _WebRequest;
             private IHttpRequest _Request;
+            private HttpRequestData _RequestData;
             public IHttpResponse Response { get; private set; }
             public HttpClientBeginResult(AsyncCallback callback, object state)
             {
@@ -230,7 +234,8 @@ namespace blqw.Web
                 {
                     _Request = value;
                     (value as IHttpTracking)?.OnInitialize(value);
-                    _WebRequest = GetRequest(value);
+                    _RequestData = new HttpRequestData(value);
+                    _WebRequest = GetRequest(_RequestData);
                     _Timer.Readied();
                     (value as IHttpTracking)?.OnSending(value);
                     _AsyncResult = _WebRequest.BeginGetResponse(Callback, _State);
@@ -269,12 +274,14 @@ namespace blqw.Web
                         _Timer.Ending();
                         (Request as IHttpLogger)?.Debug(_Timer.ToString());
                         IsCompleted = true;
+                        var res = Response as HttpResponse;
+                        if (res != null) res.RequestData = _RequestData;
                     }
                 }
                 _AsyncCallback(this);
             }
 
-            
+
 
             public void Readied()
             {

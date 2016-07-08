@@ -32,19 +32,21 @@ namespace blqw.Web
         public async Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken)
         {
             var timer = HttpTimer.Start();
+            var data = default(HttpRequestData);
             try
             {
-                (request as IHttpTracking)?.OnInitialize(request);
-                var www = GetRequest(request);
+                request.OnInitialize();
+                data = new HttpRequestData(request);
+                var www = GetRequest(data);
                 timer.Readied();
-                (request as IHttpTracking)?.OnSending(request);
+                request.OnSending();
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
                     request.Response = (await Transfer(request.UseCookies, response));
-                    (request as IHttpTracking)?.OnEnd(request, request.Response);
+                    request.OnEnd(request.Response);
                 }
             }
             catch (Exception ex)
@@ -57,13 +59,14 @@ namespace blqw.Web
                 var res = new HttpResponse();
                 res.Exception = ex;
                 request.Response = res;
-                (request as IHttpTracking)?.OnError(request, res);
+                request.OnError(res);
             }
             finally
             {
                 timer.Ending();
-                (request as IHttpLogger)?.Debug(timer.ToString());
+                request.Debug(timer.ToString());
             }
+            ((HttpResponse)request.Response).RequestData = data;
             return request.Response;
         }
 
@@ -78,8 +81,6 @@ namespace blqw.Web
             var res = new HttpResponse()
             {
                 Headers = new HttpHeaders(),
-                RequestRaw = response.RequestMessage.ToString(),
-                ResponseRaw = response.ToString(),
             };
             using (response)
             {
@@ -107,24 +108,19 @@ namespace blqw.Web
                     }
                 }
                 res.StatusCode = response.StatusCode;
+                res.Status = response.ReasonPhrase;
+                res.Version = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
                 res.IsSuccessStatusCode = response.IsSuccessStatusCode;
             }
             return res;
         }
 
-        private HttpRequestMessage GetRequest(IHttpRequest request)
+        private HttpRequestMessage GetRequest(HttpRequestData data)
         {
-            var data = new HttpRequestData(request);
-            (request as IHttpLogger)?.Debug(data.Url.ToString());
+            var request = data.Request;
+            request.Debug(data.Url);
             var www = new HttpRequestMessage(GetHttpMethod(request), data.Url);
-            if (request.Version != null)
-            {
-                www.Version = request.Version;
-            }
-            if (request.UseCookies)
-            {
-                www.Headers.Add("Cookie", request.Cookies.GetCookieHeader(data.Url));
-            }
+            www.Version = data.Version;
             if (data.Body != null)
             {
                 www.Content = new ByteArrayContent(data.Body ?? _BytesEmpty);
@@ -136,6 +132,16 @@ namespace blqw.Web
                 if (!www.Headers.TryAddWithoutValidation(header.Key, transfer))
                 {
                     www.Content?.Headers.TryAddWithoutValidation(header.Key, transfer);
+                }
+            }
+
+            if (request.UseCookies)
+            {
+                var cookie = request.Cookies.GetCookieHeader(data.Host);
+                if (string.IsNullOrWhiteSpace(cookie) == false)
+                {
+                    www.Headers.Add("Cookie", cookie);
+                    data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
                 }
             }
 
