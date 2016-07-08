@@ -66,7 +66,6 @@ namespace blqw.Web
 
             request.Debug(data.Url);
             var www = WebRequest.CreateHttp(data.Url);
-            www.KeepAlive = false;
             request.Version = data.Version;
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
@@ -76,11 +75,20 @@ namespace blqw.Web
             //必须要先设置头再设置body,否则头会被清掉
             foreach (var header in data.Headers)
             {
+                if (header.Key == nameof(www.Connection))
+                {
+                    var connection = request.Headers[nameof(www.Connection)];
+                    if (string.Equals(connection, "Keep-Alive", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(connection, "Close", StringComparison.OrdinalIgnoreCase))
+                    {
+                        www.KeepAlive = request.Headers.KeepAlive;
+                        continue;
+                    }
+                }
                 //防止中文引起的头信息乱码
                 var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
                 HeaderAddInternal(www.Headers, header.Key, transfer);
             }
-
             if (data.Body?.Length > 0)
             {
                 www.ContentLength = data.Body.Length;
@@ -99,7 +107,6 @@ namespace blqw.Web
                     data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
                 }
             }
-            
             return www;
         }
 

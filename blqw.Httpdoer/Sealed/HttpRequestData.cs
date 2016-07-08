@@ -89,7 +89,7 @@ namespace blqw.Web
             if (HasHeader("User-Agent") == false)
                 AddHeader("User-Agent", HttpHeaders.DefaultUserAgent);
             if (HasHeader("Connection") == false)
-                AddHeader("Connection", "keep-alive");
+                AddHeader("Connection", "Keep-Alive");
             if (HasHeader("Host") == false)
                 AddHeader("Host", url.Host);
         }
@@ -193,10 +193,7 @@ namespace blqw.Web
         {
             get
             {
-                return $@"{Method} {Url} {Version}
-{string.Join(Environment.NewLine, Headers.Select(it => $"{it.Key}: {it.Value}"))}
-
-{GetBodyString()}";
+                return $"{Method} {Url} {Version}\r\n{string.Join("\r\n", Headers.Select(it => $"{it.Key}: {it.Value}"))}\r\n\r\n{ GetBodyString()}";
             }
         }
     }

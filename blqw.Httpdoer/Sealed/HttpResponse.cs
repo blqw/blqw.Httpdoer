@@ -24,10 +24,7 @@ namespace blqw.Web
         {
             get
             {
-                return $@"{Version} {(int)StatusCode} {Status}
-{string.Join(Environment.NewLine, GetAllHeaders())}
-
-{Body.ToString()}" ;
+                return $"{Version} {(int)StatusCode} {Status}\r\n{string.Join("\r\n", GetAllHeaders())}\r\n\r\n{Body.ToString()}" ;
             }
         }
 

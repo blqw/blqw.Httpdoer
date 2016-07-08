@@ -240,14 +240,21 @@ namespace BuiBuiAPI
         }
         #region SendRequest
 
+
+        private CookieContainer _cookies = new CookieContainer();
         protected virtual async Task SendRequest()
         {
             await Task.Delay(1);
             var request = new Httpdoer(txtURL.Text)
             {
                 UseCookies = true,
-                Timeout = TimeSpan.FromSeconds(decimal.ToDouble(numTimeout.Value))
+                Timeout = TimeSpan.FromSeconds(decimal.ToDouble(numTimeout.Value)),
             };
+            //设置Cookie
+            if (ckbKeepCookie.Checked)
+            {
+                request.Cookies = _cookies;
+            }
             request.Headers.KeepAlive = ckbKeepAlive.Checked;
             request.Loggers.Add(new BuibuiLogger(rtxtLogs));
             request.HttpMethod = cbbHttpMethod.Text;
@@ -272,7 +279,7 @@ namespace BuiBuiAPI
             ShowResponseHeaders(response);
             //显示Cookie
             ShowResponseCookie(response);
-
+            _cookies.Add(response.Cookies);
             if (response.Exception != null)
             {
                 throw new NotImplementedException(response.Exception.Message, response.Exception);

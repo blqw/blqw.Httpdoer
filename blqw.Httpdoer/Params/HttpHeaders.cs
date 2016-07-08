@@ -80,11 +80,11 @@ namespace blqw.Web
             {
                 if (value)
                 {
-                    base["Connection"] = "keep-alive";
+                    base["Connection"] = "Keep-Alive";
                 }
                 else
                 {
-                    base["Connection"] = "close";
+                    base["Connection"] = "Close";
                 }
             }
         }
