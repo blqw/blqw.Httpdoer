@@ -50,6 +50,7 @@ namespace BuiBuiAPI
         //绘制列表
         private void listHistories_DrawItem(object sender, DrawItemEventArgs e)
         {
+            if (e.Index < 0) return;
             e.DrawBackground();
             e.DrawFocusRectangle();
             e.Graphics.DrawString(((ListBox)sender).Items[e.Index].ToString(), e.Font, new SolidBrush(e.ForeColor), new RectangleF(e.Bounds.X, e.Bounds.Y, 3000, e.Bounds.Height));
@@ -100,6 +101,10 @@ namespace BuiBuiAPI
                 await SendRequest();
                 tabMain.SelectedTab = pageResponse;
             }
+            catch (NotImplementedException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), ex.Message);
@@ -110,44 +115,12 @@ namespace BuiBuiAPI
             }
         }
 
-        private async Task SendRequest()
-        {
-            await Task.Delay(1);
-            var www = new Httpdoer(txtURL.Text)
-            {
-                UseCookies = true,
-            };
-            www.Loggers.Add(new FormLogger(rtxtLogs));
-            www.HttpMethod = cbbHttpMethod.Text;
-            www.Body.ContentType = cbbContentType.Text;
-            //写入参数
-            WriteParams(www);
-
-            var response = await www.SendAsync();
-            if (response.Exception != null)
-            {
-                throw response.Exception;
-            }
-            //返回正文
-            rtxtResponseBody.Text = response.Body?.ToString();
-            txtRequestRaw.Text = response.RequestRaw;
-            txtResponseRaw.Text = response.ResponseRaw;
-            //返回视图
-            var format = response.Body.ContentType.Format?.ToLowerInvariant();
-            if (format == "html" || format == "htm")
-                webResponseView.DocumentText = rtxtResponseBody.Text;
-            //返回头
-            ShowResponseHeaders(response);
-            //显示Cookie
-            ShowResponseCookie(response);
-        }
-
         //显示Cookie
         private void ShowResponseCookie(IHttpResponse response)
         {
-            txtResponseCookies.Text = response.Headers.GetValues("Set-Cookie").Join("; ");
+            txtResponseCookies.Text = response?.Headers?.GetValues("Set-Cookie").Join("; ");
             gridResponseCookies.DataSource =
-                response.Cookies?.Cast<Cookie>()
+                response?.Cookies?.Cast<Cookie>()
                         .Select(it => new
                         {
                             it.Name,
@@ -200,19 +173,22 @@ namespace BuiBuiAPI
         {
             if (response == null) return;
             var list = new ArrayList();
-            foreach (var item in response.Headers)
+            if (response.Headers != null)
             {
-                var arr = item.Value as IEnumerable;
-                if (arr != null && arr is string == false)
+                foreach (var item in response.Headers)
                 {
-                    foreach (var value in arr)
+                    var arr = item.Value as IEnumerable;
+                    if (arr != null && arr is string == false)
                     {
-                        list.Add(new { Name = item.Key, Value = value });
+                        foreach (var value in arr)
+                        {
+                            list.Add(new { Name = item.Key, Value = value });
+                        }
                     }
-                }
-                else
-                {
-                    list.Add(new { Name = item.Key, Value = item.Value });
+                    else
+                    {
+                        list.Add(new { Name = item.Key, Value = item.Value });
+                    }
                 }
             }
             gridResponseHeaders.DataSource = list;
@@ -228,14 +204,14 @@ namespace BuiBuiAPI
 
         private void cbbHttpMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var txt = (sender as Control)?.Text.ToLowerInvariant();
+            var txt = (sender as Control)?.Text.ToUpperInvariant();
             switch (txt)
             {
-                case "get":
-                case "delete":
+                case "GET":
+                case "DELETE":
                     cbbContentType.Text = "";
                     break;
-                case "post":
+                case "POST":
                     if (string.IsNullOrWhiteSpace(cbbContentType.Text))
                     {
                         cbbContentType.Text = "application/x-www-form-urlencoded";
@@ -246,5 +222,64 @@ namespace BuiBuiAPI
             }
 
         }
+
+        private void cbbContentType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace((sender as Control)?.Text) == false)
+            {
+                switch (cbbHttpMethod.Text.ToUpperInvariant())
+                {
+                    case "GET":
+                    case "DELETE":
+                        cbbHttpMethod.Text = "Post";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        #region SendRequest
+
+        protected virtual async Task SendRequest()
+        {
+            await Task.Delay(1);
+            var request = new Httpdoer(txtURL.Text)
+            {
+                UseCookies = true,
+                Timeout = TimeSpan.FromSeconds(decimal.ToDouble(numTimeout.Value))
+            };
+            request.Headers.KeepAlive = ckbKeepAlive.Checked;
+            request.Loggers.Add(new BuibuiLogger(rtxtLogs));
+            request.HttpMethod = cbbHttpMethod.Text;
+            if (!string.IsNullOrWhiteSpace(cbbContentType.Text))
+                request.Body.ContentType = cbbContentType.Text;
+            //写入参数
+            WriteParams(request);
+
+            var response = request.Send();
+            //var response = await request.SendAsync();
+            //返回正文
+            rtxtResponseBody.Text = response?.Body?.ToString();
+            txtRequestRaw.Text = response?.RequestData.Raw;
+            txtResponseRaw.Text = response?.ResponseRaw;
+            //返回视图
+            var format = response?.Body?.ContentType.Format?.ToLowerInvariant();
+            if (format == "html" || format == "htm")
+                webResponseView.DocumentText = rtxtResponseBody.Text;
+            else
+                webResponseView.DocumentText = string.Empty;
+            //返回头
+            ShowResponseHeaders(response);
+            //显示Cookie
+            ShowResponseCookie(response);
+
+            if (response.Exception != null)
+            {
+                throw new NotImplementedException(response.Exception.Message, response.Exception);
+            }
+        }
+
+        #endregion
+
     }
 }

@@ -9,10 +9,10 @@ using System.Windows.Forms;
 
 namespace BuiBuiAPI
 {
-    class FormLogger : IHttpLogger
+    class BuibuiLogger : IHttpLogger
     {
         RichTextBox _outer;
-        public FormLogger(RichTextBox outer)
+        public BuibuiLogger(RichTextBox outer)
         {
             _outer = outer;
         }

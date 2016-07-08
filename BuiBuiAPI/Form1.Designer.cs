@@ -76,7 +76,7 @@
             this.btnShowInsertMenu = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.cbbContentType = new System.Windows.Forms.ComboBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ckbKeepAlive = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnBui = new System.Windows.Forms.Button();
             this.txtURL = new System.Windows.Forms.TextBox();
@@ -92,6 +92,9 @@
             this.userAgentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.txtRequestRaw = new System.Windows.Forms.TextBox();
+            this.numTimeout = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.panelSide.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabHistory.SuspendLayout();
@@ -114,6 +117,7 @@
             this.pageLogs.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).BeginInit();
             this.SuspendLayout();
             // 
             // panelSide
@@ -574,10 +578,13 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.label5);
+            this.panel2.Controls.Add(this.numTimeout);
+            this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.btnShowInsertMenu);
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.cbbContentType);
-            this.panel2.Controls.Add(this.checkBox1);
+            this.panel2.Controls.Add(this.ckbKeepAlive);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.btnBui);
             this.panel2.Controls.Add(this.txtURL);
@@ -614,19 +621,20 @@
             this.cbbContentType.Name = "cbbContentType";
             this.cbbContentType.Size = new System.Drawing.Size(267, 20);
             this.cbbContentType.TabIndex = 5;
+            this.cbbContentType.SelectedIndexChanged += new System.EventHandler(this.cbbContentType_SelectedIndexChanged);
             // 
-            // checkBox1
+            // ckbKeepAlive
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(15, 48);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(84, 16);
-            this.checkBox1.TabIndex = 4;
-            this.checkBox1.Text = "Keep-Alive";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.ckbKeepAlive.AutoSize = true;
+            this.ckbKeepAlive.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.ckbKeepAlive.Checked = true;
+            this.ckbKeepAlive.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbKeepAlive.Location = new System.Drawing.Point(15, 48);
+            this.ckbKeepAlive.Name = "ckbKeepAlive";
+            this.ckbKeepAlive.Size = new System.Drawing.Size(84, 16);
+            this.ckbKeepAlive.TabIndex = 4;
+            this.ckbKeepAlive.Text = "Keep-Alive";
+            this.ckbKeepAlive.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -748,8 +756,51 @@
             this.txtRequestRaw.Location = new System.Drawing.Point(5, 5);
             this.txtRequestRaw.Multiline = true;
             this.txtRequestRaw.Name = "txtRequestRaw";
+            this.txtRequestRaw.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtRequestRaw.Size = new System.Drawing.Size(661, 511);
             this.txtRequestRaw.TabIndex = 0;
+            this.txtRequestRaw.WordWrap = false;
+            // 
+            // numTimeout
+            // 
+            this.numTimeout.Location = new System.Drawing.Point(514, 46);
+            this.numTimeout.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
+            this.numTimeout.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numTimeout.Name = "numTimeout";
+            this.numTimeout.Size = new System.Drawing.Size(39, 21);
+            this.numTimeout.TabIndex = 8;
+            this.numTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numTimeout.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(478, 49);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 12);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "超时:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(557, 49);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(17, 12);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "秒";
             // 
             // Form1
             // 
@@ -790,6 +841,7 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -818,7 +870,7 @@
         private System.Windows.Forms.ToolTip tipListbox;
         private System.Windows.Forms.ListBox listFavorite;
         private System.Windows.Forms.DataGridView gridParams;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ckbKeepAlive;
         private System.Windows.Forms.ComboBox cbbContentType;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.RichTextBox rtxtLogs;
@@ -858,6 +910,9 @@
         private System.Windows.Forms.ToolStripMenuItem acceptLanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem zhCNzhq08ToolStripMenuItem;
         private System.Windows.Forms.TextBox txtRequestRaw;
+        private System.Windows.Forms.NumericUpDown numTimeout;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 
