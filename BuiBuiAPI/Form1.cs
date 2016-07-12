@@ -1,10 +1,12 @@
-﻿using blqw.Web;
+﻿using blqw;
+using blqw.Web;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -44,6 +46,7 @@ namespace BuiBuiAPI
                     item.Click += inserter.Click;
                 }
             }
+            RefreshHistory();
         }
 
 
@@ -81,9 +84,9 @@ namespace BuiBuiAPI
             }
             var index = listbox.IndexFromPoint(e.Location);
             if (index < 0 || index >= listbox.Items.Count) return;
-            var txt = listbox.Items[index]?.ToString();
-            tipListbox.ToolTipTitle = txt;
-            tipListbox.SetToolTip(listbox, txt + "?");
+            var history = (HistoryData)listbox.Items[index];
+            tipListbox.ToolTipTitle = history.URL;
+            tipListbox.SetToolTip(listbox, history.RequestRaw);
             listbox.Tag = DateTime.Now.AddMilliseconds(30);
         }
 
@@ -120,16 +123,16 @@ namespace BuiBuiAPI
         {
             txtResponseCookies.Text = response?.Headers?.GetValues("Set-Cookie").Join("; ");
             gridResponseCookies.DataSource =
-                response?.Cookies?.Cast<Cookie>()
-                        .Select(it => new
+                response?.Cookies?.Cast<System.Net.Cookie>()
+                        .Select(it => new Cookie
                         {
-                            it.Name,
-                            it.Value,
-                            it.Domain,
+                            Name = it.Name,
+                            Value = it.Value,
+                            Domain = it.Domain,
                             Expires = it.Expired ? it.Expires.ToString("yyyy-MM-dd HH:mm:ss") : "-",
-                            it.Path,
-                            it.HttpOnly,
-                            it.Secure
+                            Path = it.Path,
+                            HttpOnly = it.HttpOnly,
+                            Secure = it.Secure
                         })
                         .ToList();
 
@@ -172,7 +175,7 @@ namespace BuiBuiAPI
         private void ShowResponseHeaders(IHttpResponse response)
         {
             if (response == null) return;
-            var list = new ArrayList();
+            var list = new List<Header>();
             if (response.Headers != null)
             {
                 foreach (var item in response.Headers)
@@ -182,12 +185,12 @@ namespace BuiBuiAPI
                     {
                         foreach (var value in arr)
                         {
-                            list.Add(new { Name = item.Key, Value = value });
+                            list.Add(new Header { Name = item.Key, Value = value + "" });
                         }
                     }
                     else
                     {
-                        list.Add(new { Name = item.Key, Value = item.Value });
+                        list.Add(new Header { Name = item.Key, Value = item.Value + "" });
                     }
                 }
             }
@@ -202,6 +205,7 @@ namespace BuiBuiAPI
             contextMenuStrip1.Show(ctl, 0, ctl.Height);
         }
 
+        //选择请求方法
         private void cbbHttpMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             var txt = (sender as Control)?.Text.ToUpperInvariant();
@@ -223,6 +227,7 @@ namespace BuiBuiAPI
 
         }
 
+        //选择正文类型
         private void cbbContentType_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace((sender as Control)?.Text) == false)
@@ -238,6 +243,21 @@ namespace BuiBuiAPI
                 }
             }
         }
+
+        //刷新历史记录列表
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshHistory();
+        }
+
+        //点击历史记录
+        private void listHistories_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var list = sender as ListBox;
+            if (list == null) return;
+            var history = list.SelectedItem as HistoryData;
+            LoadHistory(history);
+        }
         #region SendRequest
 
 
@@ -245,6 +265,7 @@ namespace BuiBuiAPI
         protected virtual async Task SendRequest()
         {
             await Task.Delay(1);
+            rtxtLogs.Clear();
             var request = new Httpdoer(txtURL.Text)
             {
                 UseCookies = true,
@@ -269,24 +290,96 @@ namespace BuiBuiAPI
             rtxtResponseBody.Text = response?.Body?.ToString();
             txtRequestRaw.Text = response?.RequestData.Raw;
             txtResponseRaw.Text = response?.ResponseRaw;
-            //返回视图
-            var format = response?.Body?.ContentType.Format?.ToLowerInvariant();
-            if (format == "html" || format == "htm")
-                webResponseView.DocumentText = rtxtResponseBody.Text;
-            else
-                webResponseView.DocumentText = string.Empty;
+            //显示视图
+            ShowView();
             //返回头
             ShowResponseHeaders(response);
             //显示Cookie
             ShowResponseCookie(response);
             _cookies.Add(response.Cookies);
+
             if (response.Exception != null)
             {
+                request.Error(response.Exception);
+                SaveHistory();
                 throw new NotImplementedException(response.Exception.Message, response.Exception);
             }
+            SaveHistory();
+        }
+
+        private void ShowView()
+        {
+            webResponseView.DocumentText = rtxtResponseBody.Text;
         }
 
         #endregion
+
+
+
+        private void LoadHistory(HistoryData history)
+        {
+            if (history == null) return;
+            cbbContentType.Text = history.ContentType;
+            ckbKeepAlive.Checked = history.KeepAlive;
+            rtxtLogs.Rtf = history.LogsRTF;
+            cbbHttpMethod.Text = history.Method;
+            txtRequestRaw.Text = history.RequestRaw;
+            rtxtResponseBody.Rtf = history.ResponseBody;
+            ShowView();
+            txtResponseCookies.Text = history.ResponseCookieRaw;
+            txtResponseRaw.Text = history.ResponseRaw;
+            numTimeout.Value = history.Timeout;
+            txtURL.Text = history.URL;
+            ckbKeepCookie.Checked = history.KeepCookie;
+            gridParams.Rows.Clear();
+            foreach (var p in history.Params)
+            {
+                gridParams.Rows.Add(p.Name, p.Location, p.Value);
+            }
+            gridParams.DataSource = history.ResponseHeaders;
+            gridResponseCookies.DataSource = history.ResponseCookies;
+        }
+
+        private void SaveHistory()
+        {
+            var history = new HistoryData
+            {
+                ContentType = cbbContentType.Text,
+                KeepAlive = ckbKeepAlive.Checked,
+                LogsRTF = rtxtLogs.Rtf,
+                Method = cbbHttpMethod.Text,
+                RequestRaw = txtRequestRaw.Text,
+                ResponseBody = rtxtResponseBody.Rtf,
+                ResponseCookieRaw = txtResponseCookies.Text,
+                ResponseRaw = txtResponseRaw.Text,
+                Timeout = (int)numTimeout.Value,
+                URL = txtURL.Text,
+                KeepCookie = ckbKeepCookie.Checked,
+                Params = gridParams.Rows.Cast<DataGridViewRow>().Where(r => !r.IsNewRow)
+                                .Select(r =>new Param
+                                          {
+                                              Name = r.Cells[0].Value + "",
+                                              Location = r.Cells[1].Value + "",
+                                              Value = r.Cells[2].Value + "",
+                                          }).ToList(),
+                ResponseHeaders = (List<Header>)gridParams.DataSource,
+                ResponseCookies = (List<Cookie>)gridResponseCookies.DataSource,
+            };
+            if (Directory.Exists("History/") == false)
+            {
+                Directory.CreateDirectory("History");
+            }
+            var path = $"History/{DateTime.Now.Ticks}";
+            var json = history.ToJsonString();
+            File.WriteAllText(path, json);
+            RefreshHistory();
+        }
+
+        private void RefreshHistory()
+        {
+            listHistories.DataSource = Directory.GetFiles("History/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it => Json.ToObject<HistoryData>(File.ReadAllText(it))).ToList();
+            listHistories.DisplayMember = "Display";
+        }
 
     }
 }

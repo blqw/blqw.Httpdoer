@@ -74,17 +74,23 @@
             this.pageLogs = new System.Windows.Forms.TabPage();
             this.rtxtLogs = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.ckbKeepAlive = new System.Windows.Forms.CheckBox();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.ckbKeepCookie = new System.Windows.Forms.CheckBox();
+            this.panel4 = new System.Windows.Forms.Panel();
             this.numTimeout = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnShowInsertMenu = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.cbbContentType = new System.Windows.Forms.ComboBox();
-            this.ckbKeepAlive = new System.Windows.Forms.CheckBox();
+            this.btnShowInsertMenu = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.cbbHttpMethod = new System.Windows.Forms.ComboBox();
             this.btnBui = new System.Windows.Forms.Button();
             this.txtURL = new System.Windows.Forms.TextBox();
-            this.cbbHttpMethod = new System.Windows.Forms.ComboBox();
             this.tipListbox = new System.Windows.Forms.ToolTip(this.components);
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.acceptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,7 +101,7 @@
             this.zhCNzhq08ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userAgentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ckbKeepCookie = new System.Windows.Forms.CheckBox();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.panelSide.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabHistory.SuspendLayout();
@@ -117,20 +123,26 @@
             this.pageResponseRaw.SuspendLayout();
             this.pageLogs.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
+            this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).BeginInit();
+            this.panel3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelSide
             // 
             this.panelSide.BackColor = System.Drawing.SystemColors.Control;
+            this.panelSide.Controls.Add(this.btnRefresh);
             this.panelSide.Controls.Add(this.tabControl2);
             this.panelSide.Controls.Add(this.panel1);
             this.panelSide.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelSide.Location = new System.Drawing.Point(905, 0);
-            this.panelSide.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelSide.Location = new System.Drawing.Point(1015, 0);
+            this.panelSide.Margin = new System.Windows.Forms.Padding(4);
             this.panelSide.Name = "panelSide";
-            this.panelSide.Size = new System.Drawing.Size(267, 778);
+            this.panelSide.Size = new System.Drawing.Size(267, 708);
             this.panelSide.TabIndex = 0;
             // 
             // tabControl2
@@ -139,20 +151,20 @@
             this.tabControl2.Controls.Add(this.tabFavorite);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl2.Location = new System.Drawing.Point(0, 65);
-            this.tabControl2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabControl2.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(267, 713);
+            this.tabControl2.Size = new System.Drawing.Size(267, 643);
             this.tabControl2.TabIndex = 3;
             // 
             // tabHistory
             // 
             this.tabHistory.Controls.Add(this.listHistories);
             this.tabHistory.Location = new System.Drawing.Point(4, 25);
-            this.tabHistory.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabHistory.Margin = new System.Windows.Forms.Padding(4);
             this.tabHistory.Name = "tabHistory";
-            this.tabHistory.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabHistory.Size = new System.Drawing.Size(259, 684);
+            this.tabHistory.Padding = new System.Windows.Forms.Padding(4);
+            this.tabHistory.Size = new System.Drawing.Size(259, 614);
             this.tabHistory.TabIndex = 0;
             this.tabHistory.Text = "历史";
             this.tabHistory.UseVisualStyleBackColor = true;
@@ -164,21 +176,22 @@
             this.listHistories.IntegralHeight = false;
             this.listHistories.ItemHeight = 15;
             this.listHistories.Location = new System.Drawing.Point(4, 4);
-            this.listHistories.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.listHistories.Margin = new System.Windows.Forms.Padding(4);
             this.listHistories.Name = "listHistories";
-            this.listHistories.Size = new System.Drawing.Size(251, 676);
+            this.listHistories.Size = new System.Drawing.Size(251, 606);
             this.listHistories.TabIndex = 0;
             this.tipListbox.SetToolTip(this.listHistories, "11122233\r\n");
+            this.listHistories.SelectedIndexChanged += new System.EventHandler(this.listHistories_SelectedIndexChanged);
             this.listHistories.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseMove);
             // 
             // tabFavorite
             // 
             this.tabFavorite.Controls.Add(this.listFavorite);
             this.tabFavorite.Location = new System.Drawing.Point(4, 25);
-            this.tabFavorite.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabFavorite.Margin = new System.Windows.Forms.Padding(4);
             this.tabFavorite.Name = "tabFavorite";
-            this.tabFavorite.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tabFavorite.Size = new System.Drawing.Size(259, 683);
+            this.tabFavorite.Padding = new System.Windows.Forms.Padding(4);
+            this.tabFavorite.Size = new System.Drawing.Size(259, 614);
             this.tabFavorite.TabIndex = 1;
             this.tabFavorite.Text = "收藏";
             this.tabFavorite.UseVisualStyleBackColor = true;
@@ -190,9 +203,9 @@
             this.listFavorite.IntegralHeight = false;
             this.listFavorite.ItemHeight = 15;
             this.listFavorite.Location = new System.Drawing.Point(4, 4);
-            this.listFavorite.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.listFavorite.Margin = new System.Windows.Forms.Padding(4);
             this.listFavorite.Name = "listFavorite";
-            this.listFavorite.Size = new System.Drawing.Size(251, 675);
+            this.listFavorite.Size = new System.Drawing.Size(251, 606);
             this.listFavorite.TabIndex = 1;
             this.listFavorite.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseMove);
             // 
@@ -203,7 +216,7 @@
             this.panel1.Controls.Add(this.label2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(267, 65);
             this.panel1.TabIndex = 4;
@@ -212,7 +225,7 @@
             // 
             this.ckbDock.AutoSize = true;
             this.ckbDock.Location = new System.Drawing.Point(21, 22);
-            this.ckbDock.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ckbDock.Margin = new System.Windows.Forms.Padding(4);
             this.ckbDock.Name = "ckbDock";
             this.ckbDock.Size = new System.Drawing.Size(59, 19);
             this.ckbDock.TabIndex = 0;
@@ -223,7 +236,7 @@
             // numMaxHistory
             // 
             this.numMaxHistory.Location = new System.Drawing.Point(193, 21);
-            this.numMaxHistory.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numMaxHistory.Margin = new System.Windows.Forms.Padding(4);
             this.numMaxHistory.Maximum = new decimal(new int[] {
             999,
             0,
@@ -256,21 +269,21 @@
             this.tabMain.Controls.Add(this.pageResponse);
             this.tabMain.Controls.Add(this.pageLogs);
             this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabMain.Location = new System.Drawing.Point(0, 94);
-            this.tabMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabMain.Location = new System.Drawing.Point(0, 128);
+            this.tabMain.Margin = new System.Windows.Forms.Padding(4);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(905, 684);
+            this.tabMain.Size = new System.Drawing.Size(1015, 580);
             this.tabMain.TabIndex = 8;
             // 
             // pageParams
             // 
             this.pageParams.Controls.Add(this.gridParams);
             this.pageParams.Location = new System.Drawing.Point(4, 25);
-            this.pageParams.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageParams.Margin = new System.Windows.Forms.Padding(4);
             this.pageParams.Name = "pageParams";
-            this.pageParams.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.pageParams.Size = new System.Drawing.Size(897, 655);
+            this.pageParams.Padding = new System.Windows.Forms.Padding(4);
+            this.pageParams.Size = new System.Drawing.Size(1007, 551);
             this.pageParams.TabIndex = 0;
             this.pageParams.Text = "Params";
             this.pageParams.UseVisualStyleBackColor = true;
@@ -287,11 +300,11 @@
             this.colParamsValue});
             this.gridParams.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridParams.Location = new System.Drawing.Point(4, 4);
-            this.gridParams.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gridParams.Margin = new System.Windows.Forms.Padding(4);
             this.gridParams.Name = "gridParams";
             this.gridParams.RowHeadersVisible = false;
             this.gridParams.RowTemplate.Height = 23;
-            this.gridParams.Size = new System.Drawing.Size(889, 647);
+            this.gridParams.Size = new System.Drawing.Size(999, 543);
             this.gridParams.TabIndex = 1;
             // 
             // colParamsName
@@ -331,24 +344,26 @@
             // 
             this.pageRequest.Controls.Add(this.txtRequestRaw);
             this.pageRequest.Location = new System.Drawing.Point(4, 25);
-            this.pageRequest.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageRequest.Margin = new System.Windows.Forms.Padding(4);
             this.pageRequest.Name = "pageRequest";
             this.pageRequest.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.pageRequest.Size = new System.Drawing.Size(897, 655);
+            this.pageRequest.Size = new System.Drawing.Size(1007, 551);
             this.pageRequest.TabIndex = 2;
             this.pageRequest.Text = "Request";
             this.pageRequest.UseVisualStyleBackColor = true;
             // 
             // txtRequestRaw
             // 
+            this.txtRequestRaw.BackColor = System.Drawing.SystemColors.Window;
             this.txtRequestRaw.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtRequestRaw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtRequestRaw.Location = new System.Drawing.Point(7, 6);
-            this.txtRequestRaw.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtRequestRaw.Margin = new System.Windows.Forms.Padding(4);
             this.txtRequestRaw.Multiline = true;
             this.txtRequestRaw.Name = "txtRequestRaw";
+            this.txtRequestRaw.ReadOnly = true;
             this.txtRequestRaw.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtRequestRaw.Size = new System.Drawing.Size(883, 643);
+            this.txtRequestRaw.Size = new System.Drawing.Size(993, 539);
             this.txtRequestRaw.TabIndex = 0;
             this.txtRequestRaw.WordWrap = false;
             // 
@@ -356,9 +371,9 @@
             // 
             this.pageResponse.Controls.Add(this.tabResponse);
             this.pageResponse.Location = new System.Drawing.Point(4, 25);
-            this.pageResponse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponse.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponse.Name = "pageResponse";
-            this.pageResponse.Size = new System.Drawing.Size(897, 655);
+            this.pageResponse.Size = new System.Drawing.Size(1007, 551);
             this.pageResponse.TabIndex = 3;
             this.pageResponse.Text = "Response";
             this.pageResponse.UseVisualStyleBackColor = true;
@@ -373,32 +388,34 @@
             this.tabResponse.Controls.Add(this.pageResponseRaw);
             this.tabResponse.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabResponse.Location = new System.Drawing.Point(0, 0);
-            this.tabResponse.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabResponse.Margin = new System.Windows.Forms.Padding(4);
             this.tabResponse.Name = "tabResponse";
             this.tabResponse.SelectedIndex = 0;
-            this.tabResponse.Size = new System.Drawing.Size(897, 655);
+            this.tabResponse.Size = new System.Drawing.Size(1007, 551);
             this.tabResponse.TabIndex = 0;
             // 
             // pageResponseBody
             // 
             this.pageResponseBody.Controls.Add(this.rtxtResponseBody);
             this.pageResponseBody.Location = new System.Drawing.Point(4, 28);
-            this.pageResponseBody.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponseBody.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponseBody.Name = "pageResponseBody";
             this.pageResponseBody.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.pageResponseBody.Size = new System.Drawing.Size(889, 623);
+            this.pageResponseBody.Size = new System.Drawing.Size(999, 519);
             this.pageResponseBody.TabIndex = 0;
             this.pageResponseBody.Text = "正文内容";
             this.pageResponseBody.UseVisualStyleBackColor = true;
             // 
             // rtxtResponseBody
             // 
+            this.rtxtResponseBody.BackColor = System.Drawing.SystemColors.Window;
             this.rtxtResponseBody.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtxtResponseBody.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtxtResponseBody.Location = new System.Drawing.Point(7, 6);
-            this.rtxtResponseBody.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rtxtResponseBody.Margin = new System.Windows.Forms.Padding(4);
             this.rtxtResponseBody.Name = "rtxtResponseBody";
-            this.rtxtResponseBody.Size = new System.Drawing.Size(875, 611);
+            this.rtxtResponseBody.ReadOnly = true;
+            this.rtxtResponseBody.Size = new System.Drawing.Size(985, 507);
             this.rtxtResponseBody.TabIndex = 0;
             this.rtxtResponseBody.Text = "";
             // 
@@ -406,9 +423,9 @@
             // 
             this.pageResponseView.Controls.Add(this.webResponseView);
             this.pageResponseView.Location = new System.Drawing.Point(4, 28);
-            this.pageResponseView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponseView.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponseView.Name = "pageResponseView";
-            this.pageResponseView.Size = new System.Drawing.Size(887, 619);
+            this.pageResponseView.Size = new System.Drawing.Size(999, 519);
             this.pageResponseView.TabIndex = 2;
             this.pageResponseView.Text = "视图";
             this.pageResponseView.UseVisualStyleBackColor = true;
@@ -417,20 +434,20 @@
             // 
             this.webResponseView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webResponseView.Location = new System.Drawing.Point(0, 0);
-            this.webResponseView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.webResponseView.Margin = new System.Windows.Forms.Padding(4);
             this.webResponseView.MinimumSize = new System.Drawing.Size(27, 25);
             this.webResponseView.Name = "webResponseView";
-            this.webResponseView.Size = new System.Drawing.Size(887, 619);
+            this.webResponseView.Size = new System.Drawing.Size(999, 519);
             this.webResponseView.TabIndex = 0;
             // 
             // pageResponseHeaders
             // 
             this.pageResponseHeaders.Controls.Add(this.gridResponseHeaders);
             this.pageResponseHeaders.Location = new System.Drawing.Point(4, 28);
-            this.pageResponseHeaders.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponseHeaders.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponseHeaders.Name = "pageResponseHeaders";
-            this.pageResponseHeaders.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.pageResponseHeaders.Size = new System.Drawing.Size(889, 623);
+            this.pageResponseHeaders.Padding = new System.Windows.Forms.Padding(4);
+            this.pageResponseHeaders.Size = new System.Drawing.Size(999, 519);
             this.pageResponseHeaders.TabIndex = 1;
             this.pageResponseHeaders.Text = "响应头";
             this.pageResponseHeaders.UseVisualStyleBackColor = true;
@@ -448,12 +465,12 @@
             this.colResponseHeaderValue});
             this.gridResponseHeaders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridResponseHeaders.Location = new System.Drawing.Point(4, 4);
-            this.gridResponseHeaders.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gridResponseHeaders.Margin = new System.Windows.Forms.Padding(4);
             this.gridResponseHeaders.Name = "gridResponseHeaders";
             this.gridResponseHeaders.ReadOnly = true;
             this.gridResponseHeaders.RowHeadersVisible = false;
             this.gridResponseHeaders.RowTemplate.Height = 23;
-            this.gridResponseHeaders.Size = new System.Drawing.Size(881, 615);
+            this.gridResponseHeaders.Size = new System.Drawing.Size(991, 511);
             this.gridResponseHeaders.TabIndex = 2;
             // 
             // colResponseHeaderName
@@ -482,9 +499,9 @@
             this.pageResponseCookie.Controls.Add(this.gridResponseCookies);
             this.pageResponseCookie.Controls.Add(this.txtResponseCookies);
             this.pageResponseCookie.Location = new System.Drawing.Point(4, 28);
-            this.pageResponseCookie.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponseCookie.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponseCookie.Name = "pageResponseCookie";
-            this.pageResponseCookie.Size = new System.Drawing.Size(889, 623);
+            this.pageResponseCookie.Size = new System.Drawing.Size(999, 519);
             this.pageResponseCookie.TabIndex = 3;
             this.pageResponseCookie.Text = "Cookies";
             this.pageResponseCookie.UseVisualStyleBackColor = true;
@@ -507,12 +524,12 @@
             this.colResponseCookieHttps});
             this.gridResponseCookies.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridResponseCookies.Location = new System.Drawing.Point(0, 148);
-            this.gridResponseCookies.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gridResponseCookies.Margin = new System.Windows.Forms.Padding(4);
             this.gridResponseCookies.Name = "gridResponseCookies";
             this.gridResponseCookies.ReadOnly = true;
             this.gridResponseCookies.RowHeadersVisible = false;
             this.gridResponseCookies.RowTemplate.Height = 23;
-            this.gridResponseCookies.Size = new System.Drawing.Size(889, 475);
+            this.gridResponseCookies.Size = new System.Drawing.Size(999, 371);
             this.gridResponseCookies.TabIndex = 2;
             // 
             // colResponseCookieName
@@ -566,96 +583,151 @@
             // 
             // txtResponseCookies
             // 
+            this.txtResponseCookies.BackColor = System.Drawing.SystemColors.Window;
             this.txtResponseCookies.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtResponseCookies.Location = new System.Drawing.Point(0, 0);
-            this.txtResponseCookies.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtResponseCookies.Margin = new System.Windows.Forms.Padding(4);
             this.txtResponseCookies.Multiline = true;
             this.txtResponseCookies.Name = "txtResponseCookies";
+            this.txtResponseCookies.ReadOnly = true;
             this.txtResponseCookies.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtResponseCookies.Size = new System.Drawing.Size(889, 148);
+            this.txtResponseCookies.Size = new System.Drawing.Size(999, 148);
             this.txtResponseCookies.TabIndex = 0;
             // 
             // pageResponseRaw
             // 
             this.pageResponseRaw.Controls.Add(this.txtResponseRaw);
             this.pageResponseRaw.Location = new System.Drawing.Point(4, 28);
-            this.pageResponseRaw.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageResponseRaw.Margin = new System.Windows.Forms.Padding(4);
             this.pageResponseRaw.Name = "pageResponseRaw";
-            this.pageResponseRaw.Size = new System.Drawing.Size(889, 623);
+            this.pageResponseRaw.Size = new System.Drawing.Size(999, 519);
             this.pageResponseRaw.TabIndex = 4;
             this.pageResponseRaw.Text = "Raw";
             this.pageResponseRaw.UseVisualStyleBackColor = true;
             // 
             // txtResponseRaw
             // 
+            this.txtResponseRaw.BackColor = System.Drawing.SystemColors.Window;
             this.txtResponseRaw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtResponseRaw.Location = new System.Drawing.Point(0, 0);
-            this.txtResponseRaw.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtResponseRaw.Margin = new System.Windows.Forms.Padding(4);
             this.txtResponseRaw.Multiline = true;
             this.txtResponseRaw.Name = "txtResponseRaw";
+            this.txtResponseRaw.ReadOnly = true;
             this.txtResponseRaw.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtResponseRaw.Size = new System.Drawing.Size(889, 623);
+            this.txtResponseRaw.Size = new System.Drawing.Size(999, 519);
             this.txtResponseRaw.TabIndex = 0;
             // 
             // pageLogs
             // 
             this.pageLogs.Controls.Add(this.rtxtLogs);
             this.pageLogs.Location = new System.Drawing.Point(4, 25);
-            this.pageLogs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pageLogs.Margin = new System.Windows.Forms.Padding(4);
             this.pageLogs.Name = "pageLogs";
             this.pageLogs.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.pageLogs.Size = new System.Drawing.Size(897, 655);
+            this.pageLogs.Size = new System.Drawing.Size(1007, 551);
             this.pageLogs.TabIndex = 4;
             this.pageLogs.Text = "Logs";
             this.pageLogs.UseVisualStyleBackColor = true;
             // 
             // rtxtLogs
             // 
+            this.rtxtLogs.BackColor = System.Drawing.SystemColors.Window;
             this.rtxtLogs.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtxtLogs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtxtLogs.Location = new System.Drawing.Point(7, 6);
-            this.rtxtLogs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rtxtLogs.Margin = new System.Windows.Forms.Padding(4);
             this.rtxtLogs.Name = "rtxtLogs";
-            this.rtxtLogs.Size = new System.Drawing.Size(883, 643);
+            this.rtxtLogs.ReadOnly = true;
+            this.rtxtLogs.Size = new System.Drawing.Size(993, 539);
             this.rtxtLogs.TabIndex = 0;
             this.rtxtLogs.Text = "";
             this.rtxtLogs.WordWrap = false;
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.ckbKeepCookie);
-            this.panel2.Controls.Add(this.label5);
-            this.panel2.Controls.Add(this.numTimeout);
-            this.panel2.Controls.Add(this.label4);
-            this.panel2.Controls.Add(this.btnShowInsertMenu);
-            this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.cbbContentType);
-            this.panel2.Controls.Add(this.ckbKeepAlive);
+            this.panel2.Controls.Add(this.flowLayoutPanel1);
             this.panel2.Controls.Add(this.label1);
+            this.panel2.Controls.Add(this.cbbHttpMethod);
             this.panel2.Controls.Add(this.btnBui);
             this.panel2.Controls.Add(this.txtURL);
-            this.panel2.Controls.Add(this.cbbHttpMethod);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(905, 94);
+            this.panel2.Size = new System.Drawing.Size(1015, 128);
             this.panel2.TabIndex = 9;
             // 
-            // label5
+            // flowLayoutPanel1
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(743, 61);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(22, 15);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "秒";
+            this.flowLayoutPanel1.Controls.Add(this.panel5);
+            this.flowLayoutPanel1.Controls.Add(this.panel6);
+            this.flowLayoutPanel1.Controls.Add(this.panel4);
+            this.flowLayoutPanel1.Controls.Add(this.panel3);
+            this.flowLayoutPanel1.Controls.Add(this.btnShowInsertMenu);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 68);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1015, 60);
+            this.flowLayoutPanel1.TabIndex = 13;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.ckbKeepAlive);
+            this.panel5.Location = new System.Drawing.Point(8, 8);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(116, 37);
+            this.panel5.TabIndex = 13;
+            // 
+            // ckbKeepAlive
+            // 
+            this.ckbKeepAlive.AutoSize = true;
+            this.ckbKeepAlive.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.ckbKeepAlive.Checked = true;
+            this.ckbKeepAlive.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbKeepAlive.Location = new System.Drawing.Point(1, 7);
+            this.ckbKeepAlive.Margin = new System.Windows.Forms.Padding(4);
+            this.ckbKeepAlive.Name = "ckbKeepAlive";
+            this.ckbKeepAlive.Size = new System.Drawing.Size(109, 19);
+            this.ckbKeepAlive.TabIndex = 4;
+            this.ckbKeepAlive.Text = "Keep-Alive";
+            this.ckbKeepAlive.UseVisualStyleBackColor = true;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.ckbKeepCookie);
+            this.panel6.Location = new System.Drawing.Point(130, 8);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(83, 37);
+            this.panel6.TabIndex = 14;
+            // 
+            // ckbKeepCookie
+            // 
+            this.ckbKeepCookie.AutoSize = true;
+            this.ckbKeepCookie.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.ckbKeepCookie.Location = new System.Drawing.Point(2, 9);
+            this.ckbKeepCookie.Margin = new System.Windows.Forms.Padding(4);
+            this.ckbKeepCookie.Name = "ckbKeepCookie";
+            this.ckbKeepCookie.Size = new System.Drawing.Size(77, 19);
+            this.ckbKeepCookie.TabIndex = 11;
+            this.ckbKeepCookie.Text = "Cookie";
+            this.ckbKeepCookie.UseVisualStyleBackColor = true;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.numTimeout);
+            this.panel4.Controls.Add(this.label4);
+            this.panel4.Controls.Add(this.label5);
+            this.panel4.Location = new System.Drawing.Point(219, 8);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(139, 37);
+            this.panel4.TabIndex = 10;
             // 
             // numTimeout
             // 
-            this.numTimeout.Location = new System.Drawing.Point(685, 58);
-            this.numTimeout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.numTimeout.Location = new System.Drawing.Point(53, 6);
+            this.numTimeout.Margin = new System.Windows.Forms.Padding(4);
             this.numTimeout.Maximum = new decimal(new int[] {
             99,
             0,
@@ -679,28 +751,36 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(637, 61);
+            this.label4.Location = new System.Drawing.Point(5, 10);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(45, 15);
             this.label4.TabIndex = 9;
             this.label4.Text = "超时:";
             // 
-            // btnShowInsertMenu
+            // label5
             // 
-            this.btnShowInsertMenu.Location = new System.Drawing.Point(773, 55);
-            this.btnShowInsertMenu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.btnShowInsertMenu.Name = "btnShowInsertMenu";
-            this.btnShowInsertMenu.Size = new System.Drawing.Size(100, 29);
-            this.btnShowInsertMenu.TabIndex = 7;
-            this.btnShowInsertMenu.Text = "插入标准头";
-            this.btnShowInsertMenu.UseVisualStyleBackColor = true;
-            this.btnShowInsertMenu.Click += new System.EventHandler(this.btnInsertMenu_Click);
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(111, 10);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(22, 15);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "秒";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.cbbContentType);
+            this.panel3.Location = new System.Drawing.Point(364, 8);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(417, 37);
+            this.panel3.TabIndex = 12;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(225, 62);
+            this.label3.Location = new System.Drawing.Point(3, 10);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(103, 15);
@@ -710,71 +790,75 @@
             // cbbContentType
             // 
             this.cbbContentType.FormattingEnabled = true;
-            this.cbbContentType.Location = new System.Drawing.Point(336, 58);
-            this.cbbContentType.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cbbContentType.Location = new System.Drawing.Point(114, 7);
+            this.cbbContentType.Margin = new System.Windows.Forms.Padding(4);
             this.cbbContentType.Name = "cbbContentType";
             this.cbbContentType.Size = new System.Drawing.Size(295, 23);
             this.cbbContentType.TabIndex = 5;
             this.cbbContentType.SelectedIndexChanged += new System.EventHandler(this.cbbContentType_SelectedIndexChanged);
             // 
-            // ckbKeepAlive
+            // btnShowInsertMenu
             // 
-            this.ckbKeepAlive.AutoSize = true;
-            this.ckbKeepAlive.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.ckbKeepAlive.Checked = true;
-            this.ckbKeepAlive.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbKeepAlive.Location = new System.Drawing.Point(15, 59);
-            this.ckbKeepAlive.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.ckbKeepAlive.Name = "ckbKeepAlive";
-            this.ckbKeepAlive.Size = new System.Drawing.Size(109, 19);
-            this.ckbKeepAlive.TabIndex = 4;
-            this.ckbKeepAlive.Text = "Keep-Alive";
-            this.ckbKeepAlive.UseVisualStyleBackColor = true;
+            this.btnShowInsertMenu.Location = new System.Drawing.Point(789, 12);
+            this.btnShowInsertMenu.Margin = new System.Windows.Forms.Padding(5, 7, 5, 5);
+            this.btnShowInsertMenu.Name = "btnShowInsertMenu";
+            this.btnShowInsertMenu.Size = new System.Drawing.Size(100, 29);
+            this.btnShowInsertMenu.TabIndex = 7;
+            this.btnShowInsertMenu.Text = "插入标准头";
+            this.btnShowInsertMenu.UseVisualStyleBackColor = true;
+            this.btnShowInsertMenu.Click += new System.EventHandler(this.btnInsertMenu_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("宋体", 15F);
             this.label1.Location = new System.Drawing.Point(17, 24);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(39, 15);
+            this.label1.Size = new System.Drawing.Size(64, 25);
             this.label1.TabIndex = 0;
             this.label1.Text = "URL:";
+            // 
+            // cbbHttpMethod
+            // 
+            this.cbbHttpMethod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbbHttpMethod.Font = new System.Drawing.Font("宋体", 16.5F);
+            this.cbbHttpMethod.FormattingEnabled = true;
+            this.cbbHttpMethod.ItemHeight = 27;
+            this.cbbHttpMethod.Location = new System.Drawing.Point(773, 18);
+            this.cbbHttpMethod.Margin = new System.Windows.Forms.Padding(4);
+            this.cbbHttpMethod.Name = "cbbHttpMethod";
+            this.cbbHttpMethod.Size = new System.Drawing.Size(124, 35);
+            this.cbbHttpMethod.TabIndex = 2;
+            this.cbbHttpMethod.SelectedIndexChanged += new System.EventHandler(this.cbbHttpMethod_SelectedIndexChanged);
             // 
             // btnBui
             // 
             this.btnBui.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBui.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.btnBui.Location = new System.Drawing.Point(773, 19);
-            this.btnBui.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnBui.BackColor = System.Drawing.Color.ForestGreen;
+            this.btnBui.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBui.Font = new System.Drawing.Font("微软雅黑", 13F);
+            this.btnBui.ForeColor = System.Drawing.Color.White;
+            this.btnBui.Location = new System.Drawing.Point(905, 17);
+            this.btnBui.Margin = new System.Windows.Forms.Padding(4);
             this.btnBui.Name = "btnBui";
-            this.btnBui.Size = new System.Drawing.Size(100, 29);
+            this.btnBui.Size = new System.Drawing.Size(96, 38);
             this.btnBui.TabIndex = 3;
             this.btnBui.Text = "bui~";
-            this.btnBui.UseVisualStyleBackColor = true;
+            this.btnBui.UseVisualStyleBackColor = false;
             this.btnBui.Click += new System.EventHandler(this.btnBui_Click);
             // 
             // txtURL
             // 
             this.txtURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtURL.Location = new System.Drawing.Point(64, 20);
-            this.txtURL.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtURL.Font = new System.Drawing.Font("宋体", 15F);
+            this.txtURL.Location = new System.Drawing.Point(88, 18);
+            this.txtURL.Margin = new System.Windows.Forms.Padding(4);
             this.txtURL.Name = "txtURL";
-            this.txtURL.Size = new System.Drawing.Size(567, 25);
+            this.txtURL.Size = new System.Drawing.Size(677, 36);
             this.txtURL.TabIndex = 1;
             this.txtURL.Text = "http://baidu.com";
-            // 
-            // cbbHttpMethod
-            // 
-            this.cbbHttpMethod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbbHttpMethod.FormattingEnabled = true;
-            this.cbbHttpMethod.Location = new System.Drawing.Point(640, 20);
-            this.cbbHttpMethod.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.cbbHttpMethod.Name = "cbbHttpMethod";
-            this.cbbHttpMethod.Size = new System.Drawing.Size(124, 23);
-            this.cbbHttpMethod.TabIndex = 2;
-            this.cbbHttpMethod.SelectedIndexChanged += new System.EventHandler(this.cbbHttpMethod_SelectedIndexChanged);
             // 
             // tipListbox
             // 
@@ -849,29 +933,27 @@
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem.Text = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrom" +
     "e/51.0.2704.103 Safari/537.36";
             // 
-            // ckbUseCookie
+            // btnRefresh
             // 
-            this.ckbKeepCookie.AutoSize = true;
-            this.ckbKeepCookie.CheckAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.ckbKeepCookie.Location = new System.Drawing.Point(135, 60);
-            this.ckbKeepCookie.Margin = new System.Windows.Forms.Padding(4);
-            this.ckbKeepCookie.Name = "ckbUseCookie";
-            this.ckbKeepCookie.Size = new System.Drawing.Size(77, 19);
-            this.ckbKeepCookie.TabIndex = 11;
-            this.ckbKeepCookie.Text = "Cookie";
-            this.ckbKeepCookie.UseVisualStyleBackColor = true;
+            this.btnRefresh.Location = new System.Drawing.Point(183, 65);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 5;
+            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1172, 778);
+            this.ClientSize = new System.Drawing.Size(1282, 708);
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panelSide);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MinimumSize = new System.Drawing.Size(661, 488);
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MinimumSize = new System.Drawing.Size(700, 500);
             this.Name = "Form1";
             this.Text = "Bui~Bui~Api";
             this.panelSide.ResumeLayout(false);
@@ -900,7 +982,16 @@
             this.pageLogs.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -974,6 +1065,12 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox ckbKeepCookie;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }
 
