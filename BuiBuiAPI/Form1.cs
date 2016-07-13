@@ -440,7 +440,7 @@ namespace BuiBuiAPI
             {
                 Directory.CreateDirectory("Favorite");
             }
-            var newpath = $"Favorite/{Path.GetFileName(history.FilePath)}";
+            var newpath = $"Favorite/{DateTime.Now.Ticks}";
             if (File.Exists(newpath)) return;
             File.Copy(history.FilePath, newpath);
             RefreshFavorite();
@@ -465,5 +465,20 @@ namespace BuiBuiAPI
             }
         }
 
+        private void gridParams_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyData)
+            {
+                case Keys.Delete:
+                    if (gridParams.SelectedCells.Count > 0
+                        && gridParams.SelectedCells[0].OwningRow.IsNewRow == false)
+                    {
+                        gridParams.Rows.Remove(gridParams.SelectedCells[0].OwningRow);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
