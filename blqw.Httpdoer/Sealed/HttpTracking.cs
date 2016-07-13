@@ -9,14 +9,14 @@ namespace blqw.Web
     public sealed class HttpTracking : IHttpTracking
     {
         public HttpTrackingHandler OnInitialize;
-        public HttpParamFoundTrackingHandler OnBodyParamFound;
+        public HttpParamFoundTrackingHandler<object> OnBodyParamFound;
         public HttpResponseTrackingHandler OnEnd;
         public HttpResponseTrackingHandler OnError;
-        public HttpParamFoundTrackingHandler OnHeaderFound;
+        public HttpParamFoundTrackingHandler<string> OnHeaderFound;
         public HttpTrackingHandler OnParamsExtracted;
         public HttpTrackingHandler OnParamsExtracting;
-        public HttpParamFoundTrackingHandler OnPathParamFound;
-        public HttpParamFoundTrackingHandler OnQueryParamFound;
+        public HttpParamFoundTrackingHandler<string> OnPathParamFound;
+        public HttpParamFoundTrackingHandler<object> OnQueryParamFound;
         public HttpTrackingHandler OnSending;
 
         void IHttpTracking.OnInitialize(IHttpRequest request)
@@ -39,7 +39,7 @@ namespace blqw.Web
             OnError?.Invoke(request, response);
         }
 
-        void IHttpTracking.OnHeaderFound(IHttpRequest request, ref string name, ref object value)
+        void IHttpTracking.OnHeaderFound(IHttpRequest request, ref string name, ref string value)
         {
             OnHeaderFound?.Invoke(request, ref name, ref value);
         }
@@ -54,7 +54,7 @@ namespace blqw.Web
             OnParamsExtracting?.Invoke(request);
         }
 
-        void IHttpTracking.OnPathParamFound(IHttpRequest request, ref string name, ref object value)
+        void IHttpTracking.OnPathParamFound(IHttpRequest request, ref string name, ref string value)
         {
             OnPathParamFound?.Invoke(request, ref name, ref value);
         }

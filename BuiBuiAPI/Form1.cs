@@ -12,6 +12,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 
 namespace BuiBuiAPI
@@ -47,6 +48,7 @@ namespace BuiBuiAPI
                 }
             }
             RefreshHistory();
+            RefreshFavorite();
         }
 
 
@@ -244,22 +246,32 @@ namespace BuiBuiAPI
             }
         }
 
-        //刷新历史记录列表
+        //刷新历史记录或收藏列表
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            RefreshHistory();
+            if (tabControl2.SelectedTab == pageHistory)
+            {
+                RefreshHistory();
+            }
+            else
+            {
+                RefreshFavorite();
+            }
         }
 
-        //点击历史记录
-        private void listHistories_SelectedIndexChanged(object sender, EventArgs e)
+        //点击历史记录或收藏
+        private void listFavorite_MouseClick(object sender, MouseEventArgs e)
         {
-            var list = sender as ListBox;
-            if (list == null) return;
-            var history = list.SelectedItem as HistoryData;
-            LoadHistory(history);
+            if (e.Button == MouseButtons.Left)
+            {
+                var list = sender as ListBox;
+                if (list == null) return;
+                var history = list.SelectedItem as HistoryData;
+                LoadHistory(history);
+            }
         }
-        #region SendRequest
 
+        #region SendRequest
 
         private CookieContainer _cookies = new CookieContainer();
         protected virtual async Task SendRequest()
@@ -271,6 +283,7 @@ namespace BuiBuiAPI
                 UseCookies = true,
                 Timeout = TimeSpan.FromSeconds(decimal.ToDouble(numTimeout.Value)),
             };
+            request.Trackings.Add(new BuibuiTracking());
             //设置Cookie
             if (ckbKeepCookie.Checked)
             {
@@ -284,8 +297,8 @@ namespace BuiBuiAPI
             //写入参数
             WriteParams(request);
 
-            var response = request.Send();
-            //var response = await request.SendAsync();
+            //var response = request.Send();
+            var response = await request.SendAsync();
             //返回正文
             rtxtResponseBody.Text = response?.Body?.ToString();
             txtRequestRaw.Text = response?.RequestData.Raw;
@@ -296,7 +309,8 @@ namespace BuiBuiAPI
             ShowResponseHeaders(response);
             //显示Cookie
             ShowResponseCookie(response);
-            _cookies.Add(response.Cookies);
+            if (response.Cookies != null)
+                _cookies.Add(response.Cookies);
 
             if (response.Exception != null)
             {
@@ -313,8 +327,6 @@ namespace BuiBuiAPI
         }
 
         #endregion
-
-
 
         private void LoadHistory(HistoryData history)
         {
@@ -356,12 +368,12 @@ namespace BuiBuiAPI
                 URL = txtURL.Text,
                 KeepCookie = ckbKeepCookie.Checked,
                 Params = gridParams.Rows.Cast<DataGridViewRow>().Where(r => !r.IsNewRow)
-                                .Select(r =>new Param
-                                          {
-                                              Name = r.Cells[0].Value + "",
-                                              Location = r.Cells[1].Value + "",
-                                              Value = r.Cells[2].Value + "",
-                                          }).ToList(),
+                                .Select(r => new Param
+                                {
+                                    Name = r.Cells[0].Value + "",
+                                    Location = r.Cells[1].Value?.ToString(),
+                                    Value = r.Cells[2].Value + "",
+                                }).ToList(),
                 ResponseHeaders = (List<Header>)gridParams.DataSource,
                 ResponseCookies = (List<Cookie>)gridResponseCookies.DataSource,
             };
@@ -377,8 +389,80 @@ namespace BuiBuiAPI
 
         private void RefreshHistory()
         {
-            listHistories.DataSource = Directory.GetFiles("History/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it => Json.ToObject<HistoryData>(File.ReadAllText(it))).ToList();
+            listHistories.DataSource = Directory.GetFiles("History/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it =>
+            {
+                var history = Json.ToObject<HistoryData>(File.ReadAllText(it));
+                history.FilePath = it;
+                return history;
+            }).ToList();
             listHistories.DisplayMember = "Display";
+        }
+        private void RefreshFavorite()
+        {
+            listFavorite.DataSource = Directory.GetFiles("Favorite/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it =>
+            {
+                var history = Json.ToObject<HistoryData>(File.ReadAllText(it));
+                history.FilePath = it;
+                return history;
+            }).ToList();
+            listHistories.DisplayMember = "Display";
+        }
+
+        private void ParseParams(object sender, EventArgs e)
+        {
+            var frm = new Form2();
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                var str = frm.txtParamString.Text;
+                try
+                {
+                    var nv = HttpUtility.ParseQueryString(str);
+                    var location = frm.cbbLocation.Text;
+                    for (int i = 0, length = nv.Count; i < length; i++)
+                    {
+                        var name = nv.GetKey(i);
+                        var value = nv[i];
+                        gridParams.Rows.Add(name, location, value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "解析失败");
+                }
+            }
+        }
+
+        private void Favoring(object sender, EventArgs e)
+        {
+            var history = listHistories.SelectedItem as HistoryData;
+            if (history == null) return;
+            if (Directory.Exists("Favorite/") == false)
+            {
+                Directory.CreateDirectory("Favorite");
+            }
+            var newpath = $"Favorite/{Path.GetFileName(history.FilePath)}";
+            if (File.Exists(newpath)) return;
+            File.Copy(history.FilePath, newpath);
+            RefreshFavorite();
+        }
+
+        private void UnFavoring(object sender, EventArgs e)
+        {
+            var history = listFavorite.SelectedItem as HistoryData;
+            if (history == null) return;
+            File.Delete(history.FilePath);
+            RefreshFavorite();
+        }
+
+        private void listHistories_MouseDown(object sender, MouseEventArgs e)
+        {
+            var list = sender as ListBox;
+            if (list == null) return;
+            var index = list.IndexFromPoint(e.Location);
+            if (index >= 0)
+            {
+                list.SelectedIndex = index;
+            }
         }
 
     }

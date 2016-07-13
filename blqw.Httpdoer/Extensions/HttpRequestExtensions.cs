@@ -400,7 +400,7 @@ namespace blqw.Web
             }
         }
 
-        public static void OnHeaderFound(this IHttpRequest request, ref string name, ref object value)
+        public static void OnHeaderFound(this IHttpRequest request, ref string name, ref string value)
         {
             var trackings = request?.Trackings;
             if (trackings == null || trackings.Count == 0)
@@ -413,7 +413,7 @@ namespace blqw.Web
             }
         }
 
-        public static void OnPathParamFound(this IHttpRequest request, ref string name, ref object value)
+        public static void OnPathParamFound(this IHttpRequest request, ref string name, ref string value)
         {
             var trackings = request?.Trackings;
             if (trackings == null || trackings.Count == 0)

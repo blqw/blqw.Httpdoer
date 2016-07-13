@@ -13,6 +13,7 @@ namespace blqw.Web
     {
         [ThreadStatic]
         static HttpQueryBuilder _QueryBuilder;
+        const string CRLF = "\r\n";
 
         public HttpRequestData(IHttpRequest request)
             : this()
@@ -94,9 +95,36 @@ namespace blqw.Web
                 AddHeader("Host", url.Host);
         }
 
-        private void AddHeader(string name, string value)
+        private void AddHeader(string name, string value = null, IEnumerable<string> values = null)
         {
-            Headers.Add(new KeyValuePair<string, string>(name, value));
+            if (values != null)
+            {
+                foreach (var val in values)
+                {
+                    Request?.OnHeaderFound(ref name, ref value);
+                    Headers.Add(new KeyValuePair<string, string>(name, val));
+                }
+            }
+            else if (value != null)
+            {
+                Request?.OnHeaderFound(ref name, ref value);
+                Headers.Add(new KeyValuePair<string, string>(name, value));
+            }
+
+        }
+        private void AddPathParam(string name, string value, IEnumerable<string> values)
+        {
+            if (values != null)
+            {
+                Request?.OnPathParamFound(ref name, ref value);
+                Url = Url.Replace("{" + name + "}", string.Join(",", values));
+            }
+            else if (value != null)
+            {
+                Request?.OnPathParamFound(ref name, ref value);
+                Url = Url.Replace("{" + name + "}", value);
+            }
+
         }
 
         public bool HasHeader(string name)
@@ -132,7 +160,7 @@ namespace blqw.Web
             foreach (var param in request)
             {
                 var name = param.Name;
-                var value = param.Value;
+                var value = param.Values ?? param.Value;
                 switch (param.Location)
                 {
                     case HttpParamLocation.Auto:
@@ -143,36 +171,19 @@ namespace blqw.Web
                         else
                             goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
-                        request.OnQueryParamFound( ref name, ref value);
-                        if (name != null && value != null)
-                            _QueryBuilder.AppendObject(name, value);
+                        Request?.OnQueryParamFound(ref name, ref value);
+                        _QueryBuilder.AppendObject(name, value);
                         break;
                     case HttpParamLocation.Body:
-                        request.OnBodyParamFound( ref name, ref value);
+                        request.OnBodyParamFound(ref name, ref value);
                         if (name != null)
                             @params.Add(name, value);
                         break;
                     case HttpParamLocation.Path:
-                        request.OnPathParamFound( ref name, ref value);
-                        Url = Url.Replace("{" + name + "}", value?.ToString());
+                        AddPathParam(name, value as string, param.Values?.Cast<string>());
                         break;
                     case HttpParamLocation.Header:
-                        request.OnHeaderFound( ref name, ref value);
-                        if (name != null)
-                        {
-                            var arr = value as IEnumerable;
-                            if (arr != null && arr is string == false)
-                            {
-                                foreach (var item in arr)
-                                {
-                                    AddHeader(name, item?.ToString());
-                                }
-                            }
-                            else
-                            {
-                                AddHeader(name, value?.ToString());
-                            }
-                        }
+                        AddHeader(name, value as string, param.Values?.Cast<string>());
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));
@@ -180,6 +191,7 @@ namespace blqw.Web
             }
             return @params;
         }
+
 
         public override string ToString()
         {
@@ -193,7 +205,7 @@ namespace blqw.Web
         {
             get
             {
-                return $"{Method} {Url} {Version}\r\n{string.Join("\r\n", Headers.Select(it => $"{it.Key}: {it.Value}"))}\r\n\r\n{ GetBodyString()}";
+                return $"{Method} {Url} {Version}{CRLF}{string.Join(CRLF, Headers.Select(it => $"{it.Key}: {it.Value}"))}{CRLF}{CRLF}{ GetBodyString()}";
             }
         }
     }

@@ -22,7 +22,8 @@ namespace BuiBuiAPI
         public List<Cookie> ResponseCookies { get; set; }
         public string ResponseCookieRaw { get; set; }
         public string LogsRTF { get; set; }
-        
+        public string FilePath { get; set; }
+
         public override string ToString()
         {
             return URL + Environment.NewLine + Method;

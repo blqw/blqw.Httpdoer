@@ -40,7 +40,7 @@ namespace Demo
 
         }
 
-        public void OnHeaderFound(IHttpRequest request, ref string name, ref object value)
+        public void OnHeaderFound(IHttpRequest request, ref string name, ref string value)
         {
 
         }
@@ -60,7 +60,7 @@ namespace Demo
 
         }
 
-        public void OnPathParamFound(IHttpRequest request, ref string name, ref object value)
+        public void OnPathParamFound(IHttpRequest request, ref string name, ref string value)
         {
 
         }

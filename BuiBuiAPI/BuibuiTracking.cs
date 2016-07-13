@@ -11,7 +11,7 @@ namespace BuiBuiAPI
     {
         public void OnBodyParamFound(IHttpRequest request, ref string name, ref object value)
         {
-            request.Debug($"Body -> ${name}:{value}");
+            request.Debug($"Body -> {name}:{value}");
         }
 
         public void OnEnd(IHttpRequest request, IHttpResponse response)
@@ -24,9 +24,9 @@ namespace BuiBuiAPI
             request.Error($"{response?.Exception?.ToString()}");
         }
 
-        public void OnHeaderFound(IHttpRequest request, ref string name, ref object value)
+        public void OnHeaderFound(IHttpRequest request, ref string name, ref string value)
         {
-            request.Debug($"Header -> ${name}:{value}");
+            request.Debug($"Header -> {name}:{value}");
         }
 
         public void OnInitialize(IHttpRequest request)
@@ -41,14 +41,14 @@ namespace BuiBuiAPI
         {
         }
 
-        public void OnPathParamFound(IHttpRequest request, ref string name, ref object value)
+        public void OnPathParamFound(IHttpRequest request, ref string name, ref string value)
         {
-            request.Debug($"PathParam -> ${name}:{value}");
+            request.Debug($"PathParam -> {name}:{value}");
         }
 
         public void OnQueryParamFound(IHttpRequest request, ref string name, ref object value)
         {
-            request.Debug($"Query -> ${name}:{value}");
+            request.Debug($"Query -> {name}:{value}");
         }
 
         public void OnSending(IHttpRequest request)

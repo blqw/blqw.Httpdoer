@@ -12,6 +12,6 @@ namespace blqw.Web
     /// <param name="request"></param>
     public delegate void HttpTrackingHandler(IHttpRequest request);
     public delegate void HttpResponseTrackingHandler(IHttpRequest request,IHttpResponse response);
-    public delegate void HttpParamFoundTrackingHandler(IHttpRequest request, ref string name,ref object value);
+    public delegate void HttpParamFoundTrackingHandler<T>(IHttpRequest request, ref string name,ref T value);
 }
  

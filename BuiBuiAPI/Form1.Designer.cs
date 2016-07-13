@@ -32,10 +32,11 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panelSide = new System.Windows.Forms.Panel();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabHistory = new System.Windows.Forms.TabPage();
+            this.pageHistory = new System.Windows.Forms.TabPage();
             this.listHistories = new System.Windows.Forms.ListBox();
-            this.tabFavorite = new System.Windows.Forms.TabPage();
+            this.pageFavorite = new System.Windows.Forms.TabPage();
             this.listFavorite = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.ckbDock = new System.Windows.Forms.CheckBox();
@@ -47,6 +48,8 @@
             this.colParamsName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colParamsLocation = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colParamsValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.解析Get参数ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pageRequest = new System.Windows.Forms.TabPage();
             this.txtRequestRaw = new System.Windows.Forms.TextBox();
             this.pageResponse = new System.Windows.Forms.TabPage();
@@ -101,16 +104,20 @@
             this.zhCNzhq08ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userAgentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnRefresh = new System.Windows.Forms.Button();
+            this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.收藏ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.取消收藏ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelSide.SuspendLayout();
             this.tabControl2.SuspendLayout();
-            this.tabHistory.SuspendLayout();
-            this.tabFavorite.SuspendLayout();
+            this.pageHistory.SuspendLayout();
+            this.pageFavorite.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHistory)).BeginInit();
             this.tabMain.SuspendLayout();
             this.pageParams.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridParams)).BeginInit();
+            this.contextMenuStrip2.SuspendLayout();
             this.pageRequest.SuspendLayout();
             this.pageResponse.SuspendLayout();
             this.tabResponse.SuspendLayout();
@@ -130,6 +137,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).BeginInit();
             this.panel3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            this.contextMenuStrip3.SuspendLayout();
+            this.contextMenuStrip4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelSide
@@ -145,10 +154,20 @@
             this.panelSide.Size = new System.Drawing.Size(267, 708);
             this.panelSide.TabIndex = 0;
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(183, 65);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 5;
+            this.btnRefresh.Text = "刷新";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // tabControl2
             // 
-            this.tabControl2.Controls.Add(this.tabHistory);
-            this.tabControl2.Controls.Add(this.tabFavorite);
+            this.tabControl2.Controls.Add(this.pageHistory);
+            this.tabControl2.Controls.Add(this.pageFavorite);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl2.Location = new System.Drawing.Point(0, 65);
             this.tabControl2.Margin = new System.Windows.Forms.Padding(4);
@@ -157,20 +176,21 @@
             this.tabControl2.Size = new System.Drawing.Size(267, 643);
             this.tabControl2.TabIndex = 3;
             // 
-            // tabHistory
+            // pageHistory
             // 
-            this.tabHistory.Controls.Add(this.listHistories);
-            this.tabHistory.Location = new System.Drawing.Point(4, 25);
-            this.tabHistory.Margin = new System.Windows.Forms.Padding(4);
-            this.tabHistory.Name = "tabHistory";
-            this.tabHistory.Padding = new System.Windows.Forms.Padding(4);
-            this.tabHistory.Size = new System.Drawing.Size(259, 614);
-            this.tabHistory.TabIndex = 0;
-            this.tabHistory.Text = "历史";
-            this.tabHistory.UseVisualStyleBackColor = true;
+            this.pageHistory.Controls.Add(this.listHistories);
+            this.pageHistory.Location = new System.Drawing.Point(4, 25);
+            this.pageHistory.Margin = new System.Windows.Forms.Padding(4);
+            this.pageHistory.Name = "pageHistory";
+            this.pageHistory.Padding = new System.Windows.Forms.Padding(4);
+            this.pageHistory.Size = new System.Drawing.Size(259, 614);
+            this.pageHistory.TabIndex = 0;
+            this.pageHistory.Text = "历史";
+            this.pageHistory.UseVisualStyleBackColor = true;
             // 
             // listHistories
             // 
+            this.listHistories.ContextMenuStrip = this.contextMenuStrip3;
             this.listHistories.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listHistories.FormattingEnabled = true;
             this.listHistories.IntegralHeight = false;
@@ -181,23 +201,25 @@
             this.listHistories.Size = new System.Drawing.Size(251, 606);
             this.listHistories.TabIndex = 0;
             this.tipListbox.SetToolTip(this.listHistories, "11122233\r\n");
-            this.listHistories.SelectedIndexChanged += new System.EventHandler(this.listHistories_SelectedIndexChanged);
+            this.listHistories.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listFavorite_MouseClick);
+            this.listHistories.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseDown);
             this.listHistories.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseMove);
             // 
-            // tabFavorite
+            // pageFavorite
             // 
-            this.tabFavorite.Controls.Add(this.listFavorite);
-            this.tabFavorite.Location = new System.Drawing.Point(4, 25);
-            this.tabFavorite.Margin = new System.Windows.Forms.Padding(4);
-            this.tabFavorite.Name = "tabFavorite";
-            this.tabFavorite.Padding = new System.Windows.Forms.Padding(4);
-            this.tabFavorite.Size = new System.Drawing.Size(259, 614);
-            this.tabFavorite.TabIndex = 1;
-            this.tabFavorite.Text = "收藏";
-            this.tabFavorite.UseVisualStyleBackColor = true;
+            this.pageFavorite.Controls.Add(this.listFavorite);
+            this.pageFavorite.Location = new System.Drawing.Point(4, 25);
+            this.pageFavorite.Margin = new System.Windows.Forms.Padding(4);
+            this.pageFavorite.Name = "pageFavorite";
+            this.pageFavorite.Padding = new System.Windows.Forms.Padding(4);
+            this.pageFavorite.Size = new System.Drawing.Size(259, 614);
+            this.pageFavorite.TabIndex = 1;
+            this.pageFavorite.Text = "收藏";
+            this.pageFavorite.UseVisualStyleBackColor = true;
             // 
             // listFavorite
             // 
+            this.listFavorite.ContextMenuStrip = this.contextMenuStrip4;
             this.listFavorite.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listFavorite.FormattingEnabled = true;
             this.listFavorite.IntegralHeight = false;
@@ -207,6 +229,8 @@
             this.listFavorite.Name = "listFavorite";
             this.listFavorite.Size = new System.Drawing.Size(251, 606);
             this.listFavorite.TabIndex = 1;
+            this.listFavorite.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listFavorite_MouseClick);
+            this.listFavorite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseDown);
             this.listFavorite.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listHistories_MouseMove);
             // 
             // panel1
@@ -298,6 +322,7 @@
             this.colParamsName,
             this.colParamsLocation,
             this.colParamsValue});
+            this.gridParams.ContextMenuStrip = this.contextMenuStrip2;
             this.gridParams.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridParams.Location = new System.Drawing.Point(4, 4);
             this.gridParams.Margin = new System.Windows.Forms.Padding(4);
@@ -339,6 +364,21 @@
             this.colParamsValue.HeaderText = "参数值";
             this.colParamsValue.MinimumWidth = 200;
             this.colParamsValue.Name = "colParamsValue";
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.解析Get参数ToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(145, 30);
+            // 
+            // 解析Get参数ToolStripMenuItem
+            // 
+            this.解析Get参数ToolStripMenuItem.Name = "解析Get参数ToolStripMenuItem";
+            this.解析Get参数ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.解析Get参数ToolStripMenuItem.Text = "解析参数";
+            this.解析Get参数ToolStripMenuItem.Click += new System.EventHandler(this.ParseParams);
             // 
             // pageRequest
             // 
@@ -743,7 +783,7 @@
             this.numTimeout.TabIndex = 8;
             this.numTimeout.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numTimeout.Value = new decimal(new int[] {
-            15,
+            5,
             0,
             0,
             0});
@@ -933,15 +973,35 @@
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem.Text = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrom" +
     "e/51.0.2704.103 Safari/537.36";
             // 
-            // btnRefresh
+            // contextMenuStrip3
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(183, 65);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 5;
-            this.btnRefresh.Text = "刷新";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.contextMenuStrip3.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.收藏ToolStripMenuItem});
+            this.contextMenuStrip3.Name = "contextMenuStrip3";
+            this.contextMenuStrip3.Size = new System.Drawing.Size(115, 30);
+            // 
+            // contextMenuStrip4
+            // 
+            this.contextMenuStrip4.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.取消收藏ToolStripMenuItem});
+            this.contextMenuStrip4.Name = "contextMenuStrip4";
+            this.contextMenuStrip4.Size = new System.Drawing.Size(145, 30);
+            // 
+            // 收藏ToolStripMenuItem
+            // 
+            this.收藏ToolStripMenuItem.Name = "收藏ToolStripMenuItem";
+            this.收藏ToolStripMenuItem.Size = new System.Drawing.Size(114, 26);
+            this.收藏ToolStripMenuItem.Text = "收藏";
+            this.收藏ToolStripMenuItem.Click += new System.EventHandler(this.Favoring);
+            // 
+            // 取消收藏ToolStripMenuItem
+            // 
+            this.取消收藏ToolStripMenuItem.Name = "取消收藏ToolStripMenuItem";
+            this.取消收藏ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.取消收藏ToolStripMenuItem.Text = "取消收藏";
+            this.取消收藏ToolStripMenuItem.Click += new System.EventHandler(this.UnFavoring);
             // 
             // Form1
             // 
@@ -958,14 +1018,15 @@
             this.Text = "Bui~Bui~Api";
             this.panelSide.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
-            this.tabHistory.ResumeLayout(false);
-            this.tabFavorite.ResumeLayout(false);
+            this.pageHistory.ResumeLayout(false);
+            this.pageFavorite.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHistory)).EndInit();
             this.tabMain.ResumeLayout(false);
             this.pageParams.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridParams)).EndInit();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.pageRequest.ResumeLayout(false);
             this.pageRequest.PerformLayout();
             this.pageResponse.ResumeLayout(false);
@@ -993,6 +1054,8 @@
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
+            this.contextMenuStrip3.ResumeLayout(false);
+            this.contextMenuStrip4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1014,8 +1077,8 @@
         private System.Windows.Forms.NumericUpDown numMaxHistory;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TabControl tabControl2;
-        private System.Windows.Forms.TabPage tabHistory;
-        private System.Windows.Forms.TabPage tabFavorite;
+        private System.Windows.Forms.TabPage pageHistory;
+        private System.Windows.Forms.TabPage pageFavorite;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ListBox listHistories;
         private System.Windows.Forms.ToolTip tipListbox;
@@ -1071,6 +1134,12 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem 解析Get参数ToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip3;
+        private System.Windows.Forms.ToolStripMenuItem 收藏ToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip4;
+        private System.Windows.Forms.ToolStripMenuItem 取消收藏ToolStripMenuItem;
     }
 }
 
