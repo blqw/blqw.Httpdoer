@@ -267,7 +267,7 @@ namespace BuiBuiAPI
                 var list = sender as ListBox;
                 if (list == null) return;
                 var history = list.SelectedItem as HistoryData;
-                LoadHistory(history);
+                ShowHistory(history);
             }
         }
 
@@ -328,7 +328,8 @@ namespace BuiBuiAPI
 
         #endregion
 
-        private void LoadHistory(HistoryData history)
+        //在界面上历史记录
+        private void ShowHistory(HistoryData history)
         {
             if (history == null) return;
             cbbContentType.Text = history.ContentType;
@@ -352,6 +353,7 @@ namespace BuiBuiAPI
             gridResponseCookies.DataSource = history.ResponseCookies;
         }
 
+        //保存历史记录
         private void SaveHistory()
         {
             var history = new HistoryData
@@ -387,18 +389,23 @@ namespace BuiBuiAPI
             RefreshHistory();
         }
 
+        //刷新历史记录
         private void RefreshHistory()
         {
+            if (Directory.Exists("History/") == false) return;
             listHistories.DataSource = Directory.GetFiles("History/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it =>
-            {
-                var history = Json.ToObject<HistoryData>(File.ReadAllText(it));
-                history.FilePath = it;
-                return history;
-            }).ToList();
+                    {
+                        var history = Json.ToObject<HistoryData>(File.ReadAllText(it));
+                        history.FilePath = it;
+                        return history;
+                    }).ToList();
             listHistories.DisplayMember = "Display";
         }
+
+        //刷新搜藏夹
         private void RefreshFavorite()
         {
+            if (Directory.Exists("Favorite/") == false) return;
             listFavorite.DataSource = Directory.GetFiles("Favorite/").OrderByDescending(it => Path.GetFileName(it).To<long>(0)).Take((int)numMaxHistory.Value).Select(it =>
             {
                 var history = Json.ToObject<HistoryData>(File.ReadAllText(it));
@@ -408,7 +415,8 @@ namespace BuiBuiAPI
             listHistories.DisplayMember = "Display";
         }
 
-        private void ParseParams(object sender, EventArgs e)
+        //点击解析参数的按钮
+        private void ParseParams_Click(object sender, EventArgs e)
         {
             var frm = new Form2();
             if (frm.ShowDialog(this) == DialogResult.OK)
@@ -432,7 +440,8 @@ namespace BuiBuiAPI
             }
         }
 
-        private void Favoring(object sender, EventArgs e)
+        //点击收藏按钮
+        private void Favoring_Click(object sender, EventArgs e)
         {
             var history = listHistories.SelectedItem as HistoryData;
             if (history == null) return;
@@ -446,7 +455,8 @@ namespace BuiBuiAPI
             RefreshFavorite();
         }
 
-        private void UnFavoring(object sender, EventArgs e)
+        //点击取消收藏按钮
+        private void UnFavoring_Click(object sender, EventArgs e)
         {
             var history = listFavorite.SelectedItem as HistoryData;
             if (history == null) return;
@@ -454,6 +464,7 @@ namespace BuiBuiAPI
             RefreshFavorite();
         }
 
+        //右键点击历史/收藏列表
         private void listHistories_MouseDown(object sender, MouseEventArgs e)
         {
             var list = sender as ListBox;
@@ -465,19 +476,38 @@ namespace BuiBuiAPI
             }
         }
 
+        //在参数列表中按下键盘delete按钮
         private void gridParams_KeyDown(object sender, KeyEventArgs e)
         {
+            if (gridParams.SelectedCells.Count == 0)
+            {
+                return;
+            }
             switch (e.KeyData)
             {
                 case Keys.Delete:
-                    if (gridParams.SelectedCells.Count > 0
-                        && gridParams.SelectedCells[0].OwningRow.IsNewRow == false)
+                    if (gridParams.SelectedCells[0].OwningRow.IsNewRow == false)
                     {
                         gridParams.Rows.Remove(gridParams.SelectedCells[0].OwningRow);
                     }
                     break;
+                //case Keys.V | Keys.Control:
+                //    if (Clipboard.ContainsText())
+                //    {
+                //        gridParams.SelectedCells[0].Value = Clipboard.GetText();
+                //    }
+                //    break;
                 default:
+                    //gridParams.BeginEdit(true);
                     break;
+            }
+        }
+
+        private void gridParams_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex == 3 && gridParams.Rows[e.RowIndex].IsNewRow == false)
+            {
+                gridParams.Rows.RemoveAt(e.RowIndex);
             }
         }
     }
