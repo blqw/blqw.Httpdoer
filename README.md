@@ -20,6 +20,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.07.18
+* 修复问题若干,发布正式版1.2正式版  
+* 加入演示项目buibuiapi  
+
 #### 2016.07.07
 * 增加自定义Method的功能  
 * 增加 Response.Headers 赋值
