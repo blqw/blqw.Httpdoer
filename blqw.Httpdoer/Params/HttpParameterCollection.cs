@@ -37,7 +37,7 @@ namespace blqw.Web
 
         public IList GetValues(string name, HttpParamLocation location)
         {
-            return Get(name, location).Values.AsReadOnly();
+            return Get(name, location).Values?.AsReadOnly();
         }
 
         public void SetValue(string name, object value, HttpParamLocation location)

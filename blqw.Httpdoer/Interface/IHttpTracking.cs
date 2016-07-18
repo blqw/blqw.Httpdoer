@@ -38,13 +38,13 @@ namespace blqw.Web
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        void OnHeaderFound(IHttpRequest request, ref string name, ref object value);
+        void OnHeaderFound(IHttpRequest request, ref string name, ref string value);
         /// <summary>
         /// 发现Path参数
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        void OnPathParamFound(IHttpRequest request, ref string name, ref object value);
+        void OnPathParamFound(IHttpRequest request, ref string name, ref string value);
         /// <summary>
         /// 初始化
         /// </summary>

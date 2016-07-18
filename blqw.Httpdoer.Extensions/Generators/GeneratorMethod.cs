@@ -115,17 +115,17 @@ namespace blqw.Web.Extensions
                     }
                     if (type == typeof(string))
                     {
-                        return "GetString" + "";
+                        return "GetString" + @async;
                     }
                     else if (type == typeof(byte[]))
                     {
-                        return "GetBytes" + "";
+                        return "GetBytes" + @async;
                     }
                     else if (type != null && type != typeof(void))
                     {
-                        return "Send" + "";
+                        return "Send" + @async;
                     }
-                    return $"GetObject{""}<{type.GetFriendlyName()}>";
+                    return $"GetObject{@async}<{type.GetFriendlyName()}>";
                 case "RemoveParams":
                     return string.Join(";", Params.Select(GetRemoveParamDefinition));
                 default:

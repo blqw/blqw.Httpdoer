@@ -34,8 +34,8 @@
       <HintPath>..\packages\blqw.DyCompiler.1.0.0\lib\net45\blqw.DyCompiler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="blqw.Httpdoer, Version=1.1.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\blqw.Httpdoer.1.1.6-beta\lib\net45\blqw.Httpdoer.dll</HintPath>
+    <Reference Include="blqw.Httpdoer, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.Httpdoer.1.2.0\lib\net45\blqw.Httpdoer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

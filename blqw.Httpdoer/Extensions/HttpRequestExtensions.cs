@@ -38,7 +38,7 @@ namespace blqw.Web
         {
             var res = SyncClient.Send(request);
             var str = res.Body?.ToString();
-            (request as IHttpLogger)?.Debug(str);
+            request.Debug(str);
             return str;
         }
 
@@ -120,7 +120,7 @@ namespace blqw.Web
         {
             var res = await AsyncClient.SendAsync(request, CancellationToken.None);
             var str = res.Body?.ToString();
-            (request as IHttpLogger)?.Debug(str);
+            request.Debug(str);
             return str;
         }
 
@@ -163,7 +163,7 @@ namespace blqw.Web
             {
                 var res = await AsyncClient.SendAsync(request, tokenSource.Token);
                 var str = res.Body?.ToString();
-                (request as IHttpLogger)?.Debug(str);
+                request.Debug(str);
                 return str;
             }
         }
@@ -213,7 +213,7 @@ namespace blqw.Web
         {
             var res = await AsyncClient.SendAsync(request, cancellationToken);
             var str = res.Body?.ToString();
-            (request as IHttpLogger)?.Debug(str);
+            request.Debug(str);
             return str;
         }
 
@@ -276,5 +276,208 @@ namespace blqw.Web
         }
 
         #endregion
+
+        #region Logs
+
+        public static void Debug(this IHttpRequest request, string message)
+        {
+            var loggers = request?.Loggers;
+            if (loggers == null || loggers.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = loggers.Count; i < length; i++)
+            {
+                loggers[i]?.Debug(message);
+            }
+        }
+
+        public static void Information(this IHttpRequest request, string message)
+        {
+            var loggers = request?.Loggers;
+            if (loggers == null || loggers.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = loggers.Count; i < length; i++)
+            {
+                loggers[i]?.Information(message);
+            }
+        }
+
+        public static void Warning(this IHttpRequest request, string message)
+        {
+            var loggers = request?.Loggers;
+            if (loggers == null || loggers.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = loggers.Count; i < length; i++)
+            {
+                loggers[i]?.Warning(message);
+            }
+        }
+
+        public static void Error(this IHttpRequest request, string message)
+        {
+            var loggers = request?.Loggers;
+            if (loggers == null || loggers.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = loggers.Count; i < length; i++)
+            {
+                loggers[i]?.Error(message);
+            }
+        }
+
+        public static void Error(this IHttpRequest request, Exception ex)
+        {
+            var loggers = request?.Loggers;
+            if (loggers == null || loggers.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = loggers.Count; i < length; i++)
+            {
+                loggers[i]?.Error(ex);
+            }
+        }
+
+        #endregion
+
+        #region Trackings
+
+        public static void OnParamsExtracting(this IHttpRequest request)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnParamsExtracting(request);
+            }
+        }
+
+        public static void OnParamsExtracted(this IHttpRequest request)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnParamsExtracted(request);
+            }
+        }
+
+        public static void OnQueryParamFound(this IHttpRequest request, ref string name, ref object value)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnQueryParamFound(request, ref name, ref value);
+            }
+        }
+
+        public static void OnBodyParamFound(this IHttpRequest request, ref string name, ref object value)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnBodyParamFound(request, ref name, ref value);
+            }
+        }
+
+        public static void OnHeaderFound(this IHttpRequest request, ref string name, ref string value)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnHeaderFound(request, ref name, ref value);
+            }
+        }
+
+        public static void OnPathParamFound(this IHttpRequest request, ref string name, ref string value)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnPathParamFound(request, ref name, ref value);
+            }
+        }
+
+        public static void OnInitialize(this IHttpRequest request)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnInitialize(request);
+            }
+        }
+
+        public static void OnError(this IHttpRequest request, IHttpResponse response)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnError(request, response);
+            }
+        }
+
+        public static void OnSending(this IHttpRequest request)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnSending(request);
+            }
+        }
+
+        public static void OnEnd(this IHttpRequest request, IHttpResponse response)
+        {
+            var trackings = request?.Trackings;
+            if (trackings == null || trackings.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0, length = trackings.Count; i < length; i++)
+            {
+                trackings[i]?.OnEnd(request, response);
+            }
+        }
+        #endregion
+
     }
 }

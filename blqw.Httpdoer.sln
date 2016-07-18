@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.25302.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{C1BCD5C1-5519-48B9-8C62-89EFB4B0991D}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{DE1186E4-99D1-4BD8-8DE1-F35F6025230E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blqw.Httpdoer.Extensions", "blqw.Httpdoer.Extensions\blqw.Httpdoer.Extensions.csproj", "{944F1950-E158-4DBD-928D-895420F12161}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuiBuiAPI", "BuiBuiAPI\BuiBuiAPI.csproj", "{5C030276-B7F5-4F83-90C7-50DAEDC17B18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{944F1950-E158-4DBD-928D-895420F12161}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{944F1950-E158-4DBD-928D-895420F12161}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{944F1950-E158-4DBD-928D-895420F12161}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C030276-B7F5-4F83-90C7-50DAEDC17B18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C030276-B7F5-4F83-90C7-50DAEDC17B18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C030276-B7F5-4F83-90C7-50DAEDC17B18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C030276-B7F5-4F83-90C7-50DAEDC17B18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

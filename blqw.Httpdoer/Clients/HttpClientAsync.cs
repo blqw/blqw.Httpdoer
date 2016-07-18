@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -31,19 +32,21 @@ namespace blqw.Web
         public async Task<IHttpResponse> SendAsync(IHttpRequest request, CancellationToken cancellationToken)
         {
             var timer = HttpTimer.Start();
+            var data = default(HttpRequestData);
             try
             {
-                (request as IHttpTracking)?.OnInitialize(request);
-                var www = GetRequest(request);
+                request.OnInitialize();
+                data = new HttpRequestData(request);
+                var www = GetRequest(data);
                 timer.Readied();
-                (request as IHttpTracking)?.OnSending(request);
+                request.OnSending();
                 using (var source1 = new CancellationTokenSource(request.Timeout))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
                     request.Response = (await Transfer(request.UseCookies, response));
-                    (request as IHttpTracking)?.OnEnd(request, request.Response);
+                    request.OnEnd(request.Response);
                 }
             }
             catch (Exception ex)
@@ -56,13 +59,14 @@ namespace blqw.Web
                 var res = new HttpResponse();
                 res.Exception = ex;
                 request.Response = res;
-                (request as IHttpTracking)?.OnError(request, res);
+                request.OnError(res);
             }
             finally
             {
                 timer.Ending();
-                (request as IHttpLogger)?.Debug(timer.ToString());
+                request.Debug(timer.ToString());
             }
+            ((HttpResponse)request.Response).RequestData = data;
             return request.Response;
         }
 
@@ -74,40 +78,49 @@ namespace blqw.Web
                 return new HttpResponse() { StatusCode = 0 };
             }
             var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
-            var res = new HttpResponse();
+            var res = new HttpResponse()
+            {
+                Headers = new HttpHeaders(),
+            };
             using (response)
             {
+                var headers = response.Headers;
+                foreach (var header in headers)
+                {
+                    foreach (var value in header.Value)
+                    {
+                        res.Headers.Add(header.Key, value);
+                    }
+                }
                 var body = await response.Content.ReadAsByteArrayAsync();
                 res.Body = new HttpBody(contentType, body);
                 if (useCookies)
                 {
-                    var cookieHeader = response.Headers.GetValues("Set-Cookie");
-                    var url = response.RequestMessage.RequestUri;
-                    foreach (var cookie in cookieHeader)
+                    IEnumerable<string> cookieHeader;
+                    if (response.Headers.TryGetValues("Set-Cookie", out cookieHeader))
                     {
-                        _LocalCookies.SetCookies(url, cookie);
+                        var url = response.RequestMessage.RequestUri;
+                        foreach (var cookie in cookieHeader)
+                        {
+                            _LocalCookies.SetCookies(url, cookie);
+                        }
+                        res.Cookies = _LocalCookies.GetCookies(url);
                     }
-                    res.Cookies = _LocalCookies.GetCookies(url);
                 }
                 res.StatusCode = response.StatusCode;
+                res.Status = response.ReasonPhrase;
+                res.Version = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
                 res.IsSuccessStatusCode = response.IsSuccessStatusCode;
             }
             return res;
         }
 
-        private HttpRequestMessage GetRequest(IHttpRequest request)
+        private HttpRequestMessage GetRequest(HttpRequestData data)
         {
-            var data = new HttpRequestData(request);
-             (request as IHttpLogger)?.Debug(data.Url.ToString());
-            var www = new HttpRequestMessage(GetHttpMethod(request.Method), data.Url);
-            if (request.Version != null)
-            {
-                www.Version = request.Version;
-            }
-            if (request.UseCookies)
-            {
-                www.Headers.Add("Cookie", request.Cookies.GetCookieHeader(data.Url));
-            }
+            var request = data.Request;
+            request.Debug(data.Url);
+            var www = new HttpRequestMessage(GetHttpMethod(request), data.Url);
+            www.Version = data.Version;
             if (data.Body != null)
             {
                 www.Content = new ByteArrayContent(data.Body ?? _BytesEmpty);
@@ -122,6 +135,16 @@ namespace blqw.Web
                 }
             }
 
+            if (request.UseCookies)
+            {
+                var cookie = request.Cookies.GetCookieHeader(data.Host);
+                if (string.IsNullOrWhiteSpace(cookie) == false)
+                {
+                    www.Headers.Add("Cookie", cookie);
+                    data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
+                }
+            }
+
             return www;
         }
 
@@ -131,9 +154,9 @@ namespace blqw.Web
 
         /// <summary> 获取 HttpMethod
         /// </summary>
-        public HttpMethod GetHttpMethod(HttpRequestMethod method)
+        public HttpMethod GetHttpMethod(IHttpRequest request)
         {
-            switch (method)
+            switch (request.Method)
             {
                 case HttpRequestMethod.Get:
                     return HttpMethod.Get;
@@ -151,6 +174,8 @@ namespace blqw.Web
                     return HttpMethod.Options;
                 case HttpRequestMethod.Connect:
                     return _HttpMethod_CONNECT;
+                case HttpRequestMethod.Custom:
+                    return new HttpMethod(request.HttpMethod);
                 default:
                     return HttpMethod.Get;
             }

@@ -1,78 +1,58 @@
-﻿using blqw.Web;
-using blqw.Web.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using blqw.Web;
 
-namespace Demo
+namespace BuiBuiAPI
 {
-    public interface IMyTestApi
-    {
-        [HttpPost("Test/GetUser")]
-        [Tracking(typeof(MyTracking))]
-        string GetUser(Guid ak, string id);
-
-        [HttpGet("OAuth/GetUser")]
-        string GetUser1(Guid ak, string id);
-
-    }
-
-    public class MyTracking : IHttpTracking
+    class BuibuiTracking : IHttpTracking
     {
         public void OnBodyParamFound(IHttpRequest request, ref string name, ref object value)
         {
-            if (name == "ak")
-            {
-                Trace.WriteLine($"ak: {value}");
-            }
+            request.Debug($"Body -> {name}:{value}");
         }
 
         public void OnEnd(IHttpRequest request, IHttpResponse response)
         {
-
+            request.Debug($"请求完成");
         }
 
         public void OnError(IHttpRequest request, IHttpResponse response)
         {
-
+            request.Error($"{response?.Exception?.ToString()}");
         }
 
         public void OnHeaderFound(IHttpRequest request, ref string name, ref string value)
         {
-
+            request.Debug($"Header -> {name}:{value}");
         }
 
         public void OnInitialize(IHttpRequest request)
         {
-
         }
 
         public void OnParamsExtracted(IHttpRequest request)
         {
-
         }
 
         public void OnParamsExtracting(IHttpRequest request)
         {
-
         }
 
         public void OnPathParamFound(IHttpRequest request, ref string name, ref string value)
         {
-
+            request.Debug($"PathParam -> {name}:{value}");
         }
 
         public void OnQueryParamFound(IHttpRequest request, ref string name, ref object value)
         {
-
+            request.Debug($"Query -> {name}:{value}");
         }
 
         public void OnSending(IHttpRequest request)
         {
-
         }
     }
 }

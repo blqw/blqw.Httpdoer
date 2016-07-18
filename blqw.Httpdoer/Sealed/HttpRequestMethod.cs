@@ -18,5 +18,9 @@ namespace blqw.Web
         Delete,
         Options,
         Connect,
+        /// <summary>
+        /// 自定义
+        /// </summary>
+        Custom,
     }
 }

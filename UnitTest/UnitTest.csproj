@@ -59,8 +59,13 @@
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest2.cs" />
+    <Compile Include="泛型测试.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\blqw.Httpdoer.Extensions\blqw.Httpdoer.Extensions.csproj">
+      <Project>{944f1950-e158-4dbd-928d-895420f12161}</Project>
+      <Name>blqw.Httpdoer.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\blqw.Httpdoer\blqw.Httpdoer.csproj">
       <Project>{135d11d6-46e5-41bf-9db2-6f033293b260}</Project>
       <Name>blqw.Httpdoer</Name>

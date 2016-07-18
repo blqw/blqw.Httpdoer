@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("blqw.Httpdoer")]
-[assembly: AssemblyDescription("http请求客户端")]
+[assembly: AssemblyTitle("BuiBuiAPI")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("blqw")]
-[assembly: AssemblyProduct("blqw.Httpdoer")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("BuiBuiAPI")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("blqw")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 //将 ComVisible 设置为 false 将使此程序集中的类型
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("135d11d6-46e5-41bf-9db2-6f033293b260")]
+[assembly: Guid("5c030276-b7f5-4f83-90c7-50daedc17b18")]
 
 // 程序集的版本信息由下列四个值组成: 
 //
@@ -32,6 +32,5 @@ using System.Runtime.InteropServices;
 //可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值，
 // 方法是按如下所示使用“*”: :
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
-//[assembly: AssemblyInformationalVersion("1.2.0-beta")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
