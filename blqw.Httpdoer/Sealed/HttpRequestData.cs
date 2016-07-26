@@ -93,6 +93,10 @@ namespace blqw.Web
                 AddHeader("Connection", "Keep-Alive");
             if (HasHeader("Host") == false)
                 AddHeader("Host", url.Host);
+            if (Method == null)
+            {
+                Method = Body?.Length > 0 ? "POST" : "GET";
+            }
         }
 
         private void AddHeader(string name, string value = null, IEnumerable<string> values = null)
