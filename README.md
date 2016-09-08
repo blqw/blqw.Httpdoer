@@ -7,6 +7,7 @@ static void Main(string[] args)
 {
     var www = new HttpRequest("https://api.datamarket.azure.com");
     www.Method = HttpRequestMethod.GET;
+    www.AutoRedirect = false; //是否自动跳转
     www.Path = "Bing/MicrosoftTranslator/v1/Translate";
     www.Query.AddModle(new {
         Text = "'hello world'",
@@ -20,6 +21,12 @@ static void Main(string[] args)
 ```
 
 ### 更新日志  
+#### 2016.09.09(1.3.0)
+* 优化某些情况下的异常信息,更详细
+* 修复异步模式下.302跳转中的Cookie丢失的问题
+* 增加是否使用Cookie全局缓存可以设置
+* 增加`AutoRedirect`属性,可控制302行为
+
 #### 2016.07.26
 * 修复不设置Method的情况下报错的问题
 
