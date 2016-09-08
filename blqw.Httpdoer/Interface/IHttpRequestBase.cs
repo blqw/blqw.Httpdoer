@@ -58,7 +58,18 @@ namespace blqw.Web
         /// <summary>
         /// 是否使用 Cookie
         /// </summary>
+        [Obsolete("使用新属性CookieMode来设置,默认为 HttpCookieMode.CustomOrCache ")]
         bool UseCookies { get; set; }
+
+        /// <summary>
+        /// 缓存模式
+        /// </summary>
+        HttpCookieMode CookieMode { get; set; }
+
+        /// <summary>
+        /// 自动302跳转
+        /// </summary>
+        bool AutoRedirect { get; set; }
 
         /// <summary>
         /// 设置或获取日志记录器

@@ -12,7 +12,13 @@ namespace blqw.Web
         public abstract byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider);
         public virtual T Deserialize<T>(byte[] bytes, IFormatProvider formatProvider)
         {
-            throw new NotImplementedException();
+            var ex = new NotImplementedException("html页面无法被转为实体对象");
+            if (bytes?.Length > 0)
+            {
+                var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.UTF8;
+                ex.Data["RawHTML"] = ex.Source = charset.GetString(bytes);
+            }
+            throw ex;
         }
 
         public virtual string Format(string format, object arg, IFormatProvider formatProvider)

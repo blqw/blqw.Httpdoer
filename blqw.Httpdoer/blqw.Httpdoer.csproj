@@ -71,6 +71,7 @@
     <Compile Include="HttpBodyParsers\HttpXMLBodyParser.cs" />
     <Compile Include="Interface\IHttpBodyParserFactory.cs" />
     <Compile Include="Sealed\HttpContentTypes.cs" />
+    <Compile Include="Sealed\HttpCookieMode.cs" />
     <Compile Include="Sealed\HttpDefaultLogger.cs" />
     <Compile Include="Sealed\HttpQueryBuilder.cs" />
     <Compile Include="Sealed\HttpRequestMethod.cs" />

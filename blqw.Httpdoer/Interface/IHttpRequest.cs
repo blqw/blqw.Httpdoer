@@ -12,7 +12,7 @@ namespace blqw.Web
     /// <summary>
     /// 用于描述 HTTP 请求时的参数
     /// </summary>
-    public interface IHttpRequest : IHttpRequestBase, IEnumerable<HttpParamValue>
+    public interface IHttpRequest : IHttpRequestBase
     {
         /// <summary> 
         /// 基路径
@@ -34,5 +34,10 @@ namespace blqw.Web
         /// 完整路径
         /// </summary>
         Uri FullUrl { get; }
+
+        /// <summary>
+        /// 枚举所有请求参数
+        /// </summary>
+        IEnumerator<HttpParamValue> GetEnumerator();
     }
 }

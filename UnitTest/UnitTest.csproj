@@ -59,6 +59,7 @@
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest2.cs" />
+    <Compile Include="bug测试.cs" />
     <Compile Include="泛型测试.cs" />
   </ItemGroup>
   <ItemGroup>

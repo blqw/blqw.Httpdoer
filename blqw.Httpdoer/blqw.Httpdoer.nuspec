@@ -13,9 +13,8 @@
     <description>$description$</description>
     <releaseNotes>
       http请求客户端,支持rest
-      2016.07.04
-      * 增加ContentType可以直接设定解析器
-      * 增加Stream解析器
+      2016.07.26
+      * 修复不设置Method的情况下报错的问题
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
