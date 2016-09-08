@@ -124,9 +124,24 @@ namespace blqw.Web
             if (request.CookieMode.HasFlag(HttpCookieMode.CustomOrCache))
             {
                 Cookies = new CookieContainer();
-                Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
-                if (request.Cookies != null)
-                    Cookies.Add(request.Cookies.GetCookies(Host));
+
+                var cookies = request.Cookies?.GetCookies(Host);
+
+                if (cookies == null)
+                {
+                    Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
+                }
+                else
+                {
+                    Cookies.Add(cookies);
+                    foreach (Cookie c in HttpRequest.LocalCookies.GetCookies(Host))
+                    {
+                        if (cookies[c.Name] == null)
+                        {
+                            Cookies.Add(c);
+                        }
+                    }
+                }
             }
             else if (request.CookieMode.HasFlag(HttpCookieMode.ApplicationCache))
             {
@@ -143,37 +158,7 @@ namespace blqw.Web
                 Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
             }
         }
-
-        /// <summary>
-        /// 重设Cookie
-        /// </summary>
-        /// <param name="mode"> 设置cookie的模式 </param>
-        /// <param name="host"> 主机域名 </param>
-        /// <param name="customCookies"> 自定义cookie </param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="mode"/>.</exception>
-        public void SetCookie(HttpCookieMode mode, Uri host, CookieContainer customCookies)
-        {
-            switch (mode)
-            {
-                case HttpCookieMode.None:
-                    break;
-                case HttpCookieMode.ApplicationCache:
-                    Cookies = HttpRequest.LocalCookies;
-                    break;
-                case HttpCookieMode.UserCustom:
-                    Cookies = customCookies;
-                    break;
-                case HttpCookieMode.CustomOrCache:
-                    Cookies = new CookieContainer();
-                    Cookies.Add(HttpRequest.LocalCookies.GetCookies(host));
-                    if (customCookies != null)
-                        Cookies.Add(customCookies.GetCookies(host));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode));
-            }
-
-        }
+        
 
         /// <summary>
         /// 添加头
