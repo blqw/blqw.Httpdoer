@@ -17,6 +17,11 @@ namespace blqw.Web
         public static IHttpLogger DefaultLogger = HttpDefaultLogger.Instance;
 
         /// <summary>
+        /// 本地 Cookies 缓存
+        /// </summary>
+        public static CookieContainer LocalCookies { get; } = new CookieContainer();
+
+        /// <summary>
         /// 初始化http请求
         /// </summary>
         public HttpRequest()
@@ -228,7 +233,20 @@ namespace blqw.Web
         /// <summary>
         /// 是否使用 Cookie
         /// </summary>
-        public bool UseCookies { get; set; }
+        [Obsolete("使用新属性CookieMode来设置,默认为 HttpCookieMode.CustomOrCache ")]
+        public bool UseCookies
+        {
+            get { return CookieMode != HttpCookieMode.None; }
+            set
+            {
+                CookieMode = value ? HttpCookieMode.CustomOrCache : HttpCookieMode.None;
+            }
+        }
+
+        /// <summary>
+        /// 缓存模式
+        /// </summary>
+        public HttpCookieMode CookieMode { get; set; }
 
         public Exception Exception
         {
@@ -257,6 +275,7 @@ namespace blqw.Web
         }
 
         List<IHttpTracking> _Trackings;
+
         public List<IHttpTracking> Trackings
         {
             get

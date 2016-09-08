@@ -40,13 +40,13 @@ namespace blqw.Web
                 request.OnSending();
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
-                request.Response = Transfer(request.UseCookies, response);
+                request.Response = Transfer(request.CookieMode, response);
                 request.OnEnd(request.Response);
             }
             catch (WebException ex)
             {
                 timer.Error();
-                var res = Transfer(request.UseCookies, (HttpWebResponse)ex.Response);
+                var res = Transfer(request.CookieMode, (HttpWebResponse)ex.Response);
                 res.Exception = ex;
                 request.Response = res;
                 request.OnError(res);
@@ -85,8 +85,12 @@ namespace blqw.Web
                         continue;
                     }
                 }
+                if (header.Key == "Cookie")
+                {
+                    continue;
+                }
                 //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
+                    var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
                 HeaderAddInternal(www.Headers, header.Key, transfer);
             }
             if (data.Body?.Length > 0)
@@ -98,19 +102,12 @@ namespace blqw.Web
                 }
             }
 
-            if (request.UseCookies)
-            {
-                www.CookieContainer = request.Cookies;
-                var cookie = request.Cookies.GetCookieHeader(data.Host);
-                if (string.IsNullOrWhiteSpace(cookie) == false)
-                {
-                    data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
-                }
-            }
+            www.CookieContainer = data.Cookies;
+            
             return www;
         }
 
-        private static HttpResponse Transfer(bool useCookies, HttpWebResponse response)
+        private static HttpResponse Transfer(HttpCookieMode mode, HttpWebResponse response)
         {
             if (response == null)
             {
@@ -132,9 +129,13 @@ namespace blqw.Web
                     }
                 }
                 res.Body = new HttpBody(contentType, GetBytes(response));
-                if (useCookies)
+                if (mode != HttpCookieMode.None)
                 {
                     res.Cookies = response.Cookies;
+                    if (mode.HasFlag(HttpCookieMode.ApplicationCache))
+                    {
+                        HttpRequest.LocalCookies.Add(response.Cookies);
+                    }
                 }
                 res.StatusCode = response.StatusCode;
                 res.Status = response.StatusDescription;
@@ -265,13 +266,13 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
                         _Timer.Sent();
-                        Response = Request.Response = Transfer(Request.UseCookies, response);
+                        Response = Request.Response = Transfer(Request.CookieMode, response);
                         (Request as IHttpTracking)?.OnEnd(Request, Response);
                     }
                     catch (WebException ex)
                     {
                         _Timer.Error();
-                        var res = Transfer(Request.UseCookies, (HttpWebResponse)ex.Response);
+                        var res = Transfer(Request.CookieMode, (HttpWebResponse)ex.Response);
                         res.Exception = ex;
                         Response = Request.Response = res;
                         (Request as IHttpTracking)?.OnError(Request, Response);
