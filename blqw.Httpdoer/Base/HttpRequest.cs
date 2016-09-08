@@ -196,11 +196,7 @@ namespace blqw.Web
         {
             return _AllParams.GetEnumerator();
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        
 
         IHttpResponse _Response;
         /// <summary>
