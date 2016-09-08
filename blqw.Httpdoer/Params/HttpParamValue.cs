@@ -92,9 +92,9 @@ namespace blqw.Web
                 if (IsArray)
                 {
                     var name = Name;
-                    return $"{Location} : " + string.Join(", ", Values.Select(it => $"{name} = {it}"));
+                    return $"{Location,7}|" + string.Join(", ", Values.Select(it => $"[{name}] {it}"));
                 }
-                return $"{Location} : {Name} = {Value}";
+                return $"{Location,7}|[{Name}] {Value}";
             }
         }
 

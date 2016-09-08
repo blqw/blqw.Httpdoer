@@ -244,6 +244,11 @@ namespace blqw.Web
         /// </summary>
         public HttpCookieMode CookieMode { get; set; }
 
+        /// <summary>
+        /// 自动302跳转
+        /// </summary>
+        public bool AutoRedirect { get; set; } = true;
+
         public Exception Exception
         {
             get

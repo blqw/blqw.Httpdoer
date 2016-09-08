@@ -45,7 +45,7 @@ namespace blqw.Web
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
                     timer.Sent();
-                    while (response.StatusCode == HttpStatusCode.Redirect) //手动处理302的请求
+                    while (request.AutoRedirect && response.StatusCode == HttpStatusCode.Redirect) //手动处理302的请求
                     {
                         request.Debug("StatusCode=302; 正在重定向...");
                         www = GetRequest(data, response.Headers.Location); //构建新的请求

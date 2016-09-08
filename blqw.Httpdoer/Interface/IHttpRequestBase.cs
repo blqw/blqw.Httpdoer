@@ -67,6 +67,11 @@ namespace blqw.Web
         HttpCookieMode CookieMode { get; set; }
 
         /// <summary>
+        /// 自动302跳转
+        /// </summary>
+        bool AutoRedirect { get; set; }
+
+        /// <summary>
         /// 设置或获取日志记录器
         /// </summary>
         List<IHttpLogger> Loggers { get; }
