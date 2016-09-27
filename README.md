@@ -5,7 +5,7 @@
 ```csharp
 static void Main(string[] args)
 {
-    var www = new HttpRequest("https://api.datamarket.azure.com");
+    var www = new Httpdoer("https://api.datamarket.azure.com");
     www.Method = HttpRequestMethod.GET;
     www.AutoRedirect = false; //是否自动跳转
     www.Path = "Bing/MicrosoftTranslator/v1/Translate";
