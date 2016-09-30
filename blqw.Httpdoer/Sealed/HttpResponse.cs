@@ -18,17 +18,10 @@ namespace blqw.Web
         public HttpHeaders Headers { get; set; }
         public bool IsSuccessStatusCode { get; set; }
         public string Status { get; set; }
-        public string Version { get; set; }
+        public string SchemeVersion { get; set; }
         public HttpRequestData RequestData { get; set; }
 
-        public string ResponseRaw
-        {
-            get
-            {
-
-                return $"{Version} {(int)StatusCode} {Status}{CRLF}{string.Join(CRLF, GetAllHeaders())}{CRLF}{CRLF}{Body?.ToString()}";
-            }
-        }
+        public string ResponseRaw => $"{SchemeVersion} {(int)StatusCode} {Status}{CRLF}{string.Join(CRLF, GetAllHeaders())}{CRLF}{CRLF}{Body}";
 
         public HttpStatusCode StatusCode { get; set; }
 

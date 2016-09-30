@@ -140,7 +140,7 @@ namespace blqw.Web
                 }
                 res.StatusCode = response.StatusCode;
                 res.Status = response.StatusDescription;
-                res.Version = $"{response.ResponseUri.Scheme.ToUpperInvariant()}/{response.ProtocolVersion}";
+                res.SchemeVersion = $"{response.ResponseUri.Scheme.ToUpperInvariant()}/{response.ProtocolVersion}";
                 res.IsSuccessStatusCode = (int)response.StatusCode >= 200 && (int)response.StatusCode <= 299;
             }
             return res;

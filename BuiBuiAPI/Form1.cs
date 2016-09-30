@@ -49,6 +49,8 @@ namespace BuiBuiAPI
             }
             RefreshHistory();
             RefreshFavorite();
+            cbbEncoding.DataSource = Encoding.GetEncodings().Select(it => it.GetEncoding()).OrderBy(it=>it.WebName).ToList();
+            cbbEncoding.DisplayMember = "WebName";
         }
 
 
@@ -300,7 +302,10 @@ namespace BuiBuiAPI
             //var response = request.Send();
             var response = await request.SendAsync();
             //返回正文
-            rtxtResponseBody.Text = response?.Body?.ToString();
+            rtxtResponseBody.Tag = response?.Body?.ResponseBody;
+            //设置编码
+            cbbEncoding.Text = response?.Body?.ContentType.Charset?.WebName;
+
             txtRequestRaw.Text = response?.RequestData.Raw;
             txtResponseRaw.Text = response?.ResponseRaw;
             //显示视图
@@ -508,6 +513,16 @@ namespace BuiBuiAPI
             if (e.RowIndex >= 0 && e.ColumnIndex == 3 && gridParams.Rows[e.RowIndex].IsNewRow == false)
             {
                 gridParams.Rows.RemoveAt(e.RowIndex);
+            }
+        }
+
+        //更换编码格式
+        private void cbbEncoding_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var body = rtxtResponseBody.Tag as byte[];
+            if (body != null)
+            {
+                rtxtResponseBody.Text = (cbbEncoding.SelectedValue as Encoding ?? Encoding.Default).GetString(body);
             }
         }
     }

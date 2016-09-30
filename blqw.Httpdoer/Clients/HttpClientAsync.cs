@@ -97,8 +97,14 @@ namespace blqw.Web
             };
             using (response)
             {
-                var headers = response.Headers;
-                foreach (var header in headers)
+                foreach (var header in response.Headers)
+                {
+                    foreach (var value in header.Value)
+                    {
+                        res.Headers.Add(header.Key, value);
+                    }
+                }
+                foreach (var header in response.Content.Headers)
                 {
                     foreach (var value in header.Value)
                     {
@@ -113,7 +119,7 @@ namespace blqw.Web
 
                 res.StatusCode = response.StatusCode;
                 res.Status = response.ReasonPhrase;
-                res.Version = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
+                res.SchemeVersion = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
                 res.IsSuccessStatusCode = response.IsSuccessStatusCode;
             }
             return res;

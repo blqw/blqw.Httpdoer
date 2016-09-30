@@ -260,7 +260,7 @@ namespace blqw.Web
         /// </summary>
         public Version Version { get; }
         /// <summary>
-        /// 请求方案/版本 ({Scheme.ToUpperInvariant()}/{Version})
+        /// 请求方案/版本 ({Scheme.ToUpperInvariant()}/{SchemeVersion})
         /// </summary>
         public string SchemeVersion { get; private set; }
 
@@ -316,6 +316,6 @@ namespace blqw.Web
         /// <summary>
         /// 请求的原始数据
         /// </summary>
-        public string Raw => $"{Method} {Url} {Version}{CRLF}{string.Join(CRLF, Headers.Select(it => $"{it.Key}: {it.Value}"))}{CRLF}{CRLF}{GetBodyString()}";
+        public string Raw => $"{Method} {Url} {SchemeVersion}{CRLF}{string.Join(CRLF, Headers.Select(it => $"{it.Key}: {it.Value}"))}{CRLF}{CRLF}{GetBodyString()}";
     }
 }
