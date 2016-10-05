@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -88,15 +89,24 @@ namespace blqw.Web
             {
                 return result;
             }
-            throw new FormatException($"{nameof(contentType)} 格式有误");
+            return new HttpContentType(contentType, null, null);
         }
 
         #region 转换
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static implicit operator string(HttpContentType value)
         {
             return value.ToString();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public static implicit operator HttpContentType(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -106,6 +116,10 @@ namespace blqw.Web
             return Parse(value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public static implicit operator HttpContentTypes(HttpContentType value)
         {
             if (value == Form)
@@ -145,7 +159,10 @@ namespace blqw.Web
                 throw new InvalidCastException();
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public static implicit operator HttpContentType(HttpContentTypes value)
         {
             switch (value)
@@ -200,9 +217,9 @@ namespace blqw.Web
         {
             if (Charset == null)
             {
-                if (Type == null && Format == null)
+                if (Type == null || Format == null)
                 {
-                    return "";
+                    return Type ?? Format;
                 }
                 return $"{Type}/{Format}";
             }
@@ -216,52 +233,66 @@ namespace blqw.Web
             {
                 return _Parser ?? HttpBodyParserFactory.Get(Type, Format);
             }
-            else if (formatType == typeof(Encoding))
+            if (formatType == typeof(Encoding))
             {
                 return Charset;
             }
-            else if (formatType == typeof(string))
+            if (formatType == typeof(string))
             {
                 return $"{Type}/{Format}";
             }
             return null;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is HttpContentType == false)
-            {
-                return false;
-            }
-            return Equals((HttpContentType)obj);
-        }
+        /// <summary>
+        /// 指示此实例与指定对象是否相等。</summary>
+        /// <returns>如果 <paramref name="obj" /> 和该实例具有相同的类型并表示相同的值，则为 true；否则为 false。</returns>
+        /// <param name="obj">要与当前实例进行比较的对象。</param>
+        /// <filterpriority>2</filterpriority>
+        public override bool Equals(object obj) => obj is HttpContentType && Equals((HttpContentType)obj);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(HttpContentType a, HttpContentType b)
         {
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(HttpContentType a, HttpContentType b)
         {
             return !a.Equals(b);
         }
 
-        public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
+        /// <summary>
+        /// 返回此实例的哈希代码。</summary>
+        /// <returns>一个 32 位有符号整数，它是该实例的哈希代码。</returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() => ToString().GetHashCode();
 
-        public HttpContentType ChangeCharset(Encoding charset)
-        {
-            return new HttpContentType(Type, Form, charset);
-        }
+        /// <summary>
+        /// 改变当前对象的编码,产生一个新对象
+        /// </summary>
+        /// <param name="charset"></param>
+        /// <returns></returns>
+        public HttpContentType ChangeCharset(Encoding charset) => new HttpContentType(Type, Form, charset);
 
-        public bool Equals(HttpContentType other)
-        {
-            return Charset == other.Charset
-                && string.Equals(Format, other.Format, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
-                && _Parser == other._Parser;
-        }
+        /// <summary>
+        /// 指示当前对象是否等于同一类型的另一个对象。</summary>
+        /// <returns>如果当前对象等于 <paramref name="other" /> 参数，则为 true；否则为 false。</returns>
+        /// <param name="other">与此对象进行比较的对象。</param>
+        public bool Equals(HttpContentType other) => Equals(Charset, other.Charset)
+                                                     && string.Equals(Format, other.Format, StringComparison.OrdinalIgnoreCase)
+                                                     && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
+                                                     && _Parser == other._Parser;
     }
 }

@@ -264,9 +264,9 @@ namespace blqw.Web
         /// </summary>
         public string SchemeVersion { get; private set; }
 
-        private Dictionary<string, object> GetBodyParams(IHttpRequest request)
+        private List<KeyValuePair<string, object>> GetBodyParams(IHttpRequest request)
         {
-            var @params = new Dictionary<string, object>();
+            var @params = new List<KeyValuePair<string, object>>();
             foreach (var param in request)
             {
                 var name = param.Name;
@@ -289,9 +289,9 @@ namespace blqw.Web
                         break;
                     case HttpParamLocation.Body:
                         request.OnBodyParamFound(ref name, ref value);
-                        if (name != null)
+                        if (name != null || value != null)
                         {
-                            @params.Add(name, value);
+                            @params.Add(new KeyValuePair<string, object>(name, value));
                         }
                         break;
                     case HttpParamLocation.Path:

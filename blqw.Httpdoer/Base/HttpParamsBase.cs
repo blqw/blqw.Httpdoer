@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
+
     public abstract class HttpParamsBase<T> : IEnumerable<KeyValuePair<string, object>>
     {
         protected HttpParamsBase(IHttpParameterCollection @params)
@@ -19,6 +20,7 @@ namespace blqw.Web
         }
 
         public abstract HttpParamLocation Location { get; }
+        
 
         protected readonly IHttpParameterCollection Params;
 
@@ -101,13 +103,7 @@ namespace blqw.Web
                 }
             }
 
-            public int Count
-            {
-                get
-                {
-                    return _list.Count;
-                }
-            }
+            public int Count => _list.Count;
 
             public IEnumerator<T> GetEnumerator()
             {

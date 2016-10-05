@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace blqw.Web
         internal HttpBody(IHttpParameterCollection @params)
             : base(@params)
         {
-
+            ContentType = HttpContentType.Undefined;
         }
 
         public HttpBody(HttpContentType contentType, byte[] responseBody)
@@ -33,15 +34,17 @@ namespace blqw.Web
             }
         }
 
+        private HttpContentType _ContentType;
         public HttpContentType ContentType
         {
             get
             {
-                return (string)Params.GetValue("Content-Type", HttpParamLocation.Header);
+                return _ContentType;
             }
             set
             {
                 Params.SetValue("Content-Type", value.ToString(), HttpParamLocation.Header);
+                _ContentType = value;
             }
         }
 
@@ -69,18 +72,22 @@ namespace blqw.Web
                 formatProvider = ContentType;
             }
             var parser = formatProvider.GetFormat(typeof(ICustomFormatter)) as ICustomFormatter;
-            if (parser == null)
-            {
-                return null;
-            }
-            return parser.Format(format, this, formatProvider);
+            return parser?.Format(format, this, formatProvider);
         }
 
         public T ToObject<T>()
         {
             var parser = ContentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
+            Debug.Assert(parser != null, "parser != null");
             var body = ResponseBody ?? parser.Serialize(null, this, ContentType);
             return parser.Deserialize<T>(body, ContentType);
+        }
+
+        public byte[] GetBytes()
+        {
+            var parser = ContentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
+            Debug.Assert(parser != null, "parser != null");
+            return ResponseBody ?? parser.Serialize(null, this, ContentType);
         }
     }
 }

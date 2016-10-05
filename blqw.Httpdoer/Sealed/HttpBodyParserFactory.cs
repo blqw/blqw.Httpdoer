@@ -49,6 +49,8 @@ namespace blqw.Web
                     return HttpJsonBodyParser.Instance;
                 case "xml":
                     return HttpXMLBodyParser.Instance;
+                case "octet-stream":
+                    return HttpStreamBodyParser.Instance;
                 case null:
                     return HttpNullBodyParser.Instance;
                 default:
