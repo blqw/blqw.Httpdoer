@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -72,12 +73,12 @@ namespace blqw.Web
         bool AutoRedirect { get; set; }
 
         /// <summary>
-        /// 设置或获取日志记录器
+        /// 获取日志记录器
         /// </summary>
-        List<IHttpLogger> Loggers { get; }
+        TraceSource Logger { get; }
 
         /// <summary>
-        /// 获取或设置用于触发一系列事件的跟踪对象
+        /// 获取用于触发一系列事件的跟踪对象
         /// </summary>
         List<IHttpTracking> Trackings { get; }
     }

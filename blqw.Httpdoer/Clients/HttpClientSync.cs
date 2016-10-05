@@ -54,7 +54,7 @@ namespace blqw.Web
             finally
             {
                 timer.Ending();
-                request.Debug(timer.ToString());
+                request.Logger?.Write(TraceEventType.Verbose, timer.ToString());
             }
             ((HttpResponse)request.Response).RequestData = data;
             return request.Response;
@@ -64,7 +64,7 @@ namespace blqw.Web
         {
             var request = data.Request;
 
-            request.Debug(data.Url);
+            request.Logger.Write(TraceEventType.Verbose, data.Url);
             var www = WebRequest.CreateHttp(data.Url);
             request.Version = data.Version;
             www.ContinueTimeout = 3000;
@@ -281,7 +281,7 @@ namespace blqw.Web
                     finally
                     {
                         _Timer.Ending();
-                        (Request as IHttpLogger)?.Debug(_Timer.ToString());
+                        Request.Logger?.Write(TraceEventType.Verbose,_Timer.ToString());
                         IsCompleted = true;
                         var res = Response as HttpResponse;
                         if (res != null) res.RequestData = _RequestData;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,7 +15,7 @@ namespace blqw.Web
     /// </summary>
     public class HttpRequest : IHttpRequest
     {
-        public static IHttpLogger DefaultLogger = HttpDefaultLogger.Instance;
+        public static TraceSource DefaultLogger = new TraceSource("blqw.Httpdoer", SourceLevels.Verbose).Initialize();
 
         /// <summary>
         /// 本地 Cookies 缓存
@@ -34,10 +35,7 @@ namespace blqw.Web
             Params = new HttpParams(@params);
             _AllParams = @params;
             Timeout = new TimeSpan(0, 0, 15);
-            if (DefaultLogger != null)
-            {
-                Loggers.Add(DefaultLogger);
-            }
+            Logger = DefaultLogger;
         }
 
         /// <summary>
@@ -215,11 +213,11 @@ namespace blqw.Web
                 {
                     if (value.IsSuccessStatusCode == false)
                     {
-                        this.Debug(((int)StatusCode).ToString());
+                        Logger?.Write(TraceEventType.Verbose, ((int)StatusCode).ToString());
                     }
                     if (value.Exception != null)
                     {
-                        this.Error(value.Exception.Message);
+                        Logger?.Write(TraceEventType.Verbose, value.Exception.Message);
                     }
                 }
             }
@@ -264,16 +262,8 @@ namespace blqw.Web
                 return Response?.StatusCode ?? 0;
             }
         }
-
-        List<IHttpLogger> _Loggers;
-        public List<IHttpLogger> Loggers
-        {
-            get
-            {
-                return _Loggers
-                    ?? (_Loggers = new List<IHttpLogger>());
-            }
-        }
+        
+        public TraceSource Logger { get; set; }
 
         List<IHttpTracking> _Trackings;
 

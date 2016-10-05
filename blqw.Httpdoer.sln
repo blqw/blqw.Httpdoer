@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.25302.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{C1BCD5C1-5519-48B9-8C62-89EFB4B0991D}"
 	ProjectSection(SolutionItems) = preProject
+		blqw.Httpdoer\blqw.Httpdoer.nuspec = blqw.Httpdoer\blqw.Httpdoer.nuspec
+		blqw.Httpdoer\nuget-pack.bat = blqw.Httpdoer\nuget-pack.bat
 		README.md = README.md
+		blqw.Httpdoer\update-ioc.ps1 = blqw.Httpdoer\update-ioc.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blqw.Httpdoer", "blqw.Httpdoer\blqw.Httpdoer.csproj", "{135D11D6-46E5-41BF-9DB2-6F033293B260}"

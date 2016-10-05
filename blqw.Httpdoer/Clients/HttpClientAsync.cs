@@ -47,7 +47,7 @@ namespace blqw.Web
                     timer.Sent();
                     while (request.AutoRedirect && response.StatusCode == HttpStatusCode.Redirect) //手动处理302的请求
                     {
-                        request.Debug("StatusCode=302; 正在重定向...");
+                        request.Logger?.Write(TraceEventType.Verbose, "StatusCode=302; 正在重定向...");
                         www = GetRequest(data, response.Headers.Location); //构建新的请求
                         var cookies = GetCookies(request.CookieMode | HttpCookieMode.UserCustom, response); //302时必须使用 cookie
                         var cookie = cookies?.GetCookieHeader(new Uri(www.RequestUri, "/"));
@@ -77,7 +77,7 @@ namespace blqw.Web
             finally
             {
                 timer.Ending();
-                request.Debug(timer.ToString());
+                request.Logger?.Write(TraceEventType.Verbose, timer.ToString());
             }
             ((HttpResponse)request.Response).RequestData = data;
             return request.Response;
@@ -151,7 +151,7 @@ namespace blqw.Web
         {
             var url = redirect?.ToString() ?? data.Url;
             var request = data.Request;
-            request.Debug(url);
+            request.Logger?.Write(TraceEventType.Verbose, url);
             var www = new HttpRequestMessage(GetHttpMethod(request), url)
             {
                 Version = data.Version

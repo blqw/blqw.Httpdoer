@@ -292,7 +292,7 @@ namespace BuiBuiAPI
                 request.Cookies = _cookies;
             }
             request.Headers.KeepAlive = ckbKeepAlive.Checked;
-            request.Loggers.Add(new BuibuiLogger(rtxtLogs));
+            request.Logger.Listeners.Add(new BuibuiListener(rtxtLogs));
             request.HttpMethod = cbbHttpMethod.Text;
             if (!string.IsNullOrWhiteSpace(cbbContentType.Text))
                 request.Body.ContentType = cbbContentType.Text;

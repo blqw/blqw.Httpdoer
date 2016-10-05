@@ -58,9 +58,10 @@
     <Compile Include="HttpBodyParsers\HttpStreamBodyParser.cs" />
     <Compile Include="Extensions\HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpRequestBase.cs" />
-    <Compile Include="Interface\IHttpLogger.cs" />
     <Compile Include="Interface\IHttpTracking.cs" />
     <Compile Include="IOC\MEFLite.cs" />
+    <Compile Include="Logger\PlatformServices.cs" />
+    <Compile Include="Logger\TraceSourceExtensions.cs" />
     <Compile Include="Params\LazyHttpParameterCollection.cs" />
     <Compile Include="Reflection\PropertyGetter.cs" />
     <Compile Include="Sealed\EncodeURI.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="Interface\IHttpBodyParserFactory.cs" />
     <Compile Include="Sealed\HttpContentTypes.cs" />
     <Compile Include="Sealed\HttpCookieMode.cs" />
-    <Compile Include="Sealed\HttpDefaultLogger.cs" />
     <Compile Include="Sealed\HttpQueryBuilder.cs" />
     <Compile Include="Sealed\HttpRequestMethod.cs" />
     <Compile Include="Params\HttpBody.cs" />
@@ -100,11 +100,7 @@
     <Compile Include="Sealed\HttpTracking.cs" />
     <Compile Include="Sealed\HttpTrackingHandler.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="blqw.Httpdoer.nuspec" />
-    <None Include="nuget-pack.bat" />
-    <None Include="update-ioc.ps1" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
