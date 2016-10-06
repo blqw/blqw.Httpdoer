@@ -499,7 +499,7 @@ namespace BuiBuiAPI
                 //case Keys.V | Keys.Control:
                 //    if (Clipboard.ContainsText())
                 //    {
-                //        gridParams.SelectedCells[0].Value = Clipboard.GetText();
+                //        gridParams.SelectedCells[0].FirstValue = Clipboard.GetText();
                 //    }
                 //    break;
                 default:

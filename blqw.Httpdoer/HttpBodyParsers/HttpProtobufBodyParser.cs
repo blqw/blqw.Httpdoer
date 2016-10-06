@@ -6,15 +6,22 @@ using System.Threading.Tasks;
 
 namespace blqw.Web
 {
-    internal class HttpProtobufBodyParser : HttpBodyParserBase
+    /// <summary>
+    /// Protobuf解析器,用于解析 Protobuf 格式的正文
+    /// </summary>
+    internal sealed class HttpProtobufBodyParser : HttpBodyParserBase
     {
-        public static HttpProtobufBodyParser Instance { get; } = new HttpProtobufBodyParser();
-
+        /// <summary>
+        /// 暂未实现
+        /// </summary>
         public override IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 暂未实现
+        /// </summary>
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
             throw new NotImplementedException();

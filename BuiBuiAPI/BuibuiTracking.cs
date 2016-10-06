@@ -24,9 +24,12 @@ namespace BuiBuiAPI
             request.Error($"{response?.Exception?.ToString()}");
         }
 
-        public void OnHeaderFound(IHttpRequest request, ref string name, ref string value)
+        public void OnHeaderFound(IHttpRequest request, ref string name,ref IEnumerable<string> values)
         {
-            request.Debug($"Header -> {name}:{value}");
+            foreach (var value in values)
+            {
+                request.Debug($"Header -> {name}:{value}");
+            }
         }
 
         public void OnInitialize(IHttpRequest request)

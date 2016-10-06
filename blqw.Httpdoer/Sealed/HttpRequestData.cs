@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,9 +12,15 @@ namespace blqw.Web
     /// </summary>
     public struct HttpRequestData
     {
+        /// <summary>
+        /// 静态缓存
+        /// </summary>
         [ThreadStatic]
-        private static HttpQueryBuilder _QueryBuilder;
+        private static HttpUrlEncodedBuilder _UrlEncodedBuilder;
 
+        /// <summary>
+        /// 回车换行
+        /// </summary>
         private const string CRLF = "\r\n";
 
         /// <summary>
@@ -25,18 +32,18 @@ namespace blqw.Web
         {
             Request = request;
             Method = request.HttpMethod;
-            var url = URIEx.GetFullURL(request.BaseUrl, request.Path);
+            var url = request.BaseUrl.Combine(request.Path);
             if (url == null)
             {
                 throw new UriFormatException("url不能为空");
             }
-            if (_QueryBuilder == null)
+            if (_UrlEncodedBuilder == null)
             {
-                _QueryBuilder = new HttpQueryBuilder();
+                _UrlEncodedBuilder = new HttpUrlEncodedBuilder();
             }
             else
             {
-                _QueryBuilder.Clear();
+                _UrlEncodedBuilder.Clear();
             }
             Host = new Uri(url, "/");
 
@@ -56,6 +63,7 @@ namespace blqw.Web
             SchemeVersion = $"{url.Scheme.ToUpperInvariant()}/{Version}";
 
             _provider = request.Body.ContentType;
+            // ReSharper disable once ImpureMethodCallOnReadonlyValueField
             var parser = _provider.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
             if (parser == null)
             {
@@ -64,11 +72,13 @@ namespace blqw.Web
             Url = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
             Headers = new List<KeyValuePair<string, string>>();
             request.OnParamsExtracting();
-            Body = parser.Serialize(null, GetBodyParams(request), _provider);
+            List<KeyValuePair<string, object>> bodyparams;
+            FindParams(request, out bodyparams);
+            Body = parser.Serialize(null, bodyparams, _provider);
             request.OnParamsExtracted();
-            var query = _QueryBuilder.ToString();
+            var query = _UrlEncodedBuilder.ToString();
 
-            if ((query?.Length).GetValueOrDefault(0) == 0)
+            if (query.Length == 0)
             {
                 Url += url.Fragment;
             }
@@ -84,33 +94,14 @@ namespace blqw.Web
                 }
             }
             //插入默认头
-            if (HasHeader("Accept") == false)
+            if (request.Headers.AutoAddDefaultHeaders)
             {
-                AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-            }
-            if (HasHeader("Accept-Encoding") == false)
-            {
-                AddHeader("Accept-Encoding", "gzip, deflate, sdch");
-            }
-            if (HasHeader("Accept-Language") == false)
-            {
-                AddHeader("Accept-Language", "zh-CN,zh;q=0.8");
-            }
-            if (HasHeader("Cache-Control") == false)
-            {
-                AddHeader("Cache-Control", "max-age=0");
-            }
-            if (HasHeader("User-Agent") == false)
-            {
-                AddHeader("User-Agent", HttpHeaders.DefaultUserAgent);
-            }
-            if (HasHeader("Connection") == false)
-            {
-                AddHeader("Connection", "Keep-Alive");
-            }
-            if (HasHeader("Host") == false)
-            {
-                AddHeader("Host", url.Host);
+                request.Headers.AddDefaultHeaders();
+
+                if (request.Headers.Contains("Host") == false)
+                {
+                    AddHeader("Host", new[] { url.Host });
+                }
             }
             if (Method == null)
             {
@@ -158,27 +149,22 @@ namespace blqw.Web
                 Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
             }
         }
-        
+
 
         /// <summary>
         /// 添加头
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <param name="values"></param>
-        private void AddHeader(string name, string value = null, IEnumerable<string> values = null)
+        /// <param name="name"> </param>
+        /// <param name="values"> </param>
+        private void AddHeader(string name, IEnumerable<string> values)
         {
-            if (values != null)
+            Request?.OnHeaderFound(ref name, ref values);
+            if (values == null)
             {
-                foreach (var val in values)
-                {
-                    Request?.OnHeaderFound(ref name, ref value);
-                    Headers.Add(new KeyValuePair<string, string>(name, val));
-                }
+                return;
             }
-            else if (value != null)
+            foreach (var value in values)
             {
-                Request?.OnHeaderFound(ref name, ref value);
                 Headers.Add(new KeyValuePair<string, string>(name, value));
             }
         }
@@ -186,33 +172,34 @@ namespace blqw.Web
         /// <summary>
         /// 添加路由参数
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <param name="values"></param>
-        private void AddPathParam(string name, string value, IEnumerable<string> values)
+        /// <param name="name"> </param>
+        /// <param name="value"> </param>
+        private void AddPathParam(string name, object value)
         {
-            if (values != null)
+            var str = value as string ?? string.Join(",", value as IEnumerable ?? Type.EmptyTypes /*随便一个空数组都可以*/);
+            Request?.OnPathParamFound(ref name, ref str);
+            if (name != null)
             {
-                Request?.OnPathParamFound(ref name, ref value);
-                Url = Url.Replace("{" + name + "}", string.Join(",", values));
-            }
-            else if (value != null)
-            {
-                Request?.OnPathParamFound(ref name, ref value);
-                Url = Url.Replace("{" + name + "}", value);
+                Url = Url.Replace("{" + name + "}", str);
             }
         }
 
         /// <summary>
         /// 判断是否存在指定的头
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name"> </param>
+        /// <returns> </returns>
         public bool HasHeader(string name) => Headers.Any(it => string.Equals(it.Key, name, StringComparison.OrdinalIgnoreCase));
 
-        private readonly IFormatProvider _provider;
+        /// <summary>
+        /// 请求正文內容类型
+        /// </summary>
+        private readonly HttpContentType _provider;
 
-        public CookieContainer Cookies { get; private set; }
+        /// <summary>
+        /// Cookie
+        /// </summary>
+        public CookieContainer Cookies { get; }
 
         /// <summary>
         /// 请求地址
@@ -230,47 +217,56 @@ namespace blqw.Web
         public byte[] Body { get; }
 
         /// <summary>
-        /// <seealso cref="IHttpRequest"/> 对象
+        /// <seealso cref="IHttpRequest" /> 对象
         /// </summary>
         public IHttpRequest Request { get; }
 
         /// <summary>
         /// 从请求体中获取字符串
         /// </summary>
-        /// <returns></returns>
         private string GetBodyString()
         {
             if ((Body == null) || (Body.Length == 0))
             {
                 return null;
             }
-            var charset = _provider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.UTF8;
+            // ReSharper disable once ImpureMethodCallOnReadonlyValueField
+            var charset = _provider.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.UTF8;
             return charset.GetString(Body);
         }
+
         /// <summary>
         /// 请求头
         /// </summary>
         public List<KeyValuePair<string, string>> Headers { get; }
+
         /// <summary>
         /// 请求方法
         /// </summary>
         public string Method { get; }
+
         /// <summary>
         /// 请求版本
         /// </summary>
         public Version Version { get; }
-        /// <summary>
-        /// 请求方案/版本 ({Scheme.ToUpperInvariant()}/{SchemeVersion})
-        /// </summary>
-        public string SchemeVersion { get; private set; }
 
-        private List<KeyValuePair<string, object>> GetBodyParams(IHttpRequest request)
+        /// <summary>
+        /// 请求方案/版本 (Scheme.ToUpperInvariant()/Version;)
+        /// </summary>
+        public string SchemeVersion { get; }
+
+        /// <summary>
+        /// 遍历所有参数
+        /// </summary>
+        /// <param name="request"> 请求 </param>
+        /// <param name="bodyParams"> body参数 </param>
+        private void FindParams(IHttpRequest request, out List<KeyValuePair<string, object>> bodyParams)
         {
-            var @params = new List<KeyValuePair<string, object>>();
+            bodyParams = new List<KeyValuePair<string, object>>();
             foreach (var param in request)
             {
                 var name = param.Name;
-                var value = param.Values ?? param.Value;
+                var value = param.Value;
                 switch (param.Location)
                 {
                     case HttpParamLocation.Auto:
@@ -285,32 +281,33 @@ namespace blqw.Web
                         goto case HttpParamLocation.Body;
                     case HttpParamLocation.Query:
                         Request?.OnQueryParamFound(ref name, ref value);
-                        _QueryBuilder.AppendObject(name, value);
+                        if ((name != null) || (value != null))
+                        {
+                            _UrlEncodedBuilder.AppendObject(name, value);
+                        }
                         break;
                     case HttpParamLocation.Body:
                         request.OnBodyParamFound(ref name, ref value);
-                        if (name != null || value != null)
+                        if ((name != null) || (value != null))
                         {
-                            @params.Add(new KeyValuePair<string, object>(name, value));
+                            bodyParams.Add(new KeyValuePair<string, object>(name, value));
                         }
                         break;
                     case HttpParamLocation.Path:
-                        AddPathParam(name, value as string, param.Values?.Cast<string>());
+                        AddPathParam(name, value);
                         break;
                     case HttpParamLocation.Header:
-                        AddHeader(name, value as string, param.Values?.Cast<string>());
+                        AddHeader(name, param.Values.Cast<string>());
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));
                 }
             }
-            return @params;
         }
 
         /// <summary>
         /// 返回当前对象的url
         /// </summary>
-        /// <returns></returns>
         public override string ToString() => Url ?? "http://";
 
         /// <summary>

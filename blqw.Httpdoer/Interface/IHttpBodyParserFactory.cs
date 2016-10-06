@@ -1,11 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace blqw.Web
+﻿namespace blqw.Web
 {
     /// <summary>
     /// Body 解析器工厂
@@ -17,7 +10,7 @@ namespace blqw.Web
         /// </summary>
         /// <param name="type"> 类型 </param>
         /// <param name="format"> 格式 </param>
-        /// <returns></returns>
+        /// <returns> </returns>
         IHttpBodyParser Create(string type, string format);
     }
 }

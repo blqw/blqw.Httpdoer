@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Web;
 
 namespace blqw.Web
 {
     /// <summary>
-    /// 表单解析器,用于解析 x-www-form-urlencoded 类型的正文
+    /// 字符串解析器,用于字符串类型的正文,包括text,html,plain等
     /// </summary>
-    internal sealed class HttpFormBodyParser : HttpBodyParserBase
+    public class HttpStringBodyParser : HttpBodyParserBase
     {
         /// <summary>
-        /// 静态缓存对象
+        /// 表示一个空的<seealso cref="byte"/>数组
         /// </summary>
-        [ThreadStatic]
-        private static HttpUrlEncodedBuilder _UrlEncodedBuilder;
+        private static readonly byte[] _EmptyBytes = new byte[0];
 
         /// <summary>
         /// 将字节流转换为键值对枚举
@@ -24,13 +23,11 @@ namespace blqw.Web
         /// <returns> </returns>
         public override IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider)
         {
-            var encoding = GetEncoding(formatProvider) ?? Encoding.Default;
-            var str = encoding.GetString(bytes);
-            var nv = HttpUtility.ParseQueryString(str);
-            foreach (string name in nv)
+            if (bytes?.Length > 0)
             {
-                var values = nv.GetValues(name);
-                yield return new KeyValuePair<string, object>(name, values?.Length == 1 ? (object)values[0] : values);
+                var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
+                var text = charset.GetString(bytes);
+                yield return new KeyValuePair<string, object>(null, text);
             }
         }
 
@@ -43,21 +40,13 @@ namespace blqw.Web
         /// <returns> </returns>
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
-            if (_UrlEncodedBuilder == null)
+            var text = body.FirstOrDefault(it => it.Key == null).Value as string;
+            if (string.IsNullOrEmpty(text))
             {
-                _UrlEncodedBuilder = new HttpUrlEncodedBuilder();
+                return _EmptyBytes;
             }
-            else
-            {
-                _UrlEncodedBuilder.Clear();
-            }
-
-            foreach (var item in body)
-            {
-                _UrlEncodedBuilder.AppendObject(item.Key, item.Value);
-            }
-            var encoding = GetEncoding(formatProvider) ?? Encoding.ASCII;
-            return encoding.GetBytes(_UrlEncodedBuilder.ToString());
+            var charset = GetEncoding(formatProvider) ?? Encoding.Default;
+            return charset.GetBytes(text);
         }
     }
 }

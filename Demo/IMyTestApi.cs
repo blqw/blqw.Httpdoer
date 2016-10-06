@@ -40,7 +40,7 @@ namespace Demo
 
         }
 
-        public void OnHeaderFound(IHttpRequest request, ref string name, ref string value)
+        public void OnHeaderFound(IHttpRequest request, ref string name, ref IEnumerable<string> values)
         {
 
         }

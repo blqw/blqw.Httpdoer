@@ -1,12 +1,9 @@
-﻿using blqw.IOC;
-using blqw.Reflection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
+using blqw.IOC;
+using blqw.Reflection;
 
 namespace blqw.Web
 {
@@ -40,7 +37,7 @@ namespace blqw.Web
         }
 
         /// <summary>
-        ///  追加 Url 查询参数字符串到 Http 参数
+        /// 追加 Url 查询参数字符串到 Http 参数
         /// </summary>
         /// <param name="param"> 参数将被追加到的参数集合 </param>
         /// <param name="query"> 需要解析的 Url 查询参数字符串 </param>
@@ -79,8 +76,7 @@ namespace blqw.Web
                 return;
             }
 
-            var nv = Components.ToJsonObject(typeof(NameValueCollection), json)
-                        as NameValueCollection;
+            var nv = (NameValueCollection)ComponentServices.ToJsonObject(typeof(NameValueCollection), json);
             for (int i = 0, length = nv.Count; i < length; i++)
             {
                 var key = nv.GetKey(i);
@@ -105,8 +101,7 @@ namespace blqw.Web
                 return;
             }
 
-            var dict = Components.ToJsonObject(typeof(Dictionary<string, object>), json)
-                        as Dictionary<string, object>;
+            var dict = (Dictionary<string, object>)ComponentServices.ToJsonObject(typeof(Dictionary<string, object>), json) ;
             foreach (var item in dict)
             {
                 param[item.Key] = item.Value;
@@ -128,11 +123,11 @@ namespace blqw.Web
             {
                 return;
             }
-            var props = PropertyGetter.Get(model.GetType());
+            var props = PropertyHandlerCollection.Get(model.GetType());
             for (int i = 0, length = props.Count; i < length; i++)
             {
                 var p = props[i];
-                param[p.Name] = Components.ToString(p.GetValue(model));
+                param[p.Name] = ComponentServices.Converter.ToString(p.GetValue(model));
             }
         }
 
@@ -151,7 +146,7 @@ namespace blqw.Web
             {
                 return;
             }
-            var props = PropertyGetter.Get(model.GetType());
+            var props = PropertyHandlerCollection.Get(model.GetType());
             for (int i = 0, length = props.Count; i < length; i++)
             {
                 var p = props[i];
@@ -162,8 +157,8 @@ namespace blqw.Web
         /// <summary>
         /// 向body中写入写入字节流
         /// </summary>
-        /// <param name="body"></param>
-        /// <param name="bytes">需要写入的字节流</param>
+        /// <param name="body"> </param>
+        /// <param name="bytes"> 需要写入的字节流 </param>
         public static void Wirte(this HttpBody body, byte[] bytes) => body?.Set(null, bytes);
     }
 }

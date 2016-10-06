@@ -93,7 +93,7 @@ namespace blqw.Web.Extensions
                                    .Replace("\r", "%0D")
                                    .Replace("\"", "%22");
                 case "Params":
-                    return string.Join(";", Params.Select(GetSetParamDefinition));
+                    return string.Join(";\r\n                ", Params.Select(GetSetParamDefinition));
                 case "return":
                     return ReturnType != null && ReturnType != typeof(void) && ReturnType != typeof(Task) ? "return" : "";
                 case "await":

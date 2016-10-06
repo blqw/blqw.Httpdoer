@@ -11,6 +11,8 @@ namespace blqw.Web
     /// </summary>
     internal static class TraceSourceExtensions
     {
+        public static TraceSource DefaultLogger = new TraceSource("blqw.Httpdoer", SourceLevels.Verbose).Initialize();
+
         static TraceSourceExtensions()
         {
             DebuggerIfAttached(Trace.Listeners);

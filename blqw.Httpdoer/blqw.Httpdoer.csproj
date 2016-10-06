@@ -34,6 +34,10 @@
     <DocumentationFile>bin\Release\blqw.Httpdoer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="blqw.IOC, Version=1.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.IOC.1.3.2\lib\net45\blqw.IOC.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -59,12 +63,10 @@
     <Compile Include="Extensions\HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpRequestBase.cs" />
     <Compile Include="Interface\IHttpTracking.cs" />
-    <Compile Include="IOC\MEFLite.cs" />
-    <Compile Include="Logger\PlatformServices.cs" />
-    <Compile Include="Logger\TraceSourceExtensions.cs" />
-    <Compile Include="Params\LazyHttpParameterCollection.cs" />
-    <Compile Include="Reflection\PropertyGetter.cs" />
-    <Compile Include="Sealed\EncodeURI.cs" />
+    <Compile Include="Params\LazyDeserializeBodyParameters.cs" />
+    <Compile Include="Reflection\PropertyHandler.cs" />
+    <Compile Include="Reflection\PropertyHandlerCollection.cs" />
+    <Compile Include="Sealed\URIExtensions.cs" />
     <Compile Include="HttpBodyParsers\HttpBodyDefaultParser.cs" />
     <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpJsonBodyParser.cs" />
@@ -73,34 +75,35 @@
     <Compile Include="Interface\IHttpBodyParserFactory.cs" />
     <Compile Include="Sealed\HttpContentTypes.cs" />
     <Compile Include="Sealed\HttpCookieMode.cs" />
-    <Compile Include="Sealed\HttpQueryBuilder.cs" />
+    <Compile Include="Sealed\HttpUrlEncodedBuilder.cs" />
     <Compile Include="Sealed\HttpRequestMethod.cs" />
     <Compile Include="Params\HttpBody.cs" />
     <Compile Include="Interface\IHttpBodyParser.cs" />
-    <Compile Include="Interface\IHttpParameterCollection.cs" />
+    <Compile Include="Interface\IHttpParameterContainer.cs" />
     <Compile Include="Sealed\HttpBodyParserFactory.cs" />
     <Compile Include="Clients\HttpClientSync.cs" />
     <Compile Include="Sealed\HttpContentType.cs" />
     <Compile Include="Params\HttpHeaders.cs" />
     <Compile Include="Params\HttpParamLocation.cs" />
-    <Compile Include="Params\HttpParameterCollection.cs" />
+    <Compile Include="Params\HttpParameterContainer.cs" />
     <Compile Include="Params\HttpParams.cs" />
     <Compile Include="Params\HttpParamValue.cs" />
     <Compile Include="Interface\IHttpClient.cs" />
     <Compile Include="Interface\IHttpRequest.cs" />
     <Compile Include="Interface\IHttpResponse.cs" />
-    <Compile Include="IOC\Component.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\HttpRequest.cs" />
     <Compile Include="Sealed\HttpRequestData.cs" />
     <Compile Include="Sealed\HttpResponse.cs" />
     <Compile Include="Params\HttpStringParams.cs" />
-    <Compile Include="HttpBodyParsers\HttpTextBodyParser.cs" />
-    <Compile Include="Sealed\HttpTimer.cs" />
+    <Compile Include="HttpBodyParsers\HttpStringBodyParser.cs" />
+    <Compile Include="Sealed\HttpRequestTimer.cs" />
     <Compile Include="Sealed\HttpTracking.cs" />
     <Compile Include="Sealed\HttpTrackingHandler.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

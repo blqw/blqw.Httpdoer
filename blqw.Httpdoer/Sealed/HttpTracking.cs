@@ -1,72 +1,102 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace blqw.Web
 {
+
+    /// <summary>
+    /// 提供对请求动作的跟踪
+    /// </summary>
     public sealed class HttpTracking : IHttpTracking
     {
-        public HttpTrackingHandler OnInitialize;
-        public HttpParamFoundTrackingHandler<object> OnBodyParamFound;
-        public HttpResponseTrackingHandler OnEnd;
-        public HttpResponseTrackingHandler OnError;
-        public HttpParamFoundTrackingHandler<string> OnHeaderFound;
-        public HttpTrackingHandler OnParamsExtracted;
-        public HttpTrackingHandler OnParamsExtracting;
-        public HttpParamFoundTrackingHandler<string> OnPathParamFound;
-        public HttpParamFoundTrackingHandler<object> OnQueryParamFound;
-        public HttpTrackingHandler OnSending;
+        /// <summary>
+        /// 发现请求中的 Body 参数时触发
+        /// </summary>
+        public event HttpParamFoundTrackingHandler<object> BodyParamFound;
+        /// <summary>
+        /// 请求完成时触发
+        /// </summary>
+        public event HttpResponseTrackingHandler End;
+        /// <summary>
+        /// 出现错误时触发
+        /// </summary>
+        public event HttpResponseTrackingHandler Error;
+        /// <summary>
+        /// 发现请求中的 Header 参数时触发
+        /// </summary>
+        public event HttpParamFoundTrackingHandler<IEnumerable<string>> HeaderFound;
+        /// <summary>
+        /// 请求初始化完成时触发
+        /// </summary>
+        public event HttpTrackingHandler Initialize;
+        /// <summary>
+        /// 处理参数完成时触发
+        /// </summary>
+        public event HttpTrackingHandler ParamsExtracted;
+        /// <summary>
+        /// 准备处理参数时触发
+        /// </summary>
+        public event HttpTrackingHandler ParamsExtracting;
+        /// <summary>
+        /// 发现请求中的 Path 参数时触发
+        /// </summary>
+        public event HttpParamFoundTrackingHandler<string> PathParamFound;
+        /// <summary>
+        /// 发现请求中的 Query 参数时触发
+        /// </summary>
+        public event HttpParamFoundTrackingHandler<object> QueryParamFound;
+        /// <summary>
+        /// 开始发送请求时触发
+        /// </summary>
+        public event HttpTrackingHandler Sending;
 
         void IHttpTracking.OnInitialize(IHttpRequest request)
         {
-            OnInitialize?.Invoke(request);
+            Initialize?.Invoke(request);
         }
 
         void IHttpTracking.OnBodyParamFound(IHttpRequest request, ref string name, ref object value)
         {
-            OnBodyParamFound?.Invoke(request, ref name, ref value);
+            BodyParamFound?.Invoke(request, ref name, ref value);
         }
 
         void IHttpTracking.OnEnd(IHttpRequest request, IHttpResponse response)
         {
-            OnEnd?.Invoke(request, response);
+            End?.Invoke(request, response);
         }
 
         void IHttpTracking.OnError(IHttpRequest request, IHttpResponse response)
         {
-            OnError?.Invoke(request, response);
+            Error?.Invoke(request, response);
         }
 
-        void IHttpTracking.OnHeaderFound(IHttpRequest request, ref string name, ref string value)
+        void IHttpTracking.OnHeaderFound(IHttpRequest request, ref string name, ref IEnumerable<string> values)
         {
-            OnHeaderFound?.Invoke(request, ref name, ref value);
+            HeaderFound?.Invoke(request, ref name, ref values);
         }
 
         void IHttpTracking.OnParamsExtracted(IHttpRequest request)
         {
-            OnParamsExtracted?.Invoke(request);
+            ParamsExtracted?.Invoke(request);
         }
 
         void IHttpTracking.OnParamsExtracting(IHttpRequest request)
         {
-            OnParamsExtracting?.Invoke(request);
+            ParamsExtracting?.Invoke(request);
         }
 
         void IHttpTracking.OnPathParamFound(IHttpRequest request, ref string name, ref string value)
         {
-            OnPathParamFound?.Invoke(request, ref name, ref value);
+            PathParamFound?.Invoke(request, ref name, ref value);
         }
 
         void IHttpTracking.OnQueryParamFound(IHttpRequest request, ref string name, ref object value)
         {
-            OnQueryParamFound?.Invoke(request, ref name, ref value);
+            QueryParamFound?.Invoke(request, ref name, ref value);
         }
 
         void IHttpTracking.OnSending(IHttpRequest request)
         {
-            OnSending?.Invoke(request);
+            Sending?.Invoke(request);
         }
     }
 }

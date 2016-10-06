@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace blqw.Web
 {
@@ -14,22 +8,26 @@ namespace blqw.Web
     /// </summary>
     public interface IHttpRequest : IHttpRequestBase
     {
-        /// <summary> 
+        /// <summary>
         /// 基路径
         /// </summary>
         Uri BaseUrl { get; set; }
-        /// <summary> 
+
+        /// <summary>
         /// 基路径的相对路径
         /// </summary>
         string Path { get; set; }
-        /// <summary> 
+
+        /// <summary>
         /// 请求方式
         /// </summary>
         HttpRequestMethod Method { get; set; }
+
         /// <summary>
         /// 请求方式的字符串形式
         /// </summary>
         string HttpMethod { get; set; }
+
         /// <summary>
         /// 完整路径
         /// </summary>
@@ -39,5 +37,6 @@ namespace blqw.Web
         /// 枚举所有请求参数
         /// </summary>
         IEnumerator<HttpParamValue> GetEnumerator();
+        
     }
 }

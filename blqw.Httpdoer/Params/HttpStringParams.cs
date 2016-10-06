@@ -1,44 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace blqw.Web
+﻿namespace blqw.Web
 {
+    /// <summary>
+    /// 表示值为字符串的参数集合
+    /// </summary>
     public sealed class HttpStringParams : HttpParamsBase<string>
     {
-        internal HttpStringParams(IHttpParameterCollection @params, HttpParamLocation location)
-            :base(@params)
+        internal HttpStringParams(IHttpParameterContainer @params, HttpParamLocation location)
+            : base(@params, location)
         {
-            _Location = location;
         }
 
-        HttpParamLocation _Location;
 
-        public override HttpParamLocation Location
-        {
-            get
-            {
-                return _Location;
-            }
-        }
-
+        /// <summary>
+        /// 获取或设置指定名称的参数
+        /// </summary>
+        /// <param name="name"> 参数名 </param>
+        /// <returns> </returns>
         public override string this[string name]
         {
             get
             {
-                var r = Params.Get(name, Location);
-                if (r.IsArray)
+                var r = Params.Get(Location, name);
+                if (r.IsMultiValue)
                 {
                     return string.Join(",", r.Values);
                 }
-                return (string)r.Value;
+                return (string) r.FirstValue;
             }
-            set
-            {
-                base[name] = value;
-            }
+            set { base[name] = value; }
         }
     }
 }

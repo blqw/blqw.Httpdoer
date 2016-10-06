@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace blqw.Web
+﻿namespace blqw.Web
 {
+    /// <summary>
+    /// 表示自动匹配的参数集合
+    /// </summary>
     public sealed class HttpParams : HttpParamsBase<object>
     {
-        internal HttpParams(IHttpParameterCollection @params)
-            :base(@params)
+        /// <summary>
+        /// 初始化参数集合
+        /// </summary>
+        /// <param name="params"></param>
+        internal HttpParams(IHttpParameterContainer @params)
+            : base(@params, HttpParamLocation.Auto)
         {
-
-        }
-        public override HttpParamLocation Location
-        {
-            get
-            {
-                return HttpParamLocation.Auto;
-            }
         }
     }
 }

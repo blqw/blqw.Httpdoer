@@ -24,6 +24,8 @@ static void Main(string[] args)
 #### [1.3.2] 2016.10.05
 * 优化自定义ContentType和Body时的编码方式
 * 优化日志输出
+* 优化代码格式
+* 完善注释
 
 #### [1.3.1] 2016.09.29 
 * 修复`Response.Headers`部分数据无法获取的问题

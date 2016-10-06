@@ -9,8 +9,8 @@ namespace Demo
 {
     public class Bing
     {
-        const string START = "<d:Text m:type=\"Edm.String\">";
-        const string END = "</d:Text>";
+        const string START = "<d:String m:type=\"Edm.String\">";
+        const string END = "</d:String>";
         const string AUTH_TOKEN = "Basic NjBhYzBhNmQtMzkwMi00YTYwLTlhODItOWVhMDU1OTA0OGVhOmVKNk1UY3FRa2tVMlZISWVrcWFLdFBBVi9yQW56Zi9RVGIzY1NCcHFSQkU9";
 
         public static string Translate(string text)

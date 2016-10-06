@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace blqw.Web
 {
@@ -17,31 +14,33 @@ namespace blqw.Web
         /// HTTP 头信息
         /// </summary>
         HttpHeaders Headers { get; }
+
         /// <summary>
         /// HTTP 请求查询参数
         /// </summary>
         HttpStringParams Query { get; }
+
         /// <summary>
         /// HTTP 请求路径参数
         /// </summary>
         HttpStringParams PathParams { get; }
+
         /// <summary>
         /// HTTP 请求正文
         /// </summary>
         HttpBody Body { get; }
+
         /// <summary>
         /// Cookie
         /// </summary>
         CookieContainer Cookies { get; set; }
+
         /// <summary>
         /// HTTP 参数,根据 Method 和 Path 来确定参数位置
         /// </summary>
         HttpParams Params { get; }
-        /// <summary> 
-        /// 请求编码
-        /// </summary>
-        Encoding Encoding { get; set; }
-        /// <summary> 
+
+        /// <summary>
         /// 超时时间
         /// </summary>
         TimeSpan Timeout { get; set; }

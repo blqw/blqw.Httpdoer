@@ -1,24 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace blqw.Web
+﻿namespace blqw.Web
 {
     /// <summary>
-    /// Body解析器
+    /// 列举所有系统Body解析器
     /// </summary>
     public static class HttpBodyParsers
     {
-        public static HttpBodyParserBase Default { get; } = HttpBodyDefaultParser.Instance;
-        public static HttpBodyParserBase Form { get; } = HttpFormBodyParser.Instance;
-        public static HttpBodyParserBase Json { get; } = HttpJsonBodyParser.Instance;
-        public static HttpBodyParserBase Null { get; } = HttpNullBodyParser.Instance;
-        public static HttpBodyParserBase Protobuf { get; } = HttpProtobufBodyParser.Instance;
-        public static HttpBodyParserBase Stream { get; } = HttpStreamBodyParser.Instance;
-        public static HttpBodyParserBase Text { get; } = HttpTextBodyParser.Instance;
-        public static HttpBodyParserBase XML { get; } = HttpXMLBodyParser.Instance;
+        /// <summary>
+        /// 默认解析器,当存在charset时解析为字符串,否则解析为字节流
+        /// </summary>
+        public static HttpBodyParserBase Default { get; } = new HttpBodyDefaultParser();
 
+        /// <summary>
+        /// 表单解析器,用于解析 x-www-form-urlencoded 格式的正文
+        /// </summary>
+        public static HttpBodyParserBase Form { get; } = new HttpFormBodyParser();
+
+        /// <summary>
+        /// Json解析器,用于解析 Json 格式的正文
+        /// </summary>
+        public static HttpBodyParserBase Json { get; } = new HttpJsonBodyParser();
+
+        /// <summary>
+        /// 空解析器,没有任何功能
+        /// </summary>
+        public static HttpBodyParserBase Null { get; } = new HttpNullBodyParser();
+
+        /// <summary>
+        /// Protobuf解析器,用于解析 Protobuf 格式的正文
+        /// </summary>
+        public static HttpBodyParserBase Protobuf { get; } = new HttpProtobufBodyParser();
+
+        /// <summary>
+        /// 流解析器,用于解析字节流形式的正文
+        /// </summary>
+        public static HttpBodyParserBase Stream { get; } = new HttpStreamBodyParser();
+
+        /// <summary>
+        /// 字符串解析器,用于字符串类型的正文,包括text,html,plain等
+        /// </summary>
+        public static HttpBodyParserBase String { get; } = new HttpStringBodyParser();
+
+        /// <summary>
+        /// XML解析器,用于解析 XML 格式的正文
+        /// </summary>
+        public static HttpBodyParserBase XML { get; } = new HttpXMLBodyParser();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using blqw.Web;
 using System.Net;
@@ -61,37 +62,70 @@ namespace UnitTest
             www.Body.Add("a", 7);
             www.Body.Add("a", new object[] { 8, 9 });
             Assert.AreEqual("1,2,3", www.Body["a"]);
-            var arr = www.Body.GetValues("a");
-            Assert.AreEqual(5, arr.Count);
+            var arr = www.Body.GetValues("a").ToArray();
+            Assert.AreEqual(4, arr.Length);
             Assert.AreEqual("1,2,3", arr[0]);
             Assert.AreEqual("4,5,6", arr[1]);
             Assert.AreEqual(7, arr[2]);
-            Assert.AreEqual(8, arr[3]);
-            Assert.AreEqual(9, arr[4]);
-
-            Assert.AreEqual("1,2,3,4,5,6,7,8,9", string.Join(",", www.Body.GetValues("a")));
+            Assert.IsInstanceOfType(arr[3], typeof(object[]));
+            Assert.AreEqual(8, ((object[])arr[3])[0]);
+            Assert.AreEqual(9, ((object[])arr[3])[1]);
+            
             www.Body.ContentType = HttpContentType.Form;
             Assert.AreEqual(
-                "a[]=1,2,3&a[]=4,5,6&a[]=7&a[]=8&a[]=9"
+                "a[]=1,2,3&a[]=4,5,6&a[]=7&a[][]=8&a[][]=9"
                 , Uri.UnescapeDataString(www.Body.ToString())
                 );
             www.Body.ContentType = HttpContentType.Json;
             var json = www.Body.ToString();
-            Assert.AreEqual("{\"a\":[\"1,2,3\",\"4,5,6\",7,8,9]}", json);
+            Assert.AreEqual("{\"a\":[\"1,2,3\",\"4,5,6\",7,[8,9]]}", json);
         }
 
 
         [TestMethod]
         public void 数组嵌套测试()
         {
-            var www = new HttpRequest();
-            www.Body.Add("a", new object[] {
-                 new[] { 1, 2 },
-                  new[] { 3, 4, 5 }
-            });
-            www.Body.ContentType = HttpContentType.Json;
-            var json = www.Body.ToString();
-            Assert.AreEqual("{\"a\":[[1,2],[3,4,5]]}", json);
+            {
+                var www = new HttpRequest();
+                www.Body.Add("a", new object[] {
+                     new[] { 1, 2 },
+                     new[] { 3, 4, 5 }
+                });
+                www.Body.ContentType = HttpContentType.Json;
+                var json = www.Body.ToString();
+                Assert.AreEqual("{\"a\":[[1,2],[3,4,5]]}", json);
+            }
+
+            {
+                var www = new HttpRequest();
+                www.Body.Add("a", new object[] {
+                     new[] { 1, 2 },
+                });
+                www.Body.ContentType = HttpContentType.Json;
+                var json = www.Body.ToString();
+                Assert.AreEqual("{\"a\":[[1,2]]}", json);
+            }
+
+            {
+                var www = new HttpRequest();
+                www.Body.Add("a", new[] { 1, 2 });
+                www.Body.Add("a", new[] { 3, 4, 5 });
+                www.Body.ContentType = HttpContentType.Json;
+                var json = www.Body.ToString();
+                Assert.AreEqual("{\"a\":[[1,2],[3,4,5]]}", json);
+            }
+
+            {
+                var www = new HttpRequest();
+                www.Body.Add("a", new object[] {
+                     new[] { 1, 2 },
+                     new[] { 3, 4, 5 }
+                });
+                www.Body.Add("a", new[] { 6, 7, 8 });
+                www.Body.ContentType = HttpContentType.Json;
+                var json = www.Body.ToString();
+                Assert.AreEqual("{\"a\":[[[1,2],[3,4,5]],[6,7,8]]}", json);
+            }
         }
 
 
@@ -116,7 +150,6 @@ namespace UnitTest
             www.Cookies.Add(new Uri("http://www.baidu.com"), new Cookie("sessionid", "123456789"));
             www.Body.AddModel(model);
             www.Method = HttpRequestMethod.Post;
-            www.Encoding = System.Text.Encoding.Default;
             www.Body.ContentType = HttpContentType.Json;
             www.GetString();
         }

@@ -1,35 +1,53 @@
-﻿using blqw.IOC;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using blqw.IOC;
 
 namespace blqw.Web
 {
-    internal class HttpJsonBodyParser : HttpBodyParserBase
+    /// <summary>
+    /// Json解析器,用于解析 Json 格式的正文
+    /// </summary>
+    internal sealed class HttpJsonBodyParser : HttpBodyParserBase
     {
-        public static HttpJsonBodyParser Instance { get; } = new HttpJsonBodyParser();
-
+        /// <summary>
+        /// 将字节流转换为键值对枚举
+        /// </summary>
+        /// <param name="bytes"> </param>
+        /// <param name="formatProvider"> 它提供有关当前实例的格式信息 </param>
+        /// <returns> </returns>
         public override IEnumerable<KeyValuePair<string, object>> Deserialize(byte[] bytes, IFormatProvider formatProvider)
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (Dictionary<string, object>)Components.ToJsonObject(typeof(Dictionary<string, object>), json);
+            return (Dictionary<string, object>) ComponentServices.ToJsonObject(typeof(Dictionary<string, object>), json);
         }
 
+        /// <summary>
+        /// 将正文格式化为字节流
+        /// </summary>
+        /// <param name="format"> 包含格式规范的格式字符串 </param>
+        /// <param name="body"> 请求或响应正文 </param>
+        /// <param name="formatProvider"> 它提供有关当前实例的格式信息 </param>
+        /// <returns> </returns>
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
-            var json = Components.ToJsonString(body);
+            var json = ComponentServices.ToJsonString(body);
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             return charset.GetBytes(json);
         }
 
+        /// <summary>
+        /// 将字节流转换为指定对象
+        /// </summary>
+        /// <param name="bytes"> </param>
+        /// <param name="formatProvider"> 它提供有关当前实例的格式信息 </param>
+        /// <returns> </returns>
         public override T Deserialize<T>(byte[] bytes, IFormatProvider formatProvider)
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (T)Components.ToJsonObject(typeof(T), json);
+            return (T) ComponentServices.ToJsonObject(typeof(T), json);
         }
     }
 }

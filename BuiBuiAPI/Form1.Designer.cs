@@ -578,7 +578,7 @@
             // colResponseHeaderValue
             // 
             this.colResponseHeaderValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colResponseHeaderValue.DataPropertyName = "Value";
+            this.colResponseHeaderValue.DataPropertyName = "FirstValue";
             this.colResponseHeaderValue.FillWeight = 80F;
             this.colResponseHeaderValue.HeaderText = "值";
             this.colResponseHeaderValue.MinimumWidth = 200;
@@ -632,7 +632,7 @@
             // 
             // colResponseCookieValue
             // 
-            this.colResponseCookieValue.DataPropertyName = "Value";
+            this.colResponseCookieValue.DataPropertyName = "FirstValue";
             this.colResponseCookieValue.HeaderText = "值";
             this.colResponseCookieValue.Name = "colResponseCookieValue";
             this.colResponseCookieValue.ReadOnly = true;

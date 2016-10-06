@@ -90,7 +90,7 @@ namespace blqw.Web.Extensions
                     case "System.Collections":
                     case "System.Collections.Generic":
                     case "System.Data":
-                    case "System.Text":
+                    case "System.String":
                     case "System.IO":
                     case "System.Collections.Specialized":
                         name = t.Name;
