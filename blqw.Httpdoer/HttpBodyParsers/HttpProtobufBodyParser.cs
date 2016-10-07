@@ -20,6 +20,15 @@ namespace blqw.Web
         }
 
         /// <summary>
+        /// 匹配解析器,返回 true 表示匹配成功
+        /// </summary>
+        /// <param name="type"> 类型 </param>
+        /// <param name="format"> 格式 </param>
+        /// <returns></returns>
+        public override bool IsMatch(string type, string format)
+            => format?.Length == 8 && format.EndsWith("protobuf", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
         /// 暂未实现
         /// </summary>
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)

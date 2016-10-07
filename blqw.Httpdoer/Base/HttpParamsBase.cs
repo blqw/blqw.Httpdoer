@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace blqw.Web
 {
@@ -9,7 +10,7 @@ namespace blqw.Web
     /// 用于表示一种类型 HTTP 参数集合的抽象基类
     /// </summary>
     /// <typeparam name="T"> </typeparam>
-    public abstract class HttpParamsBase<T> : IEnumerable<KeyValuePair<string, object>>
+    public abstract class HttpParamsBase<T> : IEnumerable<KeyValuePair<string, object>>, IObjectReference
     {
         /// <summary>
         /// 初始化 Http参数集合
@@ -44,7 +45,7 @@ namespace blqw.Web
         /// <returns> </returns>
         public virtual T this[string name]
         {
-            get { return (T)Params.GetValue(Location, name); }
+            get { return (T) Params.GetValue(Location, name); }
             set { Params.SetValue(Location, name, value); }
         }
 
@@ -63,6 +64,8 @@ namespace blqw.Web
         /// <returns> 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator" /> 对象。 </returns>
         /// <filterpriority> 2 </filterpriority>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        object IObjectReference.GetRealObject(StreamingContext context) => new InnerDictionary(this);
 
         /// <summary>
         /// 设置参数
@@ -83,7 +86,7 @@ namespace blqw.Web
         /// </summary>
         /// <param name="name"> 参数名 </param>
         /// <returns> </returns>
-        public T Get(string name) => (T)Params.GetValue(Location, name);
+        public T Get(string name) => (T) Params.GetValue(Location, name);
 
         /// <summary>
         /// 获取指定名称的参数值
@@ -108,8 +111,96 @@ namespace blqw.Web
         /// <summary>
         /// 判断指定名称的参数是否存在
         /// </summary>
-        /// <param name="name">待判断的参数名称</param>
-        /// <returns></returns>
+        /// <param name="name"> 待判断的参数名称 </param>
+        /// <returns> </returns>
         public bool Contains(string name) => Params.Contains(Location, name);
+
+        private class InnerDictionary : IDictionary<string, object>
+        {
+            private readonly HttpParamsBase<T> _params;
+
+            public InnerDictionary(HttpParamsBase<T> @params)
+            {
+                _params = @params;
+            }
+
+            public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+                => (from item in _params.Params
+                    where item.Location == _params.Location
+                    select new KeyValuePair<string, object>(item.Name, item.Value)).GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator()
+                => (from item in _params.Params
+                    where item.Location == _params.Location
+                    select new KeyValuePair<string, object>(item.Name, item.Value)).GetEnumerator();
+
+            public int Count => (from item in _params.Params where item.Location == _params.Location select 1).Count();
+
+            public bool ContainsKey(string key)
+                => _params.Contains(key);
+
+            public bool TryGetValue(string key, out object value)
+            {
+                if (_params.Contains(key))
+                {
+                    value = _params.Get(key);
+                    return true;
+                }
+                value = null;
+                return false;
+            }
+
+            public void Add(string key, object value)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Remove(string key)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Add(KeyValuePair<string, object> item)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Clear()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Contains(KeyValuePair<string, object> item)
+                => ContainsKey(item.Key);
+
+            public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Remove(KeyValuePair<string, object> item)
+            {
+                throw new NotImplementedException();
+            }
+
+
+            public object this[string key]
+            {
+                get { return _params.Get(key); }
+                set { throw new NotImplementedException(); }
+            }
+
+            ICollection<string> IDictionary<string, object>.Keys
+                => (from item in _params.Params
+                    where item.Location == _params.Location
+                    select item.Name).ToList();
+
+            ICollection<object> IDictionary<string, object>.Values
+                => (from item in _params.Params
+                    where item.Location == _params.Location
+                    select item.Value).ToList();
+
+            public bool IsReadOnly => true;
+        }
     }
 }

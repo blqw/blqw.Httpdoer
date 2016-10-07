@@ -32,6 +32,24 @@ namespace blqw.Web
         }
 
         /// <summary>
+        /// 匹配解析器,返回 true 表示匹配成功
+        /// </summary>
+        /// <param name="type"> 类型 </param>
+        /// <param name="format"> 格式 </param>
+        /// <returns></returns>
+        public override bool IsMatch(string type, string format)
+        {
+            switch (format?.Length)
+            {
+                case 4:
+                    return format.EndsWith("html", StringComparison.OrdinalIgnoreCase);
+                case 5:
+                    return format.EndsWith("plain", StringComparison.OrdinalIgnoreCase);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 将正文格式化为字节流
         /// </summary>
         /// <param name="format"> 包含格式规范的格式字符串 </param>

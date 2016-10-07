@@ -21,6 +21,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.4.0-beta]2016.10.07
+* 使用IOC优化自定义`ContentType`的处理方式
+* 更新`blqw.IOC`
+
 #### [1.3.2] 2016.10.05
 * 优化自定义ContentType和Body时的编码方式
 * 优化日志输出

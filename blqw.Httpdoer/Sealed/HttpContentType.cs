@@ -234,7 +234,7 @@ namespace blqw.Web
             if ((formatType == typeof(IHttpBodyParser))
                 || (formatType == typeof(ICustomFormatter)))
             {
-                return _Parser ?? HttpBodyParserFactory.Get(Type, Format);
+                return _Parser ?? HttpBodyParsers.Get(Type, Format);
             }
             if (formatType == typeof(Encoding))
             {

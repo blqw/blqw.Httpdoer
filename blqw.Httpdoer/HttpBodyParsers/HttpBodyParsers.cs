@@ -1,10 +1,22 @@
-﻿namespace blqw.Web
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using blqw.IOC;
+
+namespace blqw.Web
 {
     /// <summary>
     /// 列举所有系统Body解析器
     /// </summary>
     public static class HttpBodyParsers
     {
+        private static readonly List<IHttpBodyParser> _Cache;
+
+        static HttpBodyParsers()
+        {
+            _Cache = MEF.PlugIns.GetExports<IHttpBodyParser>().ToList();
+        }
+
         /// <summary>
         /// 默认解析器,当存在charset时解析为字符串,否则解析为字节流
         /// </summary>
@@ -44,5 +56,13 @@
         /// XML解析器,用于解析 XML 格式的正文
         /// </summary>
         public static HttpBodyParserBase XML { get; } = new HttpXMLBodyParser();
+
+        /// <summary>
+        /// 获取一个匹配的解析器
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="format"></param>
+        public static IHttpBodyParser Get(string type, string format) 
+            => _Cache.FirstOrDefault(it => it.IsMatch(type, format));
     }
 }

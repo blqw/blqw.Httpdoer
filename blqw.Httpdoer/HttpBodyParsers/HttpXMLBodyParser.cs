@@ -27,9 +27,18 @@ namespace blqw.Web
             var charset = GetEncoding(formatProvider) ?? Encoding.Default;
             using (var stream = new StreamReader(new MemoryStream(bytes), charset))
             {
-                return (Dictionary<string, object>) _XmlDeserializer.Deserialize(stream);
+                return (Dictionary<string, object>)_XmlDeserializer.Deserialize(stream);
             }
         }
+
+        /// <summary>
+        /// 匹配解析器,返回 true 表示匹配成功
+        /// </summary>
+        /// <param name="type"> 类型 </param>
+        /// <param name="format"> 格式 </param>
+        /// <returns></returns>
+        public override bool IsMatch(string type, string format)
+            => format?.Length == 3 && format.EndsWith("xml", StringComparison.OrdinalIgnoreCase);
 
 
         /// <summary>

@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 namespace blqw.Web
 {
     /// <summary>
     /// 表示一个正文解析器
     /// </summary>
+    [InheritedExport(typeof(IHttpBodyParser))]
     public interface IHttpBodyParser : ICustomFormatter
     {
+        /// <summary>
+        /// 匹配解析器,返回 true 表示匹配成功
+        /// </summary>
+        /// <param name="type"> 类型 </param>
+        /// <param name="format"> 格式 </param>
+        /// <returns></returns>
+        bool IsMatch(string type, string format);
+
         /// <summary>
         /// 将正文格式化为字节流
         /// </summary>

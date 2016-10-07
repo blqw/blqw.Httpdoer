@@ -19,6 +19,15 @@ namespace blqw.Web
             IFormatProvider formatProvider) => new[] { new KeyValuePair<string, object>(null, bytes) };
 
         /// <summary>
+        /// 匹配解析器,返回 true 表示匹配成功
+        /// </summary>
+        /// <param name="type"> 类型 </param>
+        /// <param name="format"> 格式 </param>
+        /// <returns></returns>
+        public override bool IsMatch(string type, string format)
+            => format?.Length == 6 && format.EndsWith("stream", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
         /// 将正文格式化为字节流
         /// </summary>
         /// <param name="format"> 包含格式规范的格式字符串 </param>

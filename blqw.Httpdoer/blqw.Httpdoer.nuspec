@@ -13,8 +13,9 @@
     <description>$description$</description>
     <releaseNotes>
       HTTP 请求客户端,支持rest
-      2016.07.26
-      * 修复不设置Method的情况下报错的问题
+      #### [1.4.0-beta]2016.10.07
+      * 使用IOC优化自定义`ContentType`的处理方式
+      * 更新`blqw.IOC`
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>

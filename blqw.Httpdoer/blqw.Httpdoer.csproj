@@ -34,8 +34,8 @@
     <DocumentationFile>bin\Release\blqw.Httpdoer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="blqw.IOC, Version=1.3.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\blqw.IOC.1.3.2\lib\net45\blqw.IOC.dll</HintPath>
+    <Reference Include="blqw.IOC, Version=1.3.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\blqw.IOC.1.3.5\lib\net45\blqw.IOC.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -72,7 +72,6 @@
     <Compile Include="HttpBodyParsers\HttpJsonBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpProtobufBodyParser.cs" />
     <Compile Include="HttpBodyParsers\HttpXMLBodyParser.cs" />
-    <Compile Include="Interface\IHttpBodyParserFactory.cs" />
     <Compile Include="Sealed\HttpContentTypes.cs" />
     <Compile Include="Sealed\HttpCookieMode.cs" />
     <Compile Include="Sealed\HttpUrlEncodedBuilder.cs" />
@@ -80,7 +79,6 @@
     <Compile Include="Params\HttpBody.cs" />
     <Compile Include="Interface\IHttpBodyParser.cs" />
     <Compile Include="Interface\IHttpParameterContainer.cs" />
-    <Compile Include="Sealed\HttpBodyParserFactory.cs" />
     <Compile Include="Clients\HttpClientSync.cs" />
     <Compile Include="Sealed\HttpContentType.cs" />
     <Compile Include="Params\HttpHeaders.cs" />
