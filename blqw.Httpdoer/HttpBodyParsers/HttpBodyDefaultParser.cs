@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 
 namespace blqw.Web
@@ -45,7 +46,19 @@ namespace blqw.Web
 
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
-            throw new NotImplementedException();
+            var data = body.FirstOrDefault(it => it.Key == null).Value;
+            var bytes = data as byte[];
+            if (bytes != null)
+            {
+                return bytes;
+            }
+            var charset = formatProvider?.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
+            var str = data as string;
+            if (str != null)
+            {
+                return charset.GetBytes(str);
+            }
+            throw new NotSupportedException("不支持");
         }
     }
 }

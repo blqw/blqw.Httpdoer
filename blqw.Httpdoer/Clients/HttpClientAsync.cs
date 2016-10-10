@@ -172,7 +172,13 @@ namespace blqw.Web
                 var url = response.RequestMessage.RequestUri;
                 foreach (var cookie in cookieHeader)
                 {
-                    cookies.SetCookies(url, cookie);
+                    try
+                    {
+                        cookies.SetCookies(url, cookie);
+                    }
+                    catch (CookieException ex)
+                    {
+                    }
                 }
             }
             return cookies;

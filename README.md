@@ -21,6 +21,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.4.1-beta]2016.10.07
+* 修复访问某些网站或者API时返回`分析URI“xxx”的 Cookie 标头时出错`的问题
+
 #### [1.4.0-beta]2016.10.07
 * 使用IOC优化自定义`ContentType`的处理方式
 * 更新`blqw.IOC`
