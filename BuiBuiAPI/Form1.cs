@@ -49,7 +49,7 @@ namespace BuiBuiAPI
             }
             RefreshHistory();
             RefreshFavorite();
-            cbbEncoding.DataSource = Encoding.GetEncodings().Select(it => it.GetEncoding()).OrderBy(it=>it.WebName).ToList();
+            cbbEncoding.DataSource = Encoding.GetEncodings().Select(it => it.GetEncoding()).OrderBy(it => it.WebName).ToList();
             cbbEncoding.DisplayMember = "WebName";
         }
 
@@ -304,7 +304,15 @@ namespace BuiBuiAPI
             //返回正文
             rtxtResponseBody.Tag = response?.Body?.ResponseBody;
             //设置编码
-            cbbEncoding.Text = response?.Body?.ContentType.Charset?.WebName;
+            var encoding = response?.Body?.ContentType.Charset?.WebName;
+            if (encoding == cbbEncoding.Text)
+            {
+                cbbEncoding_SelectedIndexChanged(cbbEncoding, EventArgs.Empty);
+            }
+            else
+            {
+                cbbEncoding.Text = response?.Body?.ContentType.Charset?.WebName;
+            }
 
             txtRequestRaw.Text = response?.RequestData.Raw;
             txtResponseRaw.Text = response?.ResponseRaw;

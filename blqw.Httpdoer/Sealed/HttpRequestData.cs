@@ -72,6 +72,11 @@ namespace blqw.Web
             Url = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
             Headers = new List<KeyValuePair<string, string>>();
             request.OnParamsExtracting();
+            if (request.Headers.AutoAddDefaultHeaders)
+            {
+                request.Headers.AddDefaultHeaders();
+            }
+            //插入默认头
             List<KeyValuePair<string, object>> bodyparams;
             FindParams(request, out bodyparams);
             Body = parser.Serialize(null, bodyparams, _provider);
@@ -93,21 +98,15 @@ namespace blqw.Web
                     Url += url.Query + "&" + query + url.Fragment;
                 }
             }
-            //插入默认头
-            if (request.Headers.AutoAddDefaultHeaders)
-            {
-                request.Headers.AddDefaultHeaders();
-
-                if (request.Headers.Contains("Host") == false)
-                {
-                    AddHeader("Host", new[] { url.Host });
-                }
-            }
             if (Method == null)
             {
                 Method = Body?.Length > 0 ? "POST" : "GET";
             }
 
+            if (request.Headers.AutoAddDefaultHeaders && request.Headers.Contains("Host") == false)
+            {
+                AddHeader("Host", new[] { url.Host });
+            }
             if (request.CookieMode == HttpCookieMode.None)
             {
                 return;
