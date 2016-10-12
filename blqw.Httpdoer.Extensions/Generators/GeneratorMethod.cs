@@ -121,7 +121,7 @@ namespace blqw.Web.Extensions
                     {
                         return "GetBytes" + @async;
                     }
-                    else if (type != null && type != typeof(void))
+                    else if (type == null || type == typeof(void))
                     {
                         return "Send" + @async;
                     }

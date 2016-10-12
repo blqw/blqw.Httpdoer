@@ -13,6 +13,8 @@
     <description>$description$</description>
     <releaseNotes>
       Httpdoer 扩展组件
+      [1.2.1] 2016.10.12
+      修复返回值为具体类型时报错的问题
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw Httpdoer</tags>
