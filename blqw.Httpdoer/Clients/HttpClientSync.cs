@@ -91,7 +91,7 @@ namespace blqw.Web
                     continue;
                 }
                 //防止中文引起的头信息乱码
-                    var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
+                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
                 HeaderAddInternal(www.Headers, header.Key, transfer);
             }
             if (data.Body?.Length > 0)
@@ -104,7 +104,7 @@ namespace blqw.Web
             }
 
             www.CookieContainer = data.Cookies;
-            
+
             return www;
         }
 

@@ -121,35 +121,44 @@ namespace blqw.Web
             {
                 return;
             }
-            if (request.CookieMode.HasFlag(HttpCookieMode.CustomOrCache))
+
+            Cookies = new CookieContainer();
+            switch (request.CookieMode)
             {
-                Cookies = new CookieContainer();
-
-                var cookies = request.Cookies?.GetCookies(Host);
-
-                if (cookies == null)
-                {
-                    Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
-                }
-                else
-                {
-                    Cookies.Add(cookies);
-                    foreach (Cookie c in HttpRequest.LocalCookies.GetCookies(Host))
+                case HttpCookieMode.ApplicationCache:
+                    var cookies0 = HttpRequest.LocalCookies.GetCookies(Host);
+                    if (cookies0 != null && cookies0.Count > 0)
                     {
-                        if (cookies[c.Name] == null)
+                        Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
+                    }
+                    break;
+                case HttpCookieMode.UserCustom:
+                    var cookies1 = request.Cookies?.GetCookies(Host);
+                    if (cookies1 != null && cookies1.Count > 0)
+                    {
+                        Cookies.Add(cookies1);
+                    }
+                    break;
+                case HttpCookieMode.CustomOrCache:
+                    var cookies2 = request.Cookies?.GetCookies(Host);
+                    if (cookies2 == null || cookies2.Count == 0)
+                    {
+                        goto case HttpCookieMode.ApplicationCache;
+                    }
+                    else
+                    {
+                        Cookies.Add(cookies2);
+                        foreach (Cookie c in HttpRequest.LocalCookies.GetCookies(Host))
                         {
-                            Cookies.Add(c);
+                            if (cookies2[c.Name] == null)
+                            {
+                                Cookies.Add(c);
+                            }
                         }
                     }
-                }
-            }
-            else if (request.CookieMode.HasFlag(HttpCookieMode.ApplicationCache))
-            {
-                Cookies = HttpRequest.LocalCookies;
-            }
-            else if (request.CookieMode.HasFlag(HttpCookieMode.UserCustom))
-            {
-                Cookies = request.Cookies;
+                    break;
+                default:
+                    break;
             }
 
             var cookie = Cookies.GetCookieHeader(Host);
