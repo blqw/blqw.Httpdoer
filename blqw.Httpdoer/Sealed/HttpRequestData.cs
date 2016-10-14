@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -23,6 +24,7 @@ namespace blqw.Web
         public HttpRequestData(IHttpRequest request)
             : this()
         {
+            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : request.Timeout;
             Request = request;
             Method = request.HttpMethod;
             var url = URIEx.GetFullURL(request.BaseUrl, request.Path);
@@ -122,52 +124,27 @@ namespace blqw.Web
                 return;
             }
 
-            Cookies = new CookieContainer();
             switch (request.CookieMode)
             {
                 case HttpCookieMode.ApplicationCache:
-                    var cookies0 = HttpRequest.LocalCookies.GetCookies(Host);
-                    if (cookies0 != null && cookies0.Count > 0)
-                    {
-                        Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
-                    }
+                    Cookies = HttpRequest.LocalCookies;
                     break;
                 case HttpCookieMode.UserCustom:
-                    var cookies1 = request.Cookies?.GetCookies(Host);
-                    if (cookies1 != null && cookies1.Count > 0)
-                    {
-                        Cookies.Add(cookies1);
-                    }
+                    Cookies = request.Cookies;
                     break;
                 case HttpCookieMode.CustomOrCache:
-                    var cookies2 = request.Cookies?.GetCookies(Host);
-                    if (cookies2 == null || cookies2.Count == 0)
+                    Cookies = request.Cookies;
+                    var cookies = HttpRequest.LocalCookies?.GetCookies(Host); //加载全局缓存Cookie
+                    if (cookies != null)
                     {
-                        goto case HttpCookieMode.ApplicationCache;
-                    }
-                    else
-                    {
-                        Cookies.Add(cookies2);
-                        foreach (Cookie c in HttpRequest.LocalCookies.GetCookies(Host))
-                        {
-                            if (cookies2[c.Name] == null)
-                            {
-                                Cookies.Add(c);
-                            }
-                        }
+                        Cookies.Add(cookies);
                     }
                     break;
                 default:
                     break;
             }
-
-            var cookie = Cookies.GetCookieHeader(Host);
-            if (string.IsNullOrWhiteSpace(cookie) == false)
-            {
-                Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
-            }
         }
-        
+
 
         /// <summary>
         /// 添加头
@@ -221,7 +198,7 @@ namespace blqw.Web
 
         private readonly IFormatProvider _provider;
 
-        public CookieContainer Cookies { get; private set; }
+        public CookieContainer Cookies { get; }
 
         /// <summary>
         /// 请求地址
@@ -271,7 +248,12 @@ namespace blqw.Web
         /// <summary>
         /// 请求方案/版本 ({Scheme.ToUpperInvariant()}/{SchemeVersion})
         /// </summary>
-        public string SchemeVersion { get; private set; }
+        public string SchemeVersion { get; }
+
+        /// <summary>
+        /// 超时时间
+        /// </summary>
+        public TimeSpan Timeout { get; }
 
         private Dictionary<string, object> GetBodyParams(IHttpRequest request)
         {

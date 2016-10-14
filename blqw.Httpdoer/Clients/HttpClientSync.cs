@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace blqw.Web
 {
@@ -40,13 +41,13 @@ namespace blqw.Web
                 request.OnSending();
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.Sent();
-                request.Response = Transfer(request.CookieMode, response);
+                request.Response = Transfer(response, request.CookieMode != HttpCookieMode.None);
                 request.OnEnd(request.Response);
             }
             catch (WebException ex)
             {
                 timer.Error();
-                var res = Transfer(request.CookieMode, (HttpWebResponse)ex.Response);
+                var res = Transfer((HttpWebResponse)ex.Response, request.CookieMode != HttpCookieMode.None);
                 res.Exception = ex;
                 request.Response = res;
                 request.OnError(res);
@@ -69,10 +70,10 @@ namespace blqw.Web
             request.Version = data.Version;
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
-            www.Timeout = (int)request.Timeout.TotalMilliseconds;
+            www.Timeout = data.Timeout.TotalMilliseconds >= int.MaxValue ? int.MaxValue : (int)data.Timeout.TotalMilliseconds;
             www.Method = data.Method;
             www.AllowAutoRedirect = request.AutoRedirect;
-
+            
             //必须要先设置头再设置body,否则头会被清掉
             foreach (var header in data.Headers)
             {
@@ -108,7 +109,7 @@ namespace blqw.Web
             return www;
         }
 
-        private static HttpResponse Transfer(HttpCookieMode mode, HttpWebResponse response)
+        private static HttpResponse Transfer(HttpWebResponse response, bool useCookies)
         {
             if (response == null)
             {
@@ -130,13 +131,14 @@ namespace blqw.Web
                     }
                 }
                 res.Body = new HttpBody(contentType, GetBytes(response));
-                if (mode != HttpCookieMode.None)
+                if (useCookies)
                 {
                     res.Cookies = response.Cookies;
-                    if (mode.HasFlag(HttpCookieMode.ApplicationCache))
-                    {
-                        HttpRequest.LocalCookies.Add(response.Cookies);
-                    }
+                    //res.Cookies = new CookieCollection();
+                    //foreach (var cookie in response.Cookies.Cast<Cookie>().Where(it=>!it.Expired))
+                    //{
+                    //    res.Cookies.Add(cookie);
+                    //}
                 }
                 res.StatusCode = response.StatusCode;
                 res.Status = response.StatusDescription;
@@ -267,13 +269,13 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_WebRequest.EndGetResponse(ar);
                         _Timer.Sent();
-                        Response = Request.Response = Transfer(Request.CookieMode, response);
+                        Response = Request.Response = Transfer(response, _Request.CookieMode != HttpCookieMode.None);
                         (Request as IHttpTracking)?.OnEnd(Request, Response);
                     }
                     catch (WebException ex)
                     {
                         _Timer.Error();
-                        var res = Transfer(Request.CookieMode, (HttpWebResponse)ex.Response);
+                        var res = Transfer((HttpWebResponse)ex.Response, _Request.CookieMode != HttpCookieMode.None);
                         res.Exception = ex;
                         Response = Request.Response = res;
                         (Request as IHttpTracking)?.OnError(Request, Response);

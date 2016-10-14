@@ -13,7 +13,7 @@ namespace blqw.Web
 {
     public sealed class HttpClientAsync : IHttpClient
     {
-        static readonly System.Net.Http.HttpClient _Client = GetOnlyHttpClient();
+        static readonly HttpClient _Client = GetOnlyHttpClient();
 
         private static System.Net.Http.HttpClient GetOnlyHttpClient()
         {
@@ -23,7 +23,7 @@ namespace blqw.Web
             handler.UseCookies = false;
             handler.AutomaticDecompression = DecompressionMethods.GZip;
             handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
-            var www = new System.Net.Http.HttpClient(handler);
+            var www = new HttpClient(handler);
             www.Timeout = new TimeSpan(0, 0, 30);
             www.MaxResponseContentBufferSize = int.MaxValue;
             return www;
@@ -40,7 +40,7 @@ namespace blqw.Web
                 var www = GetRequest(data);
                 timer.Readied();
                 request.OnSending();
-                using (var source1 = new CancellationTokenSource(request.Timeout))
+                using (var source1 = new CancellationTokenSource(data.Timeout.TotalMilliseconds >= int.MaxValue ? int.MaxValue : (int)data.Timeout.TotalMilliseconds))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
                 {
                     var response = await _Client.SendAsync(www, source2.Token);
@@ -50,16 +50,14 @@ namespace blqw.Web
                     {
                         request.Debug("StatusCode=302; 正在重定向...");
                         www = GetRequest(data, response.Headers.Location); //构建新的请求
-                        cookies = GetCookies(request.CookieMode | HttpCookieMode.UserCustom, response, cookies); //302时必须使用 cookie
-                        var cookie = cookies?.GetCookieHeader(new Uri(www.RequestUri, "/"));
-                        if (string.IsNullOrWhiteSpace(cookie) == false)
+                        if (cookies == null)
                         {
-                            www.Headers.Add("Cookie", cookie);
-                            data.Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
+                            cookies = new CookieContainer(); //302时必须使用 cookie
                         }
+                        SetCookies(response, cookies);
                         response = await _Client.SendAsync(www, source2.Token);
                     }
-                    request.Response = (await Transfer(request.CookieMode, response, cookies));
+                    request.Response = await Transfer(response, request.CookieMode != HttpCookieMode.None ? cookies : null);
                     request.OnEnd(request.Response);
                 }
             }
@@ -85,14 +83,14 @@ namespace blqw.Web
         }
 
 
-        private async Task<HttpResponse> Transfer(HttpCookieMode mode, HttpResponseMessage response, CookieContainer customCache)
+        private async Task<HttpResponse> Transfer(HttpResponseMessage response, CookieContainer cookies)
         {
             if (response == null)
             {
-                return new HttpResponse() { StatusCode = 0 };
+                return new HttpResponse { StatusCode = 0 };
             }
             var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
-            var res = new HttpResponse()
+            var res = new HttpResponse
             {
                 Headers = new HttpHeaders(),
             };
@@ -115,9 +113,9 @@ namespace blqw.Web
                 var body = await response.Content.ReadAsByteArrayAsync();
                 res.Body = new HttpBody(contentType, body);
 
-                var cookies = GetCookies(mode, response, customCache);
+                SetCookies(response, cookies);
                 res.Cookies = cookies?.GetCookies(response.RequestMessage.RequestUri);
-
+                
                 res.StatusCode = response.StatusCode;
                 res.Status = response.ReasonPhrase;
                 res.SchemeVersion = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
@@ -126,31 +124,30 @@ namespace blqw.Web
             return res;
         }
 
-        private CookieContainer GetCookies(HttpCookieMode mode, HttpResponseMessage response, CookieContainer customCache)
+        private void SetCookies(HttpResponseMessage response, CookieContainer cookies)
         {
-            if (mode == HttpCookieMode.None)
+            if (cookies == null)
             {
-                return null;
+                return;
             }
-            var cookies = mode.HasFlag(HttpCookieMode.ApplicationCache)
-                        ? HttpRequest.LocalCookies
-                        : customCache ?? new CookieContainer();
-
+            var url = response.RequestMessage.RequestUri;
             IEnumerable<string> cookieHeader;
             if (response.Headers.TryGetValues("Set-Cookie", out cookieHeader))
             {
-                var url = response.RequestMessage.RequestUri;
                 foreach (var cookie in cookieHeader)
                 {
                     cookies.SetCookies(url, cookie);
                 }
             }
-            return cookies;
         }
 
         private HttpRequestMessage GetRequest(HttpRequestData data, Uri redirect = null)
         {
-            var url = redirect?.ToString() ?? data.Url;
+            var url = data.Url;
+            if (redirect != null)
+            {
+                url = new Uri(new Uri(data.Url), redirect).ToString();
+            }
             var request = data.Request;
             request.Debug(url);
             var www = new HttpRequestMessage(GetHttpMethod(request), url)

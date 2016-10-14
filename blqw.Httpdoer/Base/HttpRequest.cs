@@ -82,11 +82,33 @@ namespace blqw.Web
         {
             get
             {
-                return _Cookies ?? (_Cookies = new CookieContainer());
+                switch (CookieMode)
+                {
+                    case HttpCookieMode.None:
+                        return null;
+                    case HttpCookieMode.ApplicationCache:
+                        return LocalCookies;
+                    case HttpCookieMode.UserCustom:
+                    case HttpCookieMode.CustomOrCache:
+                        return _Cookies ?? (_Cookies = new CookieContainer());
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(CookieMode));
+                }
             }
             set
             {
-                _Cookies = value;
+                switch (CookieMode)
+                {
+                    case HttpCookieMode.None:
+                    case HttpCookieMode.ApplicationCache:
+                        throw new NotSupportedException($"无法设置Cookie,请先设置{nameof(CookieMode)}为{HttpCookieMode.UserCustom}或{HttpCookieMode.CustomOrCache}");
+                    case HttpCookieMode.UserCustom:
+                    case HttpCookieMode.CustomOrCache:
+                        _Cookies = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
         public Encoding Encoding { get; set; }
@@ -196,7 +218,7 @@ namespace blqw.Web
         {
             return _AllParams.GetEnumerator();
         }
-        
+
 
         IHttpResponse _Response;
         /// <summary>
