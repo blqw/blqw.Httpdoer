@@ -120,7 +120,7 @@ namespace blqw.Web
                     SetCookies(response, cookies);
                     res.Cookies = cookies.GetCookies(response.RequestMessage.RequestUri);
                 }
-                
+
                 res.StatusCode = response.StatusCode;
                 res.Status = response.ReasonPhrase;
                 res.SchemeVersion = $"{response.RequestMessage.RequestUri.Scheme.ToUpperInvariant()}/{response.Version}";
@@ -180,7 +180,7 @@ namespace blqw.Web
                 }
             }
 
-            var cookieHeader = data.Cookies?.GetCookieHeader(redirect ?? data.Host);
+            var cookieHeader = data.Cookies?.GetCookieHeader(redirect?.IsAbsoluteUri == true ? redirect : data.Host);
             if (!string.IsNullOrWhiteSpace(cookieHeader))
             {
                 www.Headers.Add("Cookie", cookieHeader);
