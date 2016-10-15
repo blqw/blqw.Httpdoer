@@ -34,6 +34,7 @@ namespace blqw.Web
             Params = new HttpParams(@params);
             _AllParams = @params;
             Timeout = new TimeSpan(0, 0, 15);
+            CookieMode = HttpCookieMode.ApplicationCache;
             if (DefaultLogger != null)
             {
                 Loggers.Add(DefaultLogger);

@@ -68,7 +68,7 @@ namespace UnitTest
             Assert.IsTrue(www.Cookies.Count > 0);
             Assert.IsTrue(res.Cookies.Count > 0);
         }
-        
+
         [TestMethod]
         public void 测试同步模式下的Cookie_ApplicationCache()
         {
@@ -154,41 +154,6 @@ namespace UnitTest
             Assert.IsTrue(www.Cookies != HttpRequest.LocalCookies);
             Assert.IsTrue(www.Cookies.Count == count + 1);
             Assert.IsTrue(res.Cookies.Count > 0);
-        }
-
-        [TestMethod]
-        public async Task 测试Cookie()
-        {
-            var www = new Httpdoer("http://i.baidu.com/");
-            www.CookieMode = HttpCookieMode.UserCustom;
-            var res = await www.SendAsync();
-            Assert.IsTrue(res.Cookies.Count > 0);
-
-
-            var www1 = new Httpdoer("http://i.baidu.com/");
-            www1.CookieMode = HttpCookieMode.UserCustom;
-            www1.Cookies.Add(res.Cookies);
-            var res1 = await www1.SendAsync();
-            Assert.IsTrue(res1.Cookies.Count > 0);
-
-
-            var www4 = new Httpdoer("http://i.baidu.com/");
-            www4.CookieMode = HttpCookieMode.UserCustom;
-            var res4 = www4.Send();
-            Assert.IsTrue(res4.Cookies.Count == 4);
-
-            var www2 = new Httpdoer("http://i.baidu.com/");
-            www2.CookieMode = HttpCookieMode.UserCustom;
-            www2.Cookies.Add(res.Cookies);
-            var res2 = www2.Send();
-            Assert.IsTrue(res2.Cookies.Count == 4);
-
-
-            var www3 = new Httpdoer("http://i.baidu.com/");
-            www3.CookieMode = HttpCookieMode.UserCustom;
-            www2.Cookies.Add(res.Cookies);
-            var res3 = await www3.SendAsync();
-            Assert.IsTrue(res3.Cookies.Count == 3);
         }
 
     }
