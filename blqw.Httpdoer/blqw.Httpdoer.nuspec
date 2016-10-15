@@ -12,9 +12,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-      http请求客户端,支持rest
-      2016.07.26
-      * 修复不设置Method的情况下报错的问题
+        http请求客户端,支持rest
+        #### [1.3.1.1] 2016.09.29
+        * 修复请求中出现302跳转时,中间页面产生Cookie的处理逻辑
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>

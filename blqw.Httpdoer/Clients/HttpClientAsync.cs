@@ -49,15 +49,16 @@ namespace blqw.Web
                     while (request.AutoRedirect && response.StatusCode == HttpStatusCode.Redirect) //手动处理302的请求
                     {
                         request.Debug("StatusCode=302; 正在重定向...");
-                        www = GetRequest(data, response.Headers.Location); //构建新的请求
                         if (cookies == null)
                         {
                             cookies = new CookieContainer(); //302时必须使用 cookie
                         }
                         SetCookies(response, cookies);
+                        www = GetRequest(data, response.Headers.Location); //构建新的请求
                         response = await _Client.SendAsync(www, source2.Token);
                     }
-                    request.Response = await Transfer(response, request.CookieMode != HttpCookieMode.None ? cookies : null);
+                    request.Response = await Transfer(response, request.CookieMode != HttpCookieMode.None);
+                    SetCookies(response, cookies);
                     request.OnEnd(request.Response);
                 }
             }
@@ -83,7 +84,7 @@ namespace blqw.Web
         }
 
 
-        private async Task<HttpResponse> Transfer(HttpResponseMessage response, CookieContainer cookies)
+        private async Task<HttpResponse> Transfer(HttpResponseMessage response, bool useCookies)
         {
             if (response == null)
             {
@@ -113,8 +114,12 @@ namespace blqw.Web
                 var body = await response.Content.ReadAsByteArrayAsync();
                 res.Body = new HttpBody(contentType, body);
 
-                SetCookies(response, cookies);
-                res.Cookies = cookies?.GetCookies(response.RequestMessage.RequestUri);
+                if (useCookies)
+                {
+                    var cookies = new CookieContainer();
+                    SetCookies(response, cookies);
+                    res.Cookies = cookies.GetCookies(response.RequestMessage.RequestUri);
+                }
                 
                 res.StatusCode = response.StatusCode;
                 res.Status = response.ReasonPhrase;
@@ -136,7 +141,14 @@ namespace blqw.Web
             {
                 foreach (var cookie in cookieHeader)
                 {
-                    cookies.SetCookies(url, cookie);
+                    try
+                    {
+                        cookies.SetCookies(url, cookie);
+                    }
+                    catch (CookieException ex)
+                    {
+                        //有可能返回的Cookie值有错误,写入会失败
+                    }
                 }
             }
         }
@@ -166,6 +178,12 @@ namespace blqw.Web
                 {
                     www.Content?.Headers.TryAddWithoutValidation(header.Key, transfer);
                 }
+            }
+
+            var cookieHeader = data.Cookies?.GetCookieHeader(redirect ?? data.Host);
+            if (!string.IsNullOrWhiteSpace(cookieHeader))
+            {
+                www.Headers.Add("Cookie", cookieHeader);
             }
 
             return www;
