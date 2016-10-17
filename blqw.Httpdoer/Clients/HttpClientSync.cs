@@ -59,13 +59,13 @@ namespace blqw.Web
                 request.OnSending();
                 var response = (HttpWebResponse)www.GetResponse();
                 timer.OnSend();
-                request.Response = Convert(response, request.CookieMode);
+                request.Response = Convert(response, request.CookieMode != HttpCookieMode.None);
                 request.OnEnd(request.Response);
             }
             catch (WebException ex)
             {
                 timer.OnError();
-                var res = Convert((HttpWebResponse)ex.Response, request.CookieMode);
+                var res = Convert((HttpWebResponse)ex.Response, request.CookieMode != HttpCookieMode.None);
                 res.Exception = ex;
                 request.Response = res;
                 request.Logger?.Write(TraceEventType.Error, "请求中出现错误", ex);
@@ -135,7 +135,7 @@ namespace blqw.Web
             request.Version = data.Version;
             www.ContinueTimeout = 3000;
             www.ReadWriteTimeout = 3000;
-            www.Timeout = (int)request.Timeout.TotalMilliseconds;
+            www.Timeout = data.Timeout.TotalMilliseconds >= int.MaxValue ? int.MaxValue : (int)data.Timeout.TotalMilliseconds;
             www.Method = data.Method;
             www.AllowAutoRedirect = request.AutoRedirect;
             www.AutomaticDecompression = DecompressionMethods.GZip;
@@ -181,13 +181,12 @@ namespace blqw.Web
         /// <param name="response"> 待转换的对象 </param>
         /// <param name="mode"> cookie模式 </param>
         /// <returns> </returns>
-        private static HttpResponse Convert(HttpWebResponse response, HttpCookieMode mode)
+        private static HttpResponse Transfer(HttpWebResponse response, bool useCookies)
         {
             if (response == null)
             {
                 return new HttpResponse { StatusCode = 0 };
             }
-            var contentType = (HttpContentType)response.ContentType;
             var res = new HttpResponse
             {
                 Headers = new HttpHeaders()
@@ -207,14 +206,16 @@ namespace blqw.Web
                         res.Headers.Add(key, value);
                     }
                 }
+                var contentType = (HttpContentType)response.ContentType;
                 res.Body = new HttpBody(contentType, GetBytes(response));
-                if (mode != HttpCookieMode.None)
+                if (useCookies)
                 {
                     res.Cookies = response.Cookies;
-                    if (mode.HasFlag(HttpCookieMode.ApplicationCache))
-                    {
-                        HttpRequest.LocalCookies.Add(response.Cookies);
-                    }
+                    //res.Cookies = new CookieCollection();
+                    //foreach (var cookie in response.Cookies.Cast<Cookie>().Where(it=>!it.Expired))
+                    //{
+                    //    res.Cookies.Add(cookie);
+                    //}
                 }
                 res.StatusCode = response.StatusCode;
                 res.Status = response.StatusDescription;
@@ -365,13 +366,13 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_webRequest.EndGetResponse(ar);
                         _timer.OnSend();
-                        Response = _request.Response = Convert(response, _request.CookieMode);
+                        Response = _request.Response = Convert(response, _Request.CookieMode != HttpCookieMode.None);
                         _request.OnEnd(Response);
                     }
                     catch (WebException ex)
                     {
                         _timer.OnError();
-                        var res = Convert((HttpWebResponse)ex.Response, _request.CookieMode);
+                        var res = Convert((HttpWebResponse)ex.Response, _Request.CookieMode != HttpCookieMode.None);
                         res.Exception = ex;
                         Response = _request.Response = res;
                         _request.Logger?.Write(TraceEventType.Error, "异步请求中出现错误", ex);

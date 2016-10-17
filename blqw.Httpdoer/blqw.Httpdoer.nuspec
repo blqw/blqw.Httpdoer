@@ -13,6 +13,8 @@
     <description>$description$</description>
     <releaseNotes>
       HTTP 请求客户端,支持rest
+      #### [1.3.1.1] 2016.09.29
+      * 修复请求中出现302跳转时,中间页面产生Cookie的处理逻辑
       #### [1.4.0-beta]2016.10.07
       * 使用IOC优化自定义`ContentType`的处理方式
       * 更新`blqw.IOC`

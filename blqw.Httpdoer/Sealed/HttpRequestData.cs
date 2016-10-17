@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -30,6 +31,7 @@ namespace blqw.Web
         public HttpRequestData(IHttpRequest request)
             : this()
         {
+            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : request.Timeout;
             Request = request;
             Method = request.HttpMethod;
             var url = request.BaseUrl.Combine(request.Path);
@@ -111,41 +113,25 @@ namespace blqw.Web
             {
                 return;
             }
-            if (request.CookieMode.HasFlag(HttpCookieMode.CustomOrCache))
+
+            switch (request.CookieMode)
             {
-                Cookies = new CookieContainer();
-
-                var cookies = request.Cookies?.GetCookies(Host);
-
-                if (cookies == null)
-                {
-                    Cookies.Add(HttpRequest.LocalCookies.GetCookies(Host));
-                }
-                else
-                {
-                    Cookies.Add(cookies);
-                    foreach (Cookie c in HttpRequest.LocalCookies.GetCookies(Host))
+                case HttpCookieMode.ApplicationCache:
+                    Cookies = HttpRequest.LocalCookies;
+                    break;
+                case HttpCookieMode.UserCustom:
+                    Cookies = request.Cookies;
+                    break;
+                case HttpCookieMode.CustomOrCache:
+                    Cookies = request.Cookies;
+                    var cookies = HttpRequest.LocalCookies?.GetCookies(Host); //加载全局缓存Cookie
+                    if (cookies != null)
                     {
-                        if (cookies[c.Name] == null)
-                        {
-                            Cookies.Add(c);
-                        }
+                        Cookies.Add(cookies);
                     }
-                }
-            }
-            else if (request.CookieMode.HasFlag(HttpCookieMode.ApplicationCache))
-            {
-                Cookies = HttpRequest.LocalCookies;
-            }
-            else if (request.CookieMode.HasFlag(HttpCookieMode.UserCustom))
-            {
-                Cookies = request.Cookies;
-            }
-
-            var cookie = Cookies.GetCookieHeader(Host);
-            if (string.IsNullOrWhiteSpace(cookie) == false)
-            {
-                Headers.Add(new KeyValuePair<string, string>("Cookie", cookie));
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -253,6 +239,11 @@ namespace blqw.Web
         /// 请求方案/版本 (Scheme.ToUpperInvariant()/Version;)
         /// </summary>
         public string SchemeVersion { get; }
+
+        /// <summary>
+        /// 超时时间
+        /// </summary>
+        public TimeSpan Timeout { get; }
 
         /// <summary>
         /// 遍历所有参数

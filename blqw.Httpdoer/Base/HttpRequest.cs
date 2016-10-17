@@ -133,13 +133,37 @@ namespace blqw.Web
         /// </summary>
         public CookieContainer Cookies
         {
-            get { return _cookies ?? (_cookies = new CookieContainer()); }
-            set { _cookies = value; }
+            get
+            {
+                switch (CookieMode)
+                {
+                    case HttpCookieMode.None:
+                        return null;
+                    case HttpCookieMode.ApplicationCache:
+                        return LocalCookies;
+                    case HttpCookieMode.UserCustom:
+                    case HttpCookieMode.CustomOrCache:
+                        return _Cookies ?? (_Cookies = new CookieContainer());
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(CookieMode));
+                }
+            }
+            set
+            {
+                switch (CookieMode)
+                {
+                    case HttpCookieMode.None:
+                    case HttpCookieMode.ApplicationCache:
+                        throw new NotSupportedException($"无法设置Cookie,请先设置{nameof(CookieMode)}为{HttpCookieMode.UserCustom}或{HttpCookieMode.CustomOrCache}");
+                    case HttpCookieMode.UserCustom:
+                    case HttpCookieMode.CustomOrCache:
+                        _Cookies = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
-
-        /// <summary>
-        /// 请求编码
-        /// </summary>
         public Encoding Encoding { get; set; }
 
         /// <summary>
