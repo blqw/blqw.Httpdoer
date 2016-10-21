@@ -284,6 +284,7 @@ namespace BuiBuiAPI
             {
                 UseCookies = true,
                 Timeout = TimeSpan.FromSeconds(decimal.ToDouble(numTimeout.Value)),
+                Proxy = null,
             };
             request.Trackings.Add(new BuibuiTracking());
             //设置Cookie

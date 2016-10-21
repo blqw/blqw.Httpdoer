@@ -21,6 +21,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.0-beta]2016.10.21
+* 新增请求支持设置 `IWebProxy`
+
 #### [1.4.1-beta]2016.10.07
 * 修复访问某些网站或者API时返回`分析URI“xxx”的 Cookie 标头时出错`的问题
 

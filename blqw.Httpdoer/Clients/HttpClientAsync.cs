@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -16,21 +17,6 @@ namespace blqw.Web
     public sealed class HttpClientAsync : IHttpClient
     {
         /// <summary>
-        /// 用于请求的<seealso cref="HttpClient" />对象
-        /// </summary>
-        private static readonly HttpClient _Client = new HttpClient(new HttpClientHandler
-        {
-            AllowAutoRedirect = false,      //不处理302
-            UseCookies = false,             //不使用cookie
-            AutomaticDecompression = DecompressionMethods.GZip, //自动处理gzip
-            ClientCertificateOptions = ClientCertificateOption.Automatic //自动处理证书
-        })
-        {
-            Timeout = TimeSpan.FromSeconds(30), //默认超时时间30秒
-            MaxResponseContentBufferSize = int.MaxValue //设置缓冲字节最大值
-        };
-
-        /// <summary>
         /// 表示 <seealso cref="byte" /> 类型的空数组。此字段为只读。
         /// </summary>
         private static readonly byte[] _EmptyBytes = new byte[0];
@@ -39,6 +25,39 @@ namespace blqw.Web
         /// 表示一个CONNECT的请求方法,此字段为只读
         /// </summary>
         private static readonly HttpMethod _HttpMethodConnect = new HttpMethod("CONNECT");
+
+        /// <summary>
+        /// Client 包装对象
+        /// </summary>
+        struct HttpClientWrapper : IDisposable
+        {
+            private readonly HttpMessageInvoker _client;
+            private readonly bool _shouldDicpose;
+
+            public HttpClientWrapper(IHttpRequest request)
+            {
+                _client = request.GetAsyncInvoker();
+                _shouldDicpose = false;
+                if (_client == null)
+                {
+                    _shouldDicpose = true;
+                    _client = HttpClientProvider.GetClient(request.Proxy);
+                }
+            }
+
+            public void Dispose()
+            {
+                if (_shouldDicpose && !HttpClientProvider.IsCached(_client))
+                {
+                    _client.Dispose();
+                }
+            }
+
+            /// <summary>
+            /// 以异步操作发送 HTTP 请求。
+            /// </summary>
+            public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) => _client.SendAsync(request, cancellationToken);
+        }
 
         /// <summary>
         /// 发送异步请求
@@ -56,13 +75,14 @@ namespace blqw.Web
                 data = new HttpRequestData(request);
                 var www = Convert(data);
                 request.Logger?.Write(TraceEventType.Verbose, () => data.Raw);
+
                 timer.OnReady();
                 request.OnSending();
                 using (var source1 = new CancellationTokenSource(data.Timeout.TotalMilliseconds >= int.MaxValue ? int.MaxValue : (int)data.Timeout.TotalMilliseconds))
                 using (var source2 = CancellationTokenSource.CreateLinkedTokenSource(source1.Token, cancellationToken))
+                using (var client = new HttpClientWrapper(request)) //为了解决动态代理的问题
                 {
-                    var response = await _Client.SendAsync(www, source2.Token);
-                    timer.Sent();
+                    var response = await client.SendAsync(www, source2.Token);
                     var cookies = data.Cookies;
                     while (request.AutoRedirect && response.StatusCode == HttpStatusCode.Redirect) //手动处理302的请求
                     {
@@ -73,10 +93,11 @@ namespace blqw.Web
                             cookies = new CookieContainer(); //302时必须使用 cookie
                         }
                         SetCookies(response, cookies);
-                        www = GetRequest(data, response.Headers.Location); //构建新的请求
+                        www = Convert(data, response.Headers.Location); //构建新的请求
                         request.Logger?.Write(TraceEventType.Verbose, () => data.Raw);
-                        response = await _Client.SendAsync(www, source2.Token);
+                        response = await client.SendAsync(www, source2.Token);
                     }
+                    timer.OnSend();
                     request.Response = await Convert(response, request.CookieMode != HttpCookieMode.None);
                     SetCookies(response, cookies);
                     request.OnEnd(request.Response);
@@ -108,9 +129,9 @@ namespace blqw.Web
         /// 将<seealso cref="HttpResponseMessage"/>转为<seealso cref="HttpResponse"/>
         /// </summary>
         /// <param name="response">待转换的对象</param>
-        /// <param name="mode">cookie模式</param>
+        /// <param name="useCookies">是否使用Cookie</param>
         /// <returns></returns>
-        private async Task<HttpResponse> Convert(HttpResponseMessage response, HttpCookieMode mode)
+        private async Task<HttpResponse> Convert(HttpResponseMessage response, bool useCookies)
         {
             if (response == null)
             {

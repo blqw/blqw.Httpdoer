@@ -9,6 +9,12 @@ namespace UnitTest
     [TestClass]
     public class UnitTest4
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            HttpRequest.ClearLocalCookies();
+        }
+
         [TestMethod]
         public async Task 不设置Method()
         {
@@ -49,9 +55,10 @@ namespace UnitTest
         [TestMethod]
         public void 测试同步模式下的Cookie_None()
         {
-            var www = new Httpdoer("http://www.baidu.com/");
+            var www = new Httpdoer("http://baidu.com/");
             www.CookieMode = HttpCookieMode.None;
             var res = www.Send();
+
             Assert.IsTrue(HttpRequest.LocalCookies.Count == 0);
             Assert.IsTrue(www.Cookies == null);
             Assert.IsTrue(res.Cookies == null);

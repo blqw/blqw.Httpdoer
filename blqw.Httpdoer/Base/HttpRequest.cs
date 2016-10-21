@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
-using System.Text;
+using System.Net.Http;
 using blqw.IOC;
 
 namespace blqw.Web
@@ -58,6 +58,8 @@ namespace blqw.Web
             _paramContainer = @params;
             Timeout = new TimeSpan(0, 0, 15);
             Logger = Httpdoer.DefaultLogger;
+            CookieMode = HttpCookieMode.ApplicationCache;
+            Proxy = WebRequest.DefaultWebProxy;
         }
 
         /// <summary>
@@ -91,7 +93,7 @@ namespace blqw.Web
         /// <summary>
         /// 本地 Cookies 缓存
         /// </summary>
-        public static CookieContainer LocalCookies { get; } = new CookieContainer();
+        public static CookieContainer LocalCookies { get; private set; } = new CookieContainer();
 
         /// <summary>
         /// 请求操作中最后一次异常
@@ -119,6 +121,26 @@ namespace blqw.Web
         public HttpStringParams Query { get; }
 
         /// <summary>
+        /// 代理设置
+        /// </summary>
+        public IWebProxy Proxy
+        {
+            get { return _proxy; }
+            set
+            {
+                if (_proxy != value)
+                {
+                    _proxy = value;
+                    if (_client != null && !HttpClientProvider.IsCached(_client)) //如果没有被缓存则释放
+                    {
+                        _client.Dispose();
+                    }
+                    _client = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// HTTP 参数,根据 Method 和 Path 来确定参数位置
         /// </summary>
         public HttpParams Params { get; }
@@ -143,7 +165,7 @@ namespace blqw.Web
                         return LocalCookies;
                     case HttpCookieMode.UserCustom:
                     case HttpCookieMode.CustomOrCache:
-                        return _Cookies ?? (_Cookies = new CookieContainer());
+                        return _cookies ?? (_cookies = new CookieContainer());
                     default:
                         throw new ArgumentOutOfRangeException(nameof(CookieMode));
                 }
@@ -157,14 +179,13 @@ namespace blqw.Web
                         throw new NotSupportedException($"无法设置Cookie,请先设置{nameof(CookieMode)}为{HttpCookieMode.UserCustom}或{HttpCookieMode.CustomOrCache}");
                     case HttpCookieMode.UserCustom:
                     case HttpCookieMode.CustomOrCache:
-                        _Cookies = value;
+                        _cookies = value;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
         }
-        public Encoding Encoding { get; set; }
 
         /// <summary>
         /// 请求方式
@@ -280,6 +301,14 @@ namespace blqw.Web
         /// </summary>
         public IEnumerator<HttpParamValue> GetEnumerator() => _paramContainer.GetEnumerator();
 
+        private HttpClient _client;
+        private IWebProxy _proxy;
+
+        /// <summary>
+        /// 获取一个用于异步请求的
+        /// </summary>
+        HttpMessageInvoker IHttpRequest.GetAsyncInvoker() => _client ?? (_client = HttpClientProvider.GetClient(Proxy));
+
         /// <summary>
         /// 最后一次响应
         /// </summary>
@@ -333,6 +362,11 @@ namespace blqw.Web
         /// </summary>
         public Uri FullUrl => BaseUrl.Combine(Path);
 
+        /// <summary>
+        /// 清理本地Cooker缓存
+        /// </summary>
+        public static void ClearLocalCookies() => LocalCookies = new CookieContainer();
+
 
         /// <summary>
         /// 返回当前请求的完成路径
@@ -343,12 +377,10 @@ namespace blqw.Web
         /// <summary>
         /// 设置参数
         /// </summary>
-        /// <param name="name">参数名</param>
-        /// <param name="value">参数值</param>
-        /// <param name="location">参数位置</param>
+        /// <param name="name"> 参数名 </param>
+        /// <param name="value"> 参数值 </param>
+        /// <param name="location"> 参数位置 </param>
         protected void SetParam(string name, object value, HttpParamLocation location)
-        {
-            _paramContainer.SetValue(location, name, value);
-        }
+            => _paramContainer.SetValue(location, name, value);
     }
 }

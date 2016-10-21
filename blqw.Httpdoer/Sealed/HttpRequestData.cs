@@ -31,9 +31,6 @@ namespace blqw.Web
         public HttpRequestData(IHttpRequest request)
             : this()
         {
-            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : request.Timeout;
-            Request = request;
-            Method = request.HttpMethod;
             var url = request.BaseUrl.Combine(request.Path);
             if (url == null)
             {
@@ -47,13 +44,13 @@ namespace blqw.Web
             {
                 _UrlEncodedBuilder.Clear();
             }
-            Host = new Uri(url, "/");
+            
 
             if (request.Version != null)
             {
                 Version = request.Version;
             }
-            else if (Host.Scheme == Uri.UriSchemeHttps)
+            else if (url.Scheme == Uri.UriSchemeHttps)
             {
                 Version = HttpVersion.Version10;
             }
@@ -62,6 +59,11 @@ namespace blqw.Web
                 Version = HttpVersion.Version11;
             }
 
+            Host = new Uri(url, "/");
+            Timeout = Debugger.IsAttached ? TimeSpan.MaxValue : request.Timeout; //调试时不会因为断点时间太久而超时
+            Request = request;
+            Method = request.HttpMethod;
+            Proxy = request.Proxy;
             SchemeVersion = $"{url.Scheme.ToUpperInvariant()}/{Version}";
 
             _provider = request.Body.ContentType;
@@ -304,5 +306,11 @@ namespace blqw.Web
         /// 请求的原始数据
         /// </summary>
         public string Raw => $"{Method} {Url} {SchemeVersion}{CRLF}{string.Join(CRLF, Headers.Select(it => $"{it.Key}: {it.Value}"))}{CRLF}{CRLF}{GetBodyString()}";
+
+        /// <summary>
+        /// 代理设置
+        /// </summary>
+        public IWebProxy Proxy { get; }
+
     }
 }

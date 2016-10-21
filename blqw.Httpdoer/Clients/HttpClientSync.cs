@@ -139,7 +139,7 @@ namespace blqw.Web
             www.Method = data.Method;
             www.AllowAutoRedirect = request.AutoRedirect;
             www.AutomaticDecompression = DecompressionMethods.GZip;
-
+            www.Proxy = data.Proxy; //?? GlobalProxySelection.GetEmptyWebProxy();
             //必须要先设置头再设置body,否则头会被清掉
             foreach (var header in data.Headers)
             {
@@ -158,8 +158,8 @@ namespace blqw.Web
                     continue;
                 }
                 //防止中文引起的头信息乱码
-                var transfer = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
-                HeaderAddInternal(www.Headers, header.Key, transfer);
+                var decode = Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.UTF8.GetBytes(header.Value));
+                HeaderAddInternal(www.Headers, header.Key, decode);
             }
             if (data.Body?.Length > 0)
             {
@@ -171,7 +171,6 @@ namespace blqw.Web
             }
 
             www.CookieContainer = data.Cookies;
-
             return www;
         }
 
@@ -179,9 +178,9 @@ namespace blqw.Web
         /// 将<seealso cref="HttpWebResponse" />转换为<seealso cref="HttpResponse" />
         /// </summary>
         /// <param name="response"> 待转换的对象 </param>
-        /// <param name="mode"> cookie模式 </param>
+        /// <param name="useCookies"> 是否使用Cookie </param>
         /// <returns> </returns>
-        private static HttpResponse Transfer(HttpWebResponse response, bool useCookies)
+        private static HttpResponse Convert(HttpWebResponse response, bool useCookies)
         {
             if (response == null)
             {
@@ -366,13 +365,13 @@ namespace blqw.Web
                     {
                         var response = (HttpWebResponse)_webRequest.EndGetResponse(ar);
                         _timer.OnSend();
-                        Response = _request.Response = Convert(response, _Request.CookieMode != HttpCookieMode.None);
+                        Response = _request.Response = Convert(response, _request.CookieMode != HttpCookieMode.None);
                         _request.OnEnd(Response);
                     }
                     catch (WebException ex)
                     {
                         _timer.OnError();
-                        var res = Convert((HttpWebResponse)ex.Response, _Request.CookieMode != HttpCookieMode.None);
+                        var res = Convert((HttpWebResponse)ex.Response, _request.CookieMode != HttpCookieMode.None);
                         res.Exception = ex;
                         Response = _request.Response = res;
                         _request.Logger?.Write(TraceEventType.Error, "异步请求中出现错误", ex);
