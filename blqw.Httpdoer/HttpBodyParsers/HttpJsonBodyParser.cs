@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using blqw.IOC;
 
@@ -20,7 +22,7 @@ namespace blqw.Web
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (Dictionary<string, object>) ComponentServices.ToJsonObject(typeof(Dictionary<string, object>), json);
+            return (Dictionary<string, object>)ComponentServices.ToJsonObject(typeof(Dictionary<string, object>), json);
         }
 
         /// <summary>
@@ -41,9 +43,93 @@ namespace blqw.Web
         /// <returns> </returns>
         public override byte[] Serialize(string format, IEnumerable<KeyValuePair<string, object>> body, IFormatProvider formatProvider)
         {
-            var json = ComponentServices.ToJsonString(body);
+            string json;
+            if (body == null)
+            {
+                json = "null";
+            }
+            else if (body.FirstOrDefault().Key == null && body.Count() == 1)
+            {
+                json = ComponentServices.ToJsonString(body.FirstOrDefault().Value);
+            }
+            else if (body.GetType().GetInterfaces().Any(t => t == typeof(IDictionary) || (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IDictionary<,>))))
+            {
+                json = ComponentServices.ToJsonString(body);
+            }
+            else
+            {
+                json = ComponentServices.ToJsonString(new DictionaryWrapper(body));
+            }
+
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             return charset.GetBytes(json);
+        }
+
+        class DictionaryWrapper : IDictionary<string,object>
+        {
+            private IEnumerable<KeyValuePair<string, object>> body;
+
+            public DictionaryWrapper(IEnumerable<KeyValuePair<string, object>> body)
+            {
+                this.body = body;
+            }
+
+            public object this[string key]
+            {
+                get { return body.FirstOrDefault(it => Equals(it.Key, key)).Value; }
+                set
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public int Count => body.Count();
+            
+            public bool IsReadOnly => true;
+            
+            public ICollection<string> Keys => body.Select(it => it.Key).ToList();
+            
+            public ICollection<object> Values => body.Select(it => it.Value).ToList();
+
+            public void Add(KeyValuePair<string, object> item)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Add(string key, object value)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Clear()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Contains(KeyValuePair<string, object> item) => ContainsKey(item.Key);
+
+            public bool ContainsKey(string key) => body.Any(it => Equals(it.Key, key));
+
+            public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => body.GetEnumerator();
+
+            public bool Remove(KeyValuePair<string, object> item)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool Remove(string key)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool TryGetValue(string key, out object value) => null != (value = body.FirstOrDefault(it => Equals(it.Key, key)).Value);
+
+            IEnumerator IEnumerable.GetEnumerator() => body.GetEnumerator();
         }
 
         /// <summary>
@@ -56,7 +142,7 @@ namespace blqw.Web
         {
             var charset = GetEncoding(formatProvider) ?? Encoding.UTF8;
             var json = charset.GetString(bytes);
-            return (T) ComponentServices.ToJsonObject(typeof(T), json);
+            return (T)ComponentServices.ToJsonObject(typeof(T), json);
         }
     }
 }
