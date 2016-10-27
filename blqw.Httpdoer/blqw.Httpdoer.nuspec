@@ -15,6 +15,8 @@
       HTTP 请求客户端,支持rest
       #### [1.5.0-beta]2016.10.21
       * 新增请求支持设置 `IWebProxy`
+      #### [1.5.1]2016.10.27
+      * 修复提交json数据时格式错误的问题
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
