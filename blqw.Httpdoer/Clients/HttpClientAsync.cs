@@ -25,6 +25,10 @@ namespace blqw.Web
         /// 表示一个CONNECT的请求方法,此字段为只读
         /// </summary>
         private static readonly HttpMethod _HttpMethodConnect = new HttpMethod("CONNECT");
+        /// <summary>
+        /// 表示一个 PATCH 的请求方法,此字段为只读
+        /// </summary>
+        private static readonly HttpMethod _HttpMethodPatch = new HttpMethod("PATCH");
 
         /// <summary>
         /// Client 包装对象
@@ -267,6 +271,8 @@ namespace blqw.Web
                     return _HttpMethodConnect;
                 case HttpRequestMethod.Custom:
                     return new HttpMethod(request.HttpMethod);
+                case HttpRequestMethod.Patch:
+                    return _HttpMethodPatch;
                 default:
                     return HttpMethod.Get;
             }

@@ -40,11 +40,7 @@ namespace blqw.Web
             {
                 _UrlEncodedBuilder = new HttpUrlEncodedBuilder();
             }
-            else
-            {
-                _UrlEncodedBuilder.Clear();
-            }
-            
+
 
             if (request.Version != null)
             {
@@ -74,6 +70,11 @@ namespace blqw.Web
                 throw new FormatException($"无法获取{nameof(IHttpBodyParser)}");
             }
             Url = url.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.Unescaped);
+            if (string.IsNullOrEmpty(Url) == false && Url[Url.Length - 1] == '/' && Url.Length - url.OriginalString.Length == 1)
+            {
+                Url = url.OriginalString;
+            }
+            _UrlEncodedBuilder.Clear(url.Query);
             Headers = new List<KeyValuePair<string, string>>();
             request.OnParamsExtracting();
             if (request.Headers.AutoAddDefaultHeaders)
@@ -91,17 +92,15 @@ namespace blqw.Web
             {
                 Url += url.Fragment;
             }
+            else if(query[0] == '?')
+            {
+                Url += query + url.Fragment;
+            }
             else
             {
-                if (url.Query.Length == 0)
-                {
-                    Url += "?" + query + url.Fragment;
-                }
-                else
-                {
-                    Url += url.Query + "&" + query + url.Fragment;
-                }
+                Url += "?" + query + url.Fragment;
             }
+
             if (Method == null)
             {
                 Method = Body?.Length > 0 ? "POST" : "GET";

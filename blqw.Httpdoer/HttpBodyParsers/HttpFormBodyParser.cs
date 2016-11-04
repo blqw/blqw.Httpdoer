@@ -58,7 +58,7 @@ namespace blqw.Web
             }
             else
             {
-                _UrlEncodedBuilder.Clear();
+                _UrlEncodedBuilder.Clear(null);
             }
 
             foreach (var item in body)

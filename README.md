@@ -21,6 +21,12 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.2]2016.11.04
+* 新增一些静态方法`Httpdoer.Get`等
+* 修复请求没有Path的Url时,会在结尾处加上`/`的问题
+* 优化当domain,path,query,对query参数合并的处理逻辑
+* 新增`ToString('q')`方法可以返回带参数的请求地址
+
 #### [1.5.1]2016.10.27
 * 修复提交json数据时格式错误的问题
 

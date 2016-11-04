@@ -18,7 +18,7 @@ namespace blqw.Web
         /// <summary>
         /// 清空缓存中的字符
         /// </summary>
-        public void Clear() => _buffer?.Clear();
+        public void Clear(string pre) => _buffer?.Clear().Append(pre);
 
         /// <summary>
         /// 获取已拼接完成的所有字符,并清空缓存

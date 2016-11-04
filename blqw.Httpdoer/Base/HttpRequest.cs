@@ -10,7 +10,7 @@ namespace blqw.Web
     /// <summary>
     /// 表示一个 HTTP 请求
     /// </summary>
-    public class HttpRequest : IHttpRequest
+    public class HttpRequest : IHttpRequest, IFormattable
     {
         /// <summary>
         /// 参数容器
@@ -274,6 +274,9 @@ namespace blqw.Web
                     case "CONNECT":
                         _method = HttpRequestMethod.Connect;
                         break;
+                    case "PATCH":
+                        _method = HttpRequestMethod.Patch;
+                        break;
                     default:
                         _method = HttpRequestMethod.Custom;
                         break;
@@ -320,7 +323,7 @@ namespace blqw.Web
                 _response = value;
                 if (value?.IsSuccessStatusCode == false)
                 {
-                    Logger?.Write(TraceEventType.Information, $"状态码:{(int)_response.StatusCode}");
+                    Logger?.Write(TraceEventType.Warning, $"状态码:{(int)_response.StatusCode}");
                 }
             }
         }
@@ -373,6 +376,15 @@ namespace blqw.Web
         /// </summary>
         /// <returns> </returns>
         public override string ToString() => FullUrl?.ToString() ?? "http://";
+
+        /// <summary>
+        /// 使用指定的格式格式化当前实例的值。
+        /// </summary>
+        /// <param name="format">"q" 包含query参数</param>
+        /// <param name="formatProvider">要用于设置值格式的提供程序。- 或 -null 引用（Visual Basic 中为 Nothing）将从操作系统的当前区域设置中获取数字格式信息。</param>
+        public string ToString(string format, IFormatProvider formatProvider = null)
+            => format?.ToLowerInvariant() == "q" ? new HttpRequestData(this).Url : FullUrl?.ToString() ?? "http://";
+
 
         /// <summary>
         /// 设置参数

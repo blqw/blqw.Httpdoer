@@ -36,7 +36,8 @@ namespace blqw.Web
         {
             var res = SyncClient.Send(request);
             var str = res.Body?.ToString();
-            request.Logger?.Write(TraceEventType.Information, str);
+            if (str != null)
+                request.Logger?.Write(TraceEventType.Information, str);
             return str;
         }
 
@@ -172,7 +173,8 @@ namespace blqw.Web
         {
             var res = await AsyncClient.SendAsync(request, cancellationToken);
             var str = res.Body?.ToString();
-            request.Logger?.Write(TraceEventType.Information, str);
+            if (str != null)
+                request.Logger?.Write(TraceEventType.Information, str);
             return str;
         }
 

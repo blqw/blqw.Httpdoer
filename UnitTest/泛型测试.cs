@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using blqw.Web;
 using blqw.Web.Extensions;
@@ -28,6 +29,7 @@ namespace UnitTest
         [TestMethod]
         public void 泛型同步测试()
         {
+            Httpdoer.DefaultLogger.Switch.Level = SourceLevels.All;
             var text = "hello world";
             var domain = "https://api.datamarket.azure.com";
             var trans = HttpGenerator.Create<ITranslate>(domain);

@@ -46,6 +46,11 @@
         Connect,
 
         /// <summary>
+        /// PATCH
+        /// </summary>
+        Patch,
+
+        /// <summary>
         /// 自定义
         /// </summary>
         Custom

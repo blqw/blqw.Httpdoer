@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Messaging;
 
 namespace blqw.Web
 {
@@ -32,6 +33,10 @@ namespace blqw.Web
             if (string.IsNullOrWhiteSpace(newUrl))
             {
                 return baseUrl;
+            }
+            if (newUrl[0] == '&')
+            {
+                newUrl = (string.IsNullOrEmpty(baseUrl.Query) ? "?" : baseUrl.Query) + newUrl;
             }
             if (Uri.TryCreate(baseUrl, newUrl, out url))
             {
