@@ -277,7 +277,7 @@ namespace blqw.Web
         /// </summary>
         /// <param name="charset"> </param>
         /// <returns> </returns>
-        public HttpContentType ChangeCharset(Encoding charset) => new HttpContentType(Type, Form, charset);
+        public HttpContentType ChangeCharset(Encoding charset) => new HttpContentType(Type, Format, charset);
 
         /// <summary>
         /// 指示当前对象是否等于同一类型的另一个对象。

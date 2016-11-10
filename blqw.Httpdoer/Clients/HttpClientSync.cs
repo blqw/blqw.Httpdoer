@@ -206,6 +206,10 @@ namespace blqw.Web
                     }
                 }
                 var contentType = (HttpContentType)response.ContentType;
+                if (contentType.Charset == null && string.IsNullOrWhiteSpace(response.ContentEncoding) == false)
+                {
+                    contentType = contentType.ChangeCharset(Encoding.GetEncoding(response.ContentEncoding));
+                }
                 res.Body = new HttpBody(contentType, GetBytes(response));
                 if (useCookies)
                 {

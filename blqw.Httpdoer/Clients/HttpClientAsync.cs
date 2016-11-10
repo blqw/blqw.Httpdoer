@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -159,6 +160,15 @@ namespace blqw.Web
                     }
                 }
                 var contentType = (HttpContentType)response.Content.Headers.ContentType?.ToString();
+
+                if (contentType.Charset == null)
+                {
+                    var charset = response.Content.Headers.ContentEncoding?.FirstOrDefault();
+                    if (charset != null)
+                    {
+                        contentType = contentType.ChangeCharset(Encoding.GetEncoding(charset));
+                    }
+                }
                 var body = await response.Content.ReadAsByteArrayAsync();
                 res.Body = new HttpBody(contentType, body);
 

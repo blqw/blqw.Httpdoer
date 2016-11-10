@@ -38,6 +38,8 @@ namespace blqw.Web
             {
                 newUrl = (string.IsNullOrEmpty(baseUrl.Query) ? "?" : baseUrl.Query) + newUrl;
             }
+
+
             if (Uri.TryCreate(baseUrl, newUrl, out url))
             {
                 return url;
