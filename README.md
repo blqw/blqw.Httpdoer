@@ -21,6 +21,10 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.3]2016.11.10
+* 修复`HttpContentType.ChangeCharset`方法返回值错误的问题
+* 优化当响应头的`Content-Type`中不存在`charset`属性时,从`Content-Encoding`中获取
+
 #### [1.5.2]2016.11.04
 * 新增一些静态方法`Httpdoer.Get`等
 * 修复请求没有Path的Url时,会在结尾处加上`/`的问题

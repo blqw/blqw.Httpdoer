@@ -31,17 +31,20 @@ namespace blqw.Web.Extensions
             InterfaceType = method.DeclaringType;
             TrackingType = method.GetCustomAttribute<TrackingAttribute>()?.Type
            ?? method.DeclaringType.GetCustomAttribute<TrackingAttribute>()?.Type;
+            ContentType = method.GetCustomAttribute<ContentTypeAttribute>()?.ContentType
+           ?? method.DeclaringType.GetCustomAttribute<ContentTypeAttribute>()?.ContentType;
+
         }
+        public string ContentType { get; }
+        public Type ReturnType { get; }
+        public Type InterfaceType { get; }
+        public string MethodName { get; }
+        public GeneratorParam[] Params { get; }
 
-        public Type ReturnType { get; private set; }
-        public Type InterfaceType { get; private set; }
-        public string MethodName { get; private set; }
-        public GeneratorParam[] Params { get; private set; }
-
-        public bool IsAsync { get; private set; }
-        public string Template { get; private set; }
-        public HttpRequestMethod HttpMethod { get; private set; }
-        public Type TrackingType { get; private set; }
+        public bool IsAsync { get; }
+        public string Template { get; }
+        public HttpRequestMethod HttpMethod { get; }
+        public Type TrackingType { get; }
 
         const string CODE_TEMPLATE = @"
         %async% %ResultType% %InterfaceName%.%MethodName%(%MethodArgs%)
@@ -52,6 +55,7 @@ namespace blqw.Web.Extensions
                     Trackings.Add(%Tracking%);
                 Method = HttpRequestMethod.%HttpMethod%;
                 Path = ""%Template%"";
+                Body.ContentType = ""%ContentType%"";
                 %Params%;
                 %return% %await% HttpRequestExtensions.%Invoker%(this);
             }
@@ -128,6 +132,8 @@ namespace blqw.Web.Extensions
                     return $"GetObject{@async}<{type.GetFriendlyName()}>";
                 case "RemoveParams":
                     return string.Join(";", Params.Select(GetRemoveParamDefinition));
+                case "ContentType":
+                    return ContentType ?? "null";
                 default:
                     return "";
             }

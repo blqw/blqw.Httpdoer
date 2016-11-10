@@ -56,6 +56,14 @@ namespace blqw.Web.Tests
 
             www.Path = "&id=2";
             Assert.AreEqual("http://www.baidu.com/?id=3&id=2&id=1", www.ToString("q"));
+
+            www = new Httpdoer("www.baidu.com/a?id=3");
+            www.Path = "s?id=2";
+            Assert.AreEqual("http://www.baidu.com/s?id=2", www.ToString("q"));
+
+            www = new Httpdoer("www.baidu.com/a/b");
+            www.Path = "c";
+            Assert.AreEqual("http://www.baidu.com/a/c", www.ToString("q"));
         }
     }
 }

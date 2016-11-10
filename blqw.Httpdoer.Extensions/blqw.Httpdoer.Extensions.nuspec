@@ -15,6 +15,8 @@
       Httpdoer 扩展组件
       [1.2.1] 2016.10.12
       修复返回值为具体类型时报错的问题
+      [1.2.2] 2016.11.10
+      修复`ContentTypeAttribute`特性不生效的问题
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw Httpdoer</tags>

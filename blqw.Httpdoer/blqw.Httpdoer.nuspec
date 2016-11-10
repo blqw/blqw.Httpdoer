@@ -22,6 +22,9 @@
       * 修复请求没有Path的Url时,会在结尾处加上`/`的问题
       * 优化当domain,path,query,对query参数合并的处理逻辑
       * 新增`ToString('q')`方法可以返回带参数的请求地址
+      #### [1.5.3]2016.11.10
+      * 修复`HttpContentType.ChangeCharset`方法返回值错误的问题
+      * 优化当响应头的`Content-Type`中不存在`charset`属性时,从`Content-Encoding`中获取
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
