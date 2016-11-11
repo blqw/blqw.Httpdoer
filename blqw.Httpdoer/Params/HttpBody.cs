@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace blqw.Web
@@ -43,7 +44,17 @@ namespace blqw.Web
         /// </summary>
         public HttpContentType ContentType
         {
-            get { return _contentType; }
+            get
+            {
+                if (_contentType.Format == null && _contentType.Charset == null && _contentType.Type == null)
+                {
+                    if (Params.Any(it => it.Location == HttpParamLocation.Body))
+                    {
+                        _contentType = HttpContentType.Form;
+                    }
+                }
+                return _contentType;
+            }
             set
             {
                 Params.SetValue(HttpParamLocation.Header, "Content-Type", value.ToString());
@@ -87,7 +98,7 @@ namespace blqw.Web
         /// </summary>
         /// <param name="format"> </param>
         /// <returns> </returns>
-        public string ToString(string format) => ((IFormattable) this).ToString(format, ContentType);
+        public string ToString(string format) => ((IFormattable)this).ToString(format, ContentType);
 
         /// <summary>
         /// 返回当前正文的字符串表现形式
@@ -100,7 +111,7 @@ namespace blqw.Web
                 var charset = ContentType.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
                 return charset.GetString(ResponseBody);
             }
-            return ((IFormattable) this).ToString(null, ContentType);
+            return ((IFormattable)this).ToString(null, ContentType);
         }
 
         /// <summary>

@@ -25,7 +25,15 @@ namespace UnitTest
             www = new Httpdoer("www.baidu.com");
             result = await www.SendAsync();
             Assert.IsNull(result.Exception);
+
+            www = new Httpdoer("www.baidu.com");
+            www.Body.Add("name", "value");
+            Assert.IsNotNull(www.Body.ToString());
+            Assert.AreEqual(HttpContentType.Form, www.Body.ContentType);
+
+
         }
+
 
         [TestMethod]
         public async Task 测试302跳转()

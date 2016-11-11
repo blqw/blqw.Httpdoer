@@ -21,6 +21,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.3.1]2016.11.11
+* 修复`Body.ToString()`在某种情况下返回`null`的问题
+
 #### [1.5.3]2016.11.10
 * 修复`HttpContentType.ChangeCharset`方法返回值错误的问题
 * 优化当响应头的`Content-Type`中不存在`charset`属性时,从`Content-Encoding`中获取
