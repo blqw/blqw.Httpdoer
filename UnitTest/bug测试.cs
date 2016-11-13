@@ -28,6 +28,8 @@ namespace UnitTest
 
             www = new Httpdoer("www.baidu.com");
             www.Body.Add("name", "value");
+            Assert.AreEqual(HttpRequestMethod.Post, www.Method);
+            Assert.AreEqual("POST", www.HttpMethod);
             Assert.IsNotNull(www.Body.ToString());
             Assert.AreEqual(HttpContentType.Form, www.Body.ContentType);
 

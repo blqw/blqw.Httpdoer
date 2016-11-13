@@ -248,12 +248,17 @@ namespace blqw.Web
         }
 
         /// <summary>
+        /// 是否是未定义的
+        /// </summary>
+        public bool IsUndefined => ReferenceEquals(Format, Charset) && (Type == null || Type == "null");
+
+        /// <summary>
         /// 指示此实例与指定对象是否相等。
         /// </summary>
         /// <returns> 如果 <paramref name="obj" /> 和该实例具有相同的类型并表示相同的值，则为 true；否则为 false。 </returns>
         /// <param name="obj"> 要与当前实例进行比较的对象。 </param>
         /// <filterpriority> 2 </filterpriority>
-        public override bool Equals(object obj) => obj is HttpContentType && Equals((HttpContentType) obj);
+        public override bool Equals(object obj) => obj is HttpContentType && Equals((HttpContentType)obj);
 
         /// <summary>
         /// 重写 == 运算符

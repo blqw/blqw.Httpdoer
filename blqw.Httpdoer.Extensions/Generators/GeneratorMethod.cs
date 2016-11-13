@@ -55,7 +55,7 @@ namespace blqw.Web.Extensions
                     Trackings.Add(%Tracking%);
                 Method = HttpRequestMethod.%HttpMethod%;
                 Path = ""%Template%"";
-                Body.ContentType = ""%ContentType%"";
+                Body.ContentType = %ContentType%;
                 %Params%;
                 %return% %await% HttpRequestExtensions.%Invoker%(this);
             }
@@ -133,7 +133,7 @@ namespace blqw.Web.Extensions
                 case "RemoveParams":
                     return string.Join(";", Params.Select(GetRemoveParamDefinition));
                 case "ContentType":
-                    return ContentType ?? "null";
+                    return ContentType == null ? "null" : $"\"{ContentType}\"";
                 default:
                     return "";
             }

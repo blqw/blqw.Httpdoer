@@ -192,44 +192,58 @@ namespace blqw.Web
         /// </summary>
         public HttpRequestMethod Method
         {
-            get { return _method; }
+            get
+            {
+                if (_method == HttpRequestMethod.Delete || _method == HttpRequestMethod.Get)
+                {
+                    if (Body.HasAny())
+                    {
+                        return HttpRequestMethod.Post;
+                    }
+                }
+                return _method;
+            }
             set
             {
                 _method = value;
                 switch (_method)
                 {
                     case HttpRequestMethod.Custom:
+                        break;
                     case HttpRequestMethod.Get:
-                        HttpMethod = "GET";
                         _method = HttpRequestMethod.Get;
+                        Body.ContentType = HttpContentType.Undefined;
                         break;
                     case HttpRequestMethod.Post:
-                        HttpMethod = "POST";
-                        if (_paramContainer.Contains(HttpParamLocation.Header, "Content-Type") == false)
+                        if (Body.ContentType.IsUndefined)
                         {
                             Body.ContentType = HttpContentType.Form;
                         }
                         break;
                     case HttpRequestMethod.Head:
-                        HttpMethod = "Head";
                         break;
                     case HttpRequestMethod.Trace:
-                        HttpMethod = "Trace";
                         break;
                     case HttpRequestMethod.Put:
-                        HttpMethod = "PUT";
+                        if (Body.ContentType.IsUndefined)
+                        {
+                            Body.ContentType = HttpContentType.Form;
+                        }
                         break;
                     case HttpRequestMethod.Delete:
-                        HttpMethod = "DELETE";
+                        Body.ContentType = HttpContentType.Undefined;
                         break;
                     case HttpRequestMethod.Options:
-                        HttpMethod = "OPTIONS";
                         break;
                     case HttpRequestMethod.Connect:
-                        HttpMethod = "CONNECT";
+                        break;
+                    case HttpRequestMethod.Patch:
+                        if (Body.ContentType.IsUndefined)
+                        {
+                            Body.ContentType = HttpContentType.Form;
+                        }
                         break;
                     default:
-                        HttpMethod = _method.ToString();
                         break;
                 }
             }
@@ -240,45 +254,72 @@ namespace blqw.Web
         /// </summary>
         public string HttpMethod
         {
-            get { return _httpMethod; }
+            get
+            {
+                if (_httpMethod != null)
+                {
+                    return _httpMethod;
+                }
+                switch (Method)
+                {
+                    case HttpRequestMethod.Get:
+                        return "GET";
+                    case HttpRequestMethod.Post:
+                        return "POST";
+                    case HttpRequestMethod.Head:
+                        return "HEAD";
+                    case HttpRequestMethod.Trace:
+                        return "TRACE";
+                    case HttpRequestMethod.Put:
+                        return "PUT";
+                    case HttpRequestMethod.Delete:
+                        return "DELETE";
+                    case HttpRequestMethod.Options:
+                        return "OPTIONS";
+                    case HttpRequestMethod.Connect:
+                        return "CONNECT";
+                    case HttpRequestMethod.Patch:
+                        return "PATCH";
+                    case HttpRequestMethod.Custom:
+                        return "CUSTOM";
+                    default:
+                        return Method.ToString().ToUpperInvariant();
+                }
+            }
             set
             {
                 _httpMethod = value?.ToUpperInvariant();
                 switch (_httpMethod)
                 {
                     case "GET":
-                        _method = HttpRequestMethod.Get;
+                        Method = HttpRequestMethod.Get;
                         break;
                     case "POST":
-                        _method = HttpRequestMethod.Post;
-                        if (_paramContainer.Contains(HttpParamLocation.Header, "Content-Type") == false)
-                        {
-                            Body.ContentType = HttpContentType.Form;
-                        }
+                        Method = HttpRequestMethod.Post;
                         break;
                     case "HEAD":
-                        _method = HttpRequestMethod.Head;
+                        Method = HttpRequestMethod.Head;
                         break;
                     case "TRACE":
-                        _method = HttpRequestMethod.Trace;
+                        Method = HttpRequestMethod.Trace;
                         break;
                     case "PUT":
-                        _method = HttpRequestMethod.Put;
+                        Method = HttpRequestMethod.Put;
                         break;
                     case "DELETE":
-                        _method = HttpRequestMethod.Delete;
+                        Method = HttpRequestMethod.Delete;
                         break;
                     case "OPTIONS":
-                        _method = HttpRequestMethod.Options;
+                        Method = HttpRequestMethod.Options;
                         break;
                     case "CONNECT":
-                        _method = HttpRequestMethod.Connect;
+                        Method = HttpRequestMethod.Connect;
                         break;
                     case "PATCH":
-                        _method = HttpRequestMethod.Patch;
+                        Method = HttpRequestMethod.Patch;
                         break;
                     default:
-                        _method = HttpRequestMethod.Custom;
+                        Method = HttpRequestMethod.Custom;
                         break;
                 }
             }

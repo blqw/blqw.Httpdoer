@@ -46,18 +46,14 @@ namespace blqw.Web
         {
             get
             {
-                if (_contentType.Format == null && _contentType.Charset == null && _contentType.Type == null)
+                if (_contentType.IsUndefined && HasAny())
                 {
-                    if (Params.Any(it => it.Location == HttpParamLocation.Body))
-                    {
-                        _contentType = HttpContentType.Form;
-                    }
+                    return HttpContentType.Form;
                 }
                 return _contentType;
             }
             set
             {
-                Params.SetValue(HttpParamLocation.Header, "Content-Type", value.ToString());
                 _contentType = value;
             }
         }
@@ -141,5 +137,11 @@ namespace blqw.Web
             Debug.Assert(parser != null, "parser != null");
             return parser.Serialize(null, this, ContentType);
         }
+
+        /// <summary>
+        /// Body中是否有值
+        /// </summary>
+        /// <returns></returns>
+        public bool HasAny() => Params.Any(it => it.Location == HttpParamLocation.Body);
     }
 }

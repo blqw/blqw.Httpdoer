@@ -76,14 +76,44 @@ namespace blqw.Web
             }
             _UrlEncodedBuilder.Clear(url.Query);
             Headers = new List<KeyValuePair<string, string>>();
+            HeaderNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             request.OnParamsExtracting();
-            if (request.Headers.AutoAddDefaultHeaders)
-            {
-                request.Headers.AddDefaultHeaders();
-            }
-            //插入默认头
+            
+
             List<KeyValuePair<string, object>> bodyparams;
             FindParams(request, out bodyparams);
+            
+            if (_provider.IsUndefined == false && HeaderNames.Contains("Content-Type") == false)
+            {
+                AddHeader("Content-Type", _provider.ToString());
+            }
+            if (request.Headers.AutoAddDefaultHeaders)
+            {
+                if (HeaderNames.Contains("Accept") == false)
+                {
+                    AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                }
+                if (HeaderNames.Contains("Accept-Encoding") == false)
+                {
+                    AddHeader("Accept-Encoding", "gzip, deflate, sdch");
+                }
+                if (HeaderNames.Contains("Accept-Language") == false)
+                {
+                    AddHeader("Accept-Language", "zh-CN,zh;q=0.8");
+                }
+                if (HeaderNames.Contains("Cache-Control") == false)
+                {
+                    AddHeader("Cache-Control", "max-age=0");
+                }
+                if (HeaderNames.Contains("User-Agent") == false)
+                {
+                    AddHeader("User-Agent", HttpHeaders.DefaultUserAgent);
+                }
+                if (HeaderNames.Contains("Connection") == false)
+                {
+                    AddHeader("Connection", "Keep-Alive");
+                }
+            }
             Body = parser.Serialize(null, bodyparams, _provider);
             request.OnParamsExtracted();
             var query = _UrlEncodedBuilder.ToString();
@@ -92,7 +122,7 @@ namespace blqw.Web
             {
                 Url += url.Fragment;
             }
-            else if(query[0] == '?')
+            else if (query[0] == '?')
             {
                 Url += query + url.Fragment;
             }
@@ -151,8 +181,29 @@ namespace blqw.Web
             }
             foreach (var value in values)
             {
+                HeaderNames.Add(name);
                 Headers.Add(new KeyValuePair<string, string>(name, value));
             }
+        }
+
+
+        private string[] _headerValues;
+        /// <summary>
+        /// 添加头
+        /// </summary>
+        /// <param name="name"> </param>
+        /// <param name="value"> </param>
+        private void AddHeader(string name, string value)
+        {
+            if (_headerValues == null)
+            {
+                _headerValues = new[] { value };
+            }
+            else
+            {
+                _headerValues[0] = value;
+            }
+            AddHeader(name, _headerValues);
         }
 
         /// <summary>
@@ -225,6 +276,8 @@ namespace blqw.Web
         /// 请求头
         /// </summary>
         public List<KeyValuePair<string, string>> Headers { get; }
+
+        private HashSet<string> HeaderNames { get; }
 
         /// <summary>
         /// 请求方法

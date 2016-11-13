@@ -21,6 +21,11 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.4]2016.11.14
+* 优化默认头信息的插入时间
+* 优化`HttpMethod`,`Content-Type`等参数的默认值计算方式
+* 优化`Delete`,`Put`,`Patch`方式提交对`Content-Type`影响
+
 #### [1.5.3.1]2016.11.11
 * 修复`Body.ToString()`在某种情况下返回`null`的问题
 

@@ -27,6 +27,10 @@
       * 优化当响应头的`Content-Type`中不存在`charset`属性时,从`Content-Encoding`中获取
       #### [1.5.3.1]2016.11.11
       * 修复`Body.ToString()`在某种情况下返回`null`的问题
+      #### [1.5.4]2016.11.14
+      * 优化默认头信息的插入时间
+      * 优化`HttpMethod`,`Content-Type`等参数的默认值计算方式
+      * 优化`Delete`,`Put`,`Patch`方式提交对`Content-Type`影响
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
