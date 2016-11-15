@@ -250,14 +250,17 @@ namespace blqw.Web
             length = _Buffer.Length;
             var bytes = new List<byte>();
             int count;
-            while ((count = stream.Read(_Buffer, 0, length)) == length)
+            do
             {
-                bytes.AddRange(_Buffer);
-            }
-            if (count > 0)
-            {
-                bytes.AddRange(_Buffer.Take(count));
-            }
+                if ((count = stream.Read(_Buffer, 0, length)) == length)
+                {
+                    bytes.AddRange(_Buffer);
+                }
+                else
+                {
+                    bytes.AddRange(_Buffer.Take(count));
+                }
+            } while (count > 0);
             return bytes.ToArray();
         }
 

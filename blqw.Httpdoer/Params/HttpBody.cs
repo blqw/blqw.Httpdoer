@@ -80,6 +80,11 @@ namespace blqw.Web
         /// <filterpriority> 2 </filterpriority>
         string IFormattable.ToString(string format, IFormatProvider formatProvider)
         {
+            if (ResponseBody != null)
+            {
+                var charset = ContentType.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
+                return charset.GetString(ResponseBody);
+            }
             if (formatProvider == null)
             {
                 formatProvider = ContentType;
@@ -100,15 +105,7 @@ namespace blqw.Web
         /// 返回当前正文的字符串表现形式
         /// </summary>
         /// <returns> </returns>
-        public override string ToString()
-        {
-            if (ResponseBody != null)
-            {
-                var charset = ContentType.GetFormat(typeof(Encoding)) as Encoding ?? Encoding.Default;
-                return charset.GetString(ResponseBody);
-            }
-            return ((IFormattable)this).ToString(null, ContentType);
-        }
+        public override string ToString() => ((IFormattable)this).ToString(null, ContentType);
 
         /// <summary>
         /// 将当前正文转为指定的类型实体

@@ -31,6 +31,9 @@
       * 优化默认头信息的插入时间
       * 优化`HttpMethod`,`Content-Type`等参数的默认值计算方式
       * 优化`Delete`,`Put`,`Patch`方式提交对`Content-Type`影响
+      #### [1.5.4.1]2016.11.15
+      * 修复同步模式下返回值有可能被截断的bug
+      * 修复`ResponseRaw`有时候会抛出异常的bug
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
