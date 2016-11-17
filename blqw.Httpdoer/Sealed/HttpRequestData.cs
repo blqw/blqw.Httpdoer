@@ -78,11 +78,11 @@ namespace blqw.Web
             Headers = new List<KeyValuePair<string, string>>();
             HeaderNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             request.OnParamsExtracting();
-            
+
 
             List<KeyValuePair<string, object>> bodyparams;
             FindParams(request, out bodyparams);
-            
+
             if (_provider.IsUndefined == false && HeaderNames.Contains("Content-Type") == false)
             {
                 AddHeader("Content-Type", _provider.ToString());
@@ -213,7 +213,16 @@ namespace blqw.Web
         /// <param name="value"> </param>
         private void AddPathParam(string name, object value)
         {
-            var str = value as string ?? string.Join(",", value as IEnumerable ?? Type.EmptyTypes /*随便一个空数组都可以*/);
+            string str;
+            var ee = value as IEnumerable;
+            if (ee == null)
+            {
+                str = value.ToString();
+            }
+            else
+            {
+                str = string.Join(",", ee.Cast<object>());
+            }
             Request?.OnPathParamFound(ref name, ref str);
             if (name != null)
             {
@@ -341,7 +350,7 @@ namespace blqw.Web
                         AddPathParam(name, value);
                         break;
                     case HttpParamLocation.Header:
-                        AddHeader(name, param.Values.Cast<string>());
+                        AddHeader(name, param.Values.Select(it => it.ToString()));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(param.Location));

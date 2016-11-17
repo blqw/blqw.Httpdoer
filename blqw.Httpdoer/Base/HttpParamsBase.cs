@@ -45,7 +45,15 @@ namespace blqw.Web
         /// <returns> </returns>
         public virtual T this[string name]
         {
-            get { return (T) Params.GetValue(Location, name); }
+            get
+            {
+                var value = Params.GetValue(Location, name);
+                if (value is T)
+                {
+                    return (T)value;
+                }
+                return  (T)IOC.ComponentServices.Converter.Convert(value, typeof(T));
+            }
             set { Params.SetValue(Location, name, value); }
         }
 
@@ -86,7 +94,7 @@ namespace blqw.Web
         /// </summary>
         /// <param name="name"> 参数名 </param>
         /// <returns> </returns>
-        public T Get(string name) => (T) Params.GetValue(Location, name);
+        public T Get(string name) => (T)Params.GetValue(Location, name);
 
         /// <summary>
         /// 获取指定名称的参数值

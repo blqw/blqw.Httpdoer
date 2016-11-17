@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using blqw.Web;
+using blqw.Web.Extensions;
 
 namespace UnitTest
 {
@@ -173,5 +175,37 @@ namespace UnitTest
             Assert.IsTrue(res.Cookies.Count > 0);
         }
 
+
+        [TestMethod]
+        public void 测试Path参数()
+        {
+            var www = new Httpdoer("http://www.baidu.com/{id}");
+            www.Params["id"] = 123;
+            var url = www.ToString("q");
+            Assert.AreEqual("http://www.baidu.com/123", url);
+
+            www = new Httpdoer("http://www.baidu.com/{id}");
+            www.Params["id"] = 123;
+            www.Params.Add("id", "456");
+            url = www.ToString("q");
+            Assert.AreEqual("http://www.baidu.com/123,456", url);
+        }
+
+        [TestMethod]
+        public void 测试Head参数()
+        {
+            var www = HttpGenerator.Create<AAA>("http://baidu.com");
+            var req = www.Get(123);
+            var arr = req.RequestData.Headers.Where(it => it.Key == "id").Select(it => it.Value).ToArray();
+            
+            Assert.AreEqual(1, arr.Length);
+            Assert.AreEqual("123", arr[0]);
+        }
+
+        public interface AAA : IHttpRequest
+        {
+            [HttpGet("/a")]
+            IHttpResponse Get([Header]int id);
+        }
     }
 }

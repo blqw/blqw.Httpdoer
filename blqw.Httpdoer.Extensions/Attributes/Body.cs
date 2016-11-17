@@ -9,7 +9,7 @@ namespace blqw.Web.Extensions
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     public sealed class BodyAttribute : HttpParamAttribute
     {
-        public BodyAttribute()
+        public BodyAttribute() : base(null)
         {
         }
 
@@ -17,12 +17,6 @@ namespace blqw.Web.Extensions
         {
         }
 
-        public override HttpParamLocation Location
-        {
-            get
-            {
-                return HttpParamLocation.Body;
-            }
-        }
+        public override HttpParamLocation Location => HttpParamLocation.Body;
     }
 }

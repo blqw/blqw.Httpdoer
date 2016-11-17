@@ -125,7 +125,7 @@ namespace blqw.Web.Extensions
                     {
                         return "GetBytes" + @async;
                     }
-                    else if (type == null || type == typeof(void))
+                    else if (type == null || type == typeof(void) || type == typeof(IHttpResponse))
                     {
                         return "Send" + @async;
                     }
@@ -146,12 +146,30 @@ namespace blqw.Web.Extensions
 
         public static string GetSetParamDefinition(GeneratorParam p)
         {
-            return $@"SetParam(""{p.ParamName}"", {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
+            var name = p.ParamName;
+            if (name == null)
+            {
+                name = "null";
+            }
+            else
+            {
+                name = $"\"{name}\"";
+            }
+            return $@"SetParam({name}, {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
         }
 
         public static string GetRemoveParamDefinition(GeneratorParam p)
         {
-            return $@"SetParam(""{p.ParamName}"", null, HttpParamLocation.{p.Location.ToString()})";
+            var name = p.ParamName;
+            if (name == null)
+            {
+                name = "null";
+            }
+            else
+            {
+                name = $"\"{name}\"";
+            }
+            return $@"SetParam({name}, null, HttpParamLocation.{p.Location.ToString()})";
         }
     }
 }

@@ -28,7 +28,13 @@ namespace blqw.Web.Extensions
             }
             var usingTypes = new List<Type>()
             {
-                interfaceType, typeof(HttpRequest), typeof(ICloneable)
+                interfaceType,
+                typeof(HttpRequest),
+                typeof(int),
+                typeof(System.Net.Http.HttpMessageInvoker),
+                typeof(System.Net.IWebProxy),
+                typeof(System.Net.CookieContainer),
+                typeof(System.Diagnostics.TraceSource)
             };
             var id = System.Threading.Interlocked.Increment(ref _Identity);
             var className = Guid.NewGuid().ToString("n") + id;
@@ -41,10 +47,13 @@ namespace blqw.Web.Extensions
 
             foreach (var method in GetAllMethods(interfaceType))
             {
-                var m = new GeneratorMethod(method);
-                buffer.AppendLine(m.ToString());
-                usingTypes.Add(m.ReturnType);
-                usingTypes.AddRange(m.Params.Select(it => it.ParamType));
+                if (method.GetCustomAttribute<HttpVerbAttribute>() != null)
+                {
+                    var m = new GeneratorMethod(method);
+                    buffer.AppendLine(m.ToString());
+                    usingTypes.Add(m.ReturnType);
+                    usingTypes.AddRange(m.Params.Select(it => it.ParamType));
+                }
             }
 
             buffer.AppendLine("}");

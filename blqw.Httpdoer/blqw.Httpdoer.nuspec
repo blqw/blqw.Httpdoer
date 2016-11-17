@@ -34,6 +34,8 @@
       #### [1.5.4.1]2016.11.15
       * 修复同步模式下返回值有可能被截断的bug
       * 修复`ResponseRaw`有时候会抛出异常的bug
+      #### [1.5.4.2]2016.11.17
+      * 修复bug
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>

@@ -16,7 +16,14 @@ namespace blqw.Web.Extensions
 
             var attr = p.GetCustomAttribute<HttpParamAttribute>();
             Location = attr?.Location ?? HttpParamLocation.Auto;
-            ParamName = attr?.Name ?? VarName;
+            if (attr?.NameIsNull == true)
+            {
+                ParamName = null;
+            }
+            else
+            {
+                ParamName = attr?.Name ?? VarName;
+            }
         }
 
         public string ParamName { get; private set; }

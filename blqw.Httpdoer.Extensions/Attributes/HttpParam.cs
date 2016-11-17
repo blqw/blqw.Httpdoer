@@ -8,11 +8,16 @@ namespace blqw.Web.Extensions
 {
     public abstract class HttpParamAttribute : Attribute
     {
-        public string Name { get; private set; }
+        public string Name { get; }
+        public bool NameIsNull { get; }
 
         public HttpParamAttribute(string name)
         {
             Name = name;
+            if (name == null)
+            {
+                NameIsNull = true;
+            }
         }
 
         public HttpParamAttribute()
