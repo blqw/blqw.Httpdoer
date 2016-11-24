@@ -318,7 +318,14 @@ namespace BuiBuiAPI
             txtRequestRaw.Text = response?.RequestData.Raw;
             txtResponseRaw.Text = response?.ResponseRaw;
             //显示视图
-            ShowView();
+            if (response?.Body?.ContentType.Format?.ToLowerInvariant() == "json")
+            {
+                ShowJson();
+            }
+            else
+            {
+                ShowView();
+            }
             //返回头
             ShowResponseHeaders(response);
             //显示Cookie
@@ -338,6 +345,84 @@ namespace BuiBuiAPI
         private void ShowView()
         {
             webResponseView.DocumentText = rtxtResponseBody.Text;
+        }
+
+        private void ShowJson()
+        {
+            const string html = @"
+<!DOCTYPE html>
+<html lang='zh-cn'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+  </head>
+  <body>
+
+    <pre></pre>
+    <script src='http://apps.bdimg.com/libs/jquery/1.9.0/jquery.js'></script>
+    <script>
+        function jsonFormat(json) {
+            var obj = json;
+            if (json.constructor === String) {
+                obj = JSON.parse(json);
+            }
+
+            var buffer = [];
+
+            var space = function (c) {
+                for (var i = 0; i < c; i++) {
+                    buffer.push('&nbsp;');
+                }
+            }
+
+            var append = function (o, d) {
+                if ($.isArray(o)) {
+                    buffer.push('[');
+                    var b = false;
+                    for (var i in o) {
+                        if (b) {
+                            buffer.push(' ,');
+                        }
+                        buffer.push('<br />');
+                        b = true;
+                        space((d + 1) * 2);
+                        append(o[i], d + 1);
+                    }
+			        buffer.push('<br />');
+			        space(d * 2);
+                    buffer.push(']');
+                } else if ($.isPlainObject(o)) {
+                    buffer.push('{');
+                    var b = false;
+                    for (var i in o) {
+                        if (b) {
+                            buffer.push(' ,');
+                        }
+                        buffer.push('<br />');
+                        b = true;
+                        space((d + 1) * 2);
+                        buffer.push(JSON.stringify(i));
+                        buffer.push(' : ');
+                        append(o[i], d + 1);
+                    }
+			        buffer.push('<br />');
+			        space(d * 2);
+                    buffer.push('}');
+                } else {
+                    buffer.push(JSON.stringify(o));
+                }
+            }
+            append(obj, 0);
+            return buffer.join('');
+        };
+        $('pre').append(jsonFormat('$jsonString$'));
+    </script>
+  </body>
+</html>
+";
+            var s = html.Replace("$jsonString$", rtxtResponseBody.Text);
+            webResponseView.DocumentText = s;
         }
 
         #endregion
