@@ -36,6 +36,9 @@
       * 修复`ResponseRaw`有时候会抛出异常的bug
       #### [1.5.4.2]2016.11.17
       * 修复bug
+      #### [1.5.4.4]2016.11.24
+      * 更新nuget下载没有dll的问题
+      * 更新ioc组件版本
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
