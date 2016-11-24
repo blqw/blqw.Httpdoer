@@ -19,6 +19,8 @@
       修复`ContentTypeAttribute`特性不生效的问题
       [1.2.4] 2016.11.17
       修复bug
+      [1.2.4.1] 2016.11.24
+      修复nuget下载后没有dll的问题
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw Httpdoer</tags>
