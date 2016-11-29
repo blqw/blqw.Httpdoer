@@ -62,19 +62,28 @@ namespace blqw.Web
                 request.Response = Convert(response, request.CookieMode != HttpCookieMode.None);
                 request.OnEnd(request.Response);
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
                 timer.OnError();
-                var res = Convert((HttpWebResponse)ex.Response, request.CookieMode != HttpCookieMode.None);
-                res.Exception = ex;
-                request.Response = res;
                 request.Logger?.Write(TraceEventType.Error, "请求中出现错误", ex);
-                request.OnError(res);
+                var wex = ex as WebException;
+                if (wex != null)
+                {
+                    var res = Convert((HttpWebResponse)wex.Response, request.CookieMode != HttpCookieMode.None);
+                    res.Exception = ex;
+                    request.Response = res;
+                }
+                else
+                {
+                    var res = new HttpResponse { Exception = ex };
+                    request.Response = res;
+                }
+                request.OnError(request.Response);
             }
             finally
             {
                 timer.OnEnd();
-                request.Logger?.Write(TraceEventType.Verbose, () => request.Response.ResponseRaw);
+                request.Logger?.Write(TraceEventType.Verbose, () => request.Response?.ResponseRaw);
                 request.Logger?.Write(TraceEventType.Information, timer.ToString());
             }
             ((HttpResponse)request.Response).RequestData = data;

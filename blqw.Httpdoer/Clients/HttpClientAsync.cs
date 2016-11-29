@@ -111,14 +111,14 @@ namespace blqw.Web
             catch (Exception ex)
             {
                 timer.OnError();
+                request.Logger?.Write(TraceEventType.Error, "异步请求中出现错误", ex);
                 if (ex is TaskCanceledException)
                 {
                     ex = new TimeoutException("请求已超时");
                 }
                 var res = new HttpResponse { Exception = ex };
-                request.OnError(res);
                 request.Response = res;
-                request.Logger?.Write(TraceEventType.Error, "异步请求中出现错误", ex);
+                request.OnError(res);
             }
             finally
             {
