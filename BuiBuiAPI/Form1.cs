@@ -416,7 +416,7 @@ namespace BuiBuiAPI
             append(obj, 0);
             return buffer.join('');
         };
-        $('pre').append(jsonFormat('$jsonString$'));
+        $('pre').append(jsonFormat($jsonString$));
     </script>
   </body>
 </html>
