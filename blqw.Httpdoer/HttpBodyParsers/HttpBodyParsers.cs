@@ -10,12 +10,20 @@ namespace blqw.Web
     /// </summary>
     public static class HttpBodyParsers
     {
-        private static readonly List<IHttpBodyParser> _Cache;
+        private static readonly IList<IHttpBodyParser> _cache;
 
         static HttpBodyParsers()
         {
-            _Cache = MEF.PlugIns.GetExports<IHttpBodyParser>().ToList();
+            _cache = MEF.PlugIns.GetExports<IHttpBodyParser>().ToList().AsReadOnly();
         }
+
+        //public static IList<IHttpBodyParser> Cache { get; private set; }
+
+        /// <summary>
+        /// 解析器个数
+        /// </summary>
+        public static int Count => _cache.Count;
+
 
         /// <summary>
         /// 默认解析器,当存在charset时解析为字符串,否则解析为字节流
@@ -63,6 +71,6 @@ namespace blqw.Web
         /// <param name="type"></param>
         /// <param name="format"></param>
         public static IHttpBodyParser Get(string type, string format) 
-            => _Cache.FirstOrDefault(it => it.IsMatch(type, format));
+            => _cache.FirstOrDefault(it => it.IsMatch(type, format));
     }
 }
