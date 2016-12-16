@@ -1,5 +1,7 @@
-﻿using System;
+﻿using blqw;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,11 +25,33 @@ namespace BuiBuiAPI
         public string ResponseCookieRaw { get; set; }
         public string LogsRTF { get; set; }
         public string FilePath { get; set; }
+        public string Description { get; set; }
 
         public override string ToString()
+            => Description ?? (URL + Environment.NewLine + Method);
+
+        public void Save(string dir)
         {
-            return URL + Environment.NewLine + Method;
+            if (Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir);
+            }
+            var path = Path.Combine(dir, DateTime.Now.Ticks.ToString());
+            for (int i = 0; i < 10; i++)
+            {
+                if (File.Exists(path) == false)
+                {
+                    var json = this.ToJsonString();
+                    File.WriteAllText(path, json);
+                    return;
+                }
+                path = Path.Combine(dir, DateTime.Now.Ticks.ToString());
+            }
+            throw new InvalidOperationException("文件保存失败");
         }
+
+        public void Delete()
+            => File.Delete(FilePath);
     }
 
     public class Param

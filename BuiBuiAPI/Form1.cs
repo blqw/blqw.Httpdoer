@@ -477,14 +477,8 @@ namespace BuiBuiAPI
                                 }).ToList(),
                 ResponseHeaders = (List<Header>)gridParams.DataSource,
                 ResponseCookies = (List<Cookie>)gridResponseCookies.DataSource,
-            };
-            if (Directory.Exists("History/") == false)
-            {
-                Directory.CreateDirectory("History");
-            }
-            var path = $"History/{DateTime.Now.Ticks}";
-            var json = history.ToJsonString();
-            File.WriteAllText(path, json);
+            };            
+            history.Save("History");
             RefreshHistory();
         }
 
@@ -544,14 +538,32 @@ namespace BuiBuiAPI
         {
             var history = listHistories.SelectedItem as HistoryData;
             if (history == null) return;
-            if (Directory.Exists("Favorite/") == false)
+            var frm = new Form();
+            frm.FormBorderStyle = FormBorderStyle.None;
+            var txt = new TextBox();
+            txt.Width = 100;
+            frm.Controls.Add(txt);
+            frm.TopLevel = true;
+            frm.TopMost = true;
+            txt.LostFocus += (a, b) => frm.Close();
+            txt.KeyPress += (a, b) =>
             {
-                Directory.CreateDirectory("Favorite");
-            }
-            var newpath = $"Favorite/{DateTime.Now.Ticks}";
-            if (File.Exists(newpath)) return;
-            File.Copy(history.FilePath, newpath);
-            RefreshFavorite();
+                if (b.KeyChar == 13 && string.IsNullOrWhiteSpace(txt.Text) == false)
+                {
+                    if (Directory.Exists("Favorite/") == false)
+                    {
+                        Directory.CreateDirectory("Favorite");
+                    }
+                    history.Description = txt.Text;
+                    history.Save("Favorite");
+                    history.Description = null;
+                    RefreshFavorite();
+                    frm.Close();
+                }
+            };
+            frm.Show();
+            frm.Size = txt.Size;
+            frm.Location = new Point(Cursor.Position.X - txt.Width, Cursor.Position.Y - txt.Height);
         }
 
         //点击取消收藏按钮
@@ -559,7 +571,7 @@ namespace BuiBuiAPI
         {
             var history = listFavorite.SelectedItem as HistoryData;
             if (history == null) return;
-            File.Delete(history.FilePath);
+            history.Delete();
             RefreshFavorite();
         }
 
@@ -618,6 +630,15 @@ namespace BuiBuiAPI
             {
                 rtxtResponseBody.Text = (cbbEncoding.SelectedValue as Encoding ?? Encoding.Default).GetString(body);
             }
+        }
+
+        // 删除历史
+        private void DeleteHistory(object sender, EventArgs e)
+        {
+            var history = listHistories.SelectedItem as HistoryData;
+            if (history == null) return;
+            history.Delete();
+            RefreshHistory();
         }
     }
 }
