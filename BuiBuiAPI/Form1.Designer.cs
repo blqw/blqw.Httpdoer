@@ -39,6 +39,7 @@
             this.listHistories = new System.Windows.Forms.ListBox();
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.收藏ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.删除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pageFavorite = new System.Windows.Forms.TabPage();
             this.listFavorite = new System.Windows.Forms.ListBox();
             this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -49,6 +50,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.tabMain = new System.Windows.Forms.TabControl();
             this.pageParams = new System.Windows.Forms.TabPage();
+            this.tabRequestData = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.gridParams = new System.Windows.Forms.DataGridView();
             this.colParamsName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colParamsLocation = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -56,6 +59,8 @@
             this.colRemove = new System.Windows.Forms.DataGridViewButtonColumn();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.解析Get参数ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pageCustomRequestData = new System.Windows.Forms.TabPage();
+            this.txtCustomRequestData = new System.Windows.Forms.TextBox();
             this.pageRequest = new System.Windows.Forms.TabPage();
             this.txtRequestRaw = new System.Windows.Forms.TextBox();
             this.pageResponse = new System.Windows.Forms.TabPage();
@@ -112,7 +117,6 @@
             this.zhCNzhq08ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userAgentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.删除ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelSide.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.pageHistory.SuspendLayout();
@@ -123,8 +127,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHistory)).BeginInit();
             this.tabMain.SuspendLayout();
             this.pageParams.SuspendLayout();
+            this.tabRequestData.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridParams)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
+            this.pageCustomRequestData.SuspendLayout();
             this.pageRequest.SuspendLayout();
             this.pageResponse.SuspendLayout();
             this.tabResponse.SuspendLayout();
@@ -161,7 +168,7 @@
             // btnRefresh
             // 
             this.btnRefresh.Location = new System.Drawing.Point(137, 51);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(56, 23);
             this.btnRefresh.TabIndex = 5;
@@ -185,7 +192,7 @@
             this.pageHistory.Controls.Add(this.listHistories);
             this.pageHistory.Location = new System.Drawing.Point(4, 22);
             this.pageHistory.Name = "pageHistory";
-            this.pageHistory.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.pageHistory.Padding = new System.Windows.Forms.Padding(3);
             this.pageHistory.Size = new System.Drawing.Size(192, 488);
             this.pageHistory.TabIndex = 0;
             this.pageHistory.Text = "历史";
@@ -214,21 +221,28 @@
             this.收藏ToolStripMenuItem,
             this.删除ToolStripMenuItem});
             this.contextMenuStrip3.Name = "contextMenuStrip3";
-            this.contextMenuStrip3.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip3.Size = new System.Drawing.Size(101, 48);
             // 
             // 收藏ToolStripMenuItem
             // 
             this.收藏ToolStripMenuItem.Name = "收藏ToolStripMenuItem";
-            this.收藏ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.收藏ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.收藏ToolStripMenuItem.Text = "收藏";
             this.收藏ToolStripMenuItem.Click += new System.EventHandler(this.Favoring_Click);
+            // 
+            // 删除ToolStripMenuItem
+            // 
+            this.删除ToolStripMenuItem.Name = "删除ToolStripMenuItem";
+            this.删除ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.删除ToolStripMenuItem.Text = "删除";
+            this.删除ToolStripMenuItem.Click += new System.EventHandler(this.DeleteHistory);
             // 
             // pageFavorite
             // 
             this.pageFavorite.Controls.Add(this.listFavorite);
             this.pageFavorite.Location = new System.Drawing.Point(4, 22);
             this.pageFavorite.Name = "pageFavorite";
-            this.pageFavorite.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.pageFavorite.Padding = new System.Windows.Forms.Padding(3);
             this.pageFavorite.Size = new System.Drawing.Size(192, 488);
             this.pageFavorite.TabIndex = 1;
             this.pageFavorite.Text = "收藏";
@@ -328,14 +342,37 @@
             // 
             // pageParams
             // 
-            this.pageParams.Controls.Add(this.gridParams);
+            this.pageParams.Controls.Add(this.tabRequestData);
             this.pageParams.Location = new System.Drawing.Point(4, 22);
             this.pageParams.Name = "pageParams";
-            this.pageParams.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.pageParams.Padding = new System.Windows.Forms.Padding(3);
             this.pageParams.Size = new System.Drawing.Size(754, 438);
             this.pageParams.TabIndex = 0;
             this.pageParams.Text = "Params";
             this.pageParams.UseVisualStyleBackColor = true;
+            // 
+            // tabRequestData
+            // 
+            this.tabRequestData.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+            this.tabRequestData.Controls.Add(this.tabPage1);
+            this.tabRequestData.Controls.Add(this.pageCustomRequestData);
+            this.tabRequestData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabRequestData.Location = new System.Drawing.Point(3, 3);
+            this.tabRequestData.Name = "tabRequestData";
+            this.tabRequestData.SelectedIndex = 0;
+            this.tabRequestData.Size = new System.Drawing.Size(748, 432);
+            this.tabRequestData.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.gridParams);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(740, 403);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "列表";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // gridParams
             // 
@@ -354,7 +391,7 @@
             this.gridParams.Location = new System.Drawing.Point(3, 3);
             this.gridParams.Name = "gridParams";
             this.gridParams.RowTemplate.Height = 23;
-            this.gridParams.Size = new System.Drawing.Size(748, 432);
+            this.gridParams.Size = new System.Drawing.Size(734, 397);
             this.gridParams.TabIndex = 1;
             this.gridParams.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridParams_CellContentClick);
             // 
@@ -418,12 +455,33 @@
             this.解析Get参数ToolStripMenuItem.Text = "解析参数";
             this.解析Get参数ToolStripMenuItem.Click += new System.EventHandler(this.ParseParams_Click);
             // 
+            // pageCustomRequestData
+            // 
+            this.pageCustomRequestData.Controls.Add(this.txtCustomRequestData);
+            this.pageCustomRequestData.Location = new System.Drawing.Point(4, 25);
+            this.pageCustomRequestData.Name = "pageCustomRequestData";
+            this.pageCustomRequestData.Padding = new System.Windows.Forms.Padding(3);
+            this.pageCustomRequestData.Size = new System.Drawing.Size(740, 403);
+            this.pageCustomRequestData.TabIndex = 1;
+            this.pageCustomRequestData.Text = "自定义";
+            this.pageCustomRequestData.UseVisualStyleBackColor = true;
+            this.pageCustomRequestData.Enter += new System.EventHandler(this.Selectd_CustomPostData);
+            // 
+            // txtCustomRequestData
+            // 
+            this.txtCustomRequestData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtCustomRequestData.Location = new System.Drawing.Point(3, 3);
+            this.txtCustomRequestData.Multiline = true;
+            this.txtCustomRequestData.Name = "txtCustomRequestData";
+            this.txtCustomRequestData.Size = new System.Drawing.Size(734, 397);
+            this.txtCustomRequestData.TabIndex = 0;
+            // 
             // pageRequest
             // 
             this.pageRequest.Controls.Add(this.txtRequestRaw);
             this.pageRequest.Location = new System.Drawing.Point(4, 22);
             this.pageRequest.Name = "pageRequest";
-            this.pageRequest.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.pageRequest.Padding = new System.Windows.Forms.Padding(5);
             this.pageRequest.Size = new System.Drawing.Size(754, 438);
             this.pageRequest.TabIndex = 2;
             this.pageRequest.Text = "Request";
@@ -475,7 +533,7 @@
             this.pageResponseBody.Controls.Add(this.label6);
             this.pageResponseBody.Location = new System.Drawing.Point(4, 25);
             this.pageResponseBody.Name = "pageResponseBody";
-            this.pageResponseBody.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.pageResponseBody.Padding = new System.Windows.Forms.Padding(5);
             this.pageResponseBody.Size = new System.Drawing.Size(746, 409);
             this.pageResponseBody.TabIndex = 0;
             this.pageResponseBody.Text = "正文内容";
@@ -486,7 +544,7 @@
             this.cbbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbEncoding.FormattingEnabled = true;
             this.cbbEncoding.Location = new System.Drawing.Point(35, 5);
-            this.cbbEncoding.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbbEncoding.Margin = new System.Windows.Forms.Padding(2);
             this.cbbEncoding.Name = "cbbEncoding";
             this.cbbEncoding.Size = new System.Drawing.Size(112, 20);
             this.cbbEncoding.TabIndex = 1;
@@ -521,7 +579,7 @@
             this.pageResponseView.Controls.Add(this.webResponseView);
             this.pageResponseView.Location = new System.Drawing.Point(4, 25);
             this.pageResponseView.Name = "pageResponseView";
-            this.pageResponseView.Size = new System.Drawing.Size(748, 412);
+            this.pageResponseView.Size = new System.Drawing.Size(746, 409);
             this.pageResponseView.TabIndex = 2;
             this.pageResponseView.Text = "视图";
             this.pageResponseView.UseVisualStyleBackColor = true;
@@ -532,7 +590,7 @@
             this.webResponseView.Location = new System.Drawing.Point(0, 0);
             this.webResponseView.MinimumSize = new System.Drawing.Size(20, 20);
             this.webResponseView.Name = "webResponseView";
-            this.webResponseView.Size = new System.Drawing.Size(748, 412);
+            this.webResponseView.Size = new System.Drawing.Size(746, 409);
             this.webResponseView.TabIndex = 0;
             // 
             // pageResponseHeaders
@@ -540,8 +598,8 @@
             this.pageResponseHeaders.Controls.Add(this.gridResponseHeaders);
             this.pageResponseHeaders.Location = new System.Drawing.Point(4, 25);
             this.pageResponseHeaders.Name = "pageResponseHeaders";
-            this.pageResponseHeaders.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.pageResponseHeaders.Size = new System.Drawing.Size(748, 412);
+            this.pageResponseHeaders.Padding = new System.Windows.Forms.Padding(3);
+            this.pageResponseHeaders.Size = new System.Drawing.Size(746, 409);
             this.pageResponseHeaders.TabIndex = 1;
             this.pageResponseHeaders.Text = "响应头";
             this.pageResponseHeaders.UseVisualStyleBackColor = true;
@@ -563,7 +621,7 @@
             this.gridResponseHeaders.ReadOnly = true;
             this.gridResponseHeaders.RowHeadersVisible = false;
             this.gridResponseHeaders.RowTemplate.Height = 23;
-            this.gridResponseHeaders.Size = new System.Drawing.Size(742, 406);
+            this.gridResponseHeaders.Size = new System.Drawing.Size(740, 403);
             this.gridResponseHeaders.TabIndex = 2;
             // 
             // colResponseHeaderName
@@ -593,7 +651,7 @@
             this.pageResponseCookie.Controls.Add(this.txtResponseCookies);
             this.pageResponseCookie.Location = new System.Drawing.Point(4, 25);
             this.pageResponseCookie.Name = "pageResponseCookie";
-            this.pageResponseCookie.Size = new System.Drawing.Size(748, 412);
+            this.pageResponseCookie.Size = new System.Drawing.Size(746, 409);
             this.pageResponseCookie.TabIndex = 3;
             this.pageResponseCookie.Text = "Cookies";
             this.pageResponseCookie.UseVisualStyleBackColor = true;
@@ -620,7 +678,7 @@
             this.gridResponseCookies.ReadOnly = true;
             this.gridResponseCookies.RowHeadersVisible = false;
             this.gridResponseCookies.RowTemplate.Height = 23;
-            this.gridResponseCookies.Size = new System.Drawing.Size(748, 293);
+            this.gridResponseCookies.Size = new System.Drawing.Size(746, 290);
             this.gridResponseCookies.TabIndex = 2;
             // 
             // colResponseCookieName
@@ -681,7 +739,7 @@
             this.txtResponseCookies.Name = "txtResponseCookies";
             this.txtResponseCookies.ReadOnly = true;
             this.txtResponseCookies.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtResponseCookies.Size = new System.Drawing.Size(748, 119);
+            this.txtResponseCookies.Size = new System.Drawing.Size(746, 119);
             this.txtResponseCookies.TabIndex = 0;
             // 
             // pageResponseRaw
@@ -689,7 +747,7 @@
             this.pageResponseRaw.Controls.Add(this.txtResponseRaw);
             this.pageResponseRaw.Location = new System.Drawing.Point(4, 25);
             this.pageResponseRaw.Name = "pageResponseRaw";
-            this.pageResponseRaw.Size = new System.Drawing.Size(748, 412);
+            this.pageResponseRaw.Size = new System.Drawing.Size(746, 409);
             this.pageResponseRaw.TabIndex = 4;
             this.pageResponseRaw.Text = "Raw";
             this.pageResponseRaw.UseVisualStyleBackColor = true;
@@ -703,7 +761,7 @@
             this.txtResponseRaw.Name = "txtResponseRaw";
             this.txtResponseRaw.ReadOnly = true;
             this.txtResponseRaw.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtResponseRaw.Size = new System.Drawing.Size(748, 412);
+            this.txtResponseRaw.Size = new System.Drawing.Size(746, 409);
             this.txtResponseRaw.TabIndex = 0;
             // 
             // pageLogs
@@ -711,7 +769,7 @@
             this.pageLogs.Controls.Add(this.rtxtLogs);
             this.pageLogs.Location = new System.Drawing.Point(4, 22);
             this.pageLogs.Name = "pageLogs";
-            this.pageLogs.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.pageLogs.Padding = new System.Windows.Forms.Padding(5);
             this.pageLogs.Size = new System.Drawing.Size(754, 438);
             this.pageLogs.TabIndex = 4;
             this.pageLogs.Text = "Logs";
@@ -752,9 +810,9 @@
             this.flowLayoutPanel1.Controls.Add(this.btnShowInsertMenu);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 54);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(4);
             this.flowLayoutPanel1.Size = new System.Drawing.Size(762, 48);
             this.flowLayoutPanel1.TabIndex = 13;
             // 
@@ -762,7 +820,7 @@
             // 
             this.panel5.Controls.Add(this.ckbKeepAlive);
             this.panel5.Location = new System.Drawing.Point(6, 6);
-            this.panel5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel5.Margin = new System.Windows.Forms.Padding(2);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(87, 30);
             this.panel5.TabIndex = 13;
@@ -784,7 +842,7 @@
             // 
             this.panel6.Controls.Add(this.ckbKeepCookie);
             this.panel6.Location = new System.Drawing.Point(97, 6);
-            this.panel6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(62, 30);
             this.panel6.TabIndex = 14;
@@ -806,7 +864,7 @@
             this.panel4.Controls.Add(this.label4);
             this.panel4.Controls.Add(this.label5);
             this.panel4.Location = new System.Drawing.Point(163, 6);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(104, 30);
             this.panel4.TabIndex = 10;
@@ -857,7 +915,7 @@
             this.panel3.Controls.Add(this.label3);
             this.panel3.Controls.Add(this.cbbContentType);
             this.panel3.Location = new System.Drawing.Point(271, 6);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(313, 30);
             this.panel3.TabIndex = 12;
@@ -1012,13 +1070,6 @@
             this.mozilla50WindowsNT100WOW64AppleWebKit53736KHTMLLikeGeckoChrome5102704103Safari53736ToolStripMenuItem.Text = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrom" +
     "e/51.0.2704.103 Safari/537.36";
             // 
-            // 删除ToolStripMenuItem
-            // 
-            this.删除ToolStripMenuItem.Name = "删除ToolStripMenuItem";
-            this.删除ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.删除ToolStripMenuItem.Text = "删除";
-            this.删除ToolStripMenuItem.Click += new System.EventHandler(this.DeleteHistory);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1042,8 +1093,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHistory)).EndInit();
             this.tabMain.ResumeLayout(false);
             this.pageParams.ResumeLayout(false);
+            this.tabRequestData.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridParams)).EndInit();
             this.contextMenuStrip2.ResumeLayout(false);
+            this.pageCustomRequestData.ResumeLayout(false);
+            this.pageCustomRequestData.PerformLayout();
             this.pageRequest.ResumeLayout(false);
             this.pageRequest.PerformLayout();
             this.pageResponse.ResumeLayout(false);
@@ -1159,6 +1214,10 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cbbEncoding;
         private System.Windows.Forms.ToolStripMenuItem 删除ToolStripMenuItem;
+        private System.Windows.Forms.TabControl tabRequestData;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage pageCustomRequestData;
+        private System.Windows.Forms.TextBox txtCustomRequestData;
     }
 }
 

@@ -26,7 +26,8 @@ namespace BuiBuiAPI
         public string LogsRTF { get; set; }
         public string FilePath { get; set; }
         public string Description { get; set; }
-
+        public string CustomRequestData { get; set; }
+        public int RequestDataMode { get; set; }
         public override string ToString()
             => Description ?? (URL + Environment.NewLine + Method);
 

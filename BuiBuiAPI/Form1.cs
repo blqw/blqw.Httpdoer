@@ -145,34 +145,41 @@ namespace BuiBuiAPI
         //写入参数
         private void WriteParams(Httpdoer doer)
         {
-            foreach (DataGridViewRow row in gridParams.Rows)
+            if (tabRequestData.SelectedTab == pageCustomRequestData)
             {
-                if (row.IsNewRow) continue;
-                var name = row.Cells[colParamsName.Name].Value as string ?? "";
-                var location = row.Cells[colParamsLocation.Name].Value as string;
-                var value = row.Cells[colParamsValue.Name].Value as string;
-                switch (location)
-                {
-                    case null:
-                    case "Auto":
-                        doer.Params.Add(name, value);
-                        break;
-                    case "Query":
-                        doer.Query.Add(name, value);
-                        break;
-                    case "Body":
-                        doer.Body.Add(name, value);
-                        break;
-                    case "Header":
-                        doer.Headers.Add(name, value);
-                        break;
-                    case "Path":
-                        doer.PathParams.Add(name, value);
-                        break;
-                    default:
-                        break;
-                }
+                doer.Body.Wirte((doer.Body.ContentType.Charset ?? Encoding.UTF8).GetBytes(txtCustomRequestData.Text));
             }
+            else
+            {
+                foreach (DataGridViewRow row in gridParams.Rows)
+                {
+                    if (row.IsNewRow) continue;
+                    var name = row.Cells[colParamsName.Name].Value as string ?? "";
+                    var location = row.Cells[colParamsLocation.Name].Value as string;
+                    var value = row.Cells[colParamsValue.Name].Value as string;
+                    switch (location)
+                    {
+                        case null:
+                        case "Auto":
+                            doer.Params.Add(name, value);
+                            break;
+                        case "Query":
+                            doer.Query.Add(name, value);
+                            break;
+                        case "Body":
+                            doer.Body.Add(name, value);
+                            break;
+                        case "Header":
+                            doer.Headers.Add(name, value);
+                            break;
+                        case "Path":
+                            doer.PathParams.Add(name, value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }            
         }
 
         // 在界面上显示头
@@ -450,6 +457,8 @@ namespace BuiBuiAPI
             }
             gridParams.DataSource = history.ResponseHeaders;
             gridResponseCookies.DataSource = history.ResponseCookies;
+            txtCustomRequestData.Text = history.CustomRequestData;
+            tabRequestData.SelectedIndex = history.RequestDataMode;
         }
 
         //保存历史记录
@@ -477,6 +486,8 @@ namespace BuiBuiAPI
                                 }).ToList(),
                 ResponseHeaders = (List<Header>)gridParams.DataSource,
                 ResponseCookies = (List<Cookie>)gridResponseCookies.DataSource,
+                CustomRequestData = txtCustomRequestData.Text,
+                RequestDataMode = tabRequestData.SelectedIndex,
             };            
             history.Save("History");
             RefreshHistory();
@@ -639,6 +650,21 @@ namespace BuiBuiAPI
             if (history == null) return;
             history.Delete();
             RefreshHistory();
+        }
+
+        //选中自定义参数
+        private void Selectd_CustomPostData(object sender, EventArgs e)
+        {
+            switch (cbbHttpMethod.Text.ToLowerInvariant())
+            {
+                case "get":
+                case "delete":
+                    cbbHttpMethod.Text = "Post";
+                    cbbContentType.Text = "application/json;charset=utf-8";
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
