@@ -43,6 +43,7 @@
       * 修复无法获取`IHttpBodyParser`的问题
       #### [1.5.4.8] 2017.01.11
       * 修复一个逻辑上的错误,多个`Httpdoer`不在共享一个日志对象,而是共享全局侦听器
+      * 更新依赖组件
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>
