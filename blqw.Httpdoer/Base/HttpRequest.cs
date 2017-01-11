@@ -57,7 +57,8 @@ namespace blqw.Web
             Params = new HttpParams(@params);
             _paramContainer = @params;
             Timeout = new TimeSpan(0, 0, 15);
-            Logger = Httpdoer.DefaultLogger;
+            Logger = new IOC.LoggerSource(Httpdoer.DefaultLogger.Name, Httpdoer.DefaultLogger.Switch.Level);
+            Logger.Listeners.AddRange(Httpdoer.DefaultLogger.Listeners);
             CookieMode = HttpCookieMode.ApplicationCache;
             Proxy = WebRequest.DefaultWebProxy;
         }

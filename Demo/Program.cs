@@ -20,26 +20,13 @@ namespace Demo
         }
         static void Main(string[] args)
         {
-            Debug.Listeners.Add(new ConsoleTraceListener());
-            while (true)
-            {
-                //Console.WriteLine();
-                Console.WriteLine(Bing.Translate2("hello world"));
-                //var user = new User("03f53a51-3291-11e6-b28c-288023a0fe60");
-
-
-
-
-
-
-
-
-
-
-
-
-                Console.Read();
-            }
+            var www = new Httpdoer("www.baidu.com");
+            www.Body.ContentType = HttpContentType.Json;
+            www.Method = HttpRequestMethod.Post;
+            www.Body.Wirte(Encoding.UTF8.GetBytes("{'a':1}"));
+//           www.Body.AddModel(new { a = 1, b = "fdsfdas", c = new { d = true, e = DateTime.Now, f = new[] { 1, 2, 3, 4, 5 } } });
+            var str = www.GetString();
+            Console.WriteLine(str);
         }
 
 
