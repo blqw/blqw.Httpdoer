@@ -62,9 +62,12 @@
     <Compile Include="HttpBodyParsers\HttpStreamBodyParser.cs" />
     <Compile Include="Extensions\HttpParamsExtensions.cs" />
     <Compile Include="Interface\IHttpTracking.cs" />
+    <Compile Include="Params\HttpQuery.cs" />
     <Compile Include="Params\LazyDeserializeBodyParameters.cs" />
     <Compile Include="Reflection\PropertyHandler.cs" />
     <Compile Include="Reflection\PropertyHandlerCollection.cs" />
+    <Compile Include="Sealed\ArrayEncodeMode.cs" />
+    <Compile Include="Sealed\ObjectEncodeMode.cs" />
     <Compile Include="Sealed\URIExtensions.cs" />
     <Compile Include="HttpBodyParsers\HttpBodyDefaultParser.cs" />
     <Compile Include="HttpBodyParsers\HttpFormBodyParser.cs" />

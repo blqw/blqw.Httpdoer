@@ -44,6 +44,8 @@
       #### [1.5.4.8] 2017.01.11
       * 修复一个逻辑上的错误,多个`Httpdoer`不在共享一个日志对象,而是共享全局侦听器
       * 更新依赖组件
+      #### [1.5.4.9] 2017.01.16
+      * 新增控制`Query`参数中数组和对象的名称解析方式的枚举`ArrayEncodeMode`和`ObjectEncodeMode`
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>HttpClient Http WebClient RestClient blqw</tags>

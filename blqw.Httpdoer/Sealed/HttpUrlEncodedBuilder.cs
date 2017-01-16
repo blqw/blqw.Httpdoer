@@ -31,6 +31,17 @@ namespace blqw.Web
             return query ?? "";
         }
 
+
+        /// <summary>
+        /// 数组编码模式
+        /// </summary>
+        public ArrayEncodeMode ArrayEncodeMode { get; set; }
+
+        /// <summary>
+        /// 对象编码模式
+        /// </summary>
+        public ObjectEncodeMode ObjectEncodeMode { get; set; }
+
         /// <summary>
         /// 追加一个参数
         /// </summary>
@@ -51,7 +62,7 @@ namespace blqw.Web
         /// <param name="buffer"> 字符缓存 </param>
         /// <param name="preName"> 参数名 </param>
         /// <param name="value"> 参数值 </param>
-        private static void AppendObject(StringBuilder buffer, string preName, object value)
+        private void AppendObject(StringBuilder buffer, string preName, object value)
         {
             var str = value as string
                       ?? (value as IFormattable)?.ToString(null, null)
@@ -67,18 +78,53 @@ namespace blqw.Web
                 return;
             }
 
-            var array = (value as IEnumerable)?.GetEnumerator()
-                        ?? value as IEnumerator;
+            var array = (value as IEnumerable)?.GetEnumerator() ?? value as IEnumerator;
             if (array != null)
             {
-                if (array.MoveNext())
+                switch (ArrayEncodeMode)
                 {
-                    AppendObject(buffer, preName + "[]", array.Current);
-                    while (array.MoveNext())
-                    {
-                        buffer.Append('&');
-                        AppendObject(buffer, preName + "[]", array.Current);
-                    }
+                    case ArrayEncodeMode.Merge:
+                        AppendObject(buffer, preName, string.Join(",", array));
+                        break;
+                    case ArrayEncodeMode.JQuery:
+                        if (array.MoveNext())
+                        {
+                            AppendObject(buffer, preName + "[]", array.Current);
+                            while (array.MoveNext())
+                            {
+                                buffer.Append('&');
+                                AppendObject(buffer, preName + "[]", array.Current);
+                            }
+                        }
+                        break;
+                    case ArrayEncodeMode.Json:
+                        AppendObject(buffer, preName, IOC.ComponentServices.ToJsonString(array));
+                        break;
+                    case ArrayEncodeMode.Asp:
+                        if (array.MoveNext())
+                        {
+                            var i = 0;
+                            AppendObject(buffer, $"{preName}[{i}]", array.Current);
+                            while (array.MoveNext())
+                            {
+                                i++;
+                                buffer.Append('&');
+                                AppendObject(buffer, $"{preName}[{i}]", array.Current);
+                            }
+                        }
+                        break;
+                    case ArrayEncodeMode.Default:
+                    default:
+                        if (array.MoveNext())
+                        {
+                            AppendObject(buffer, preName, array.Current);
+                            while (array.MoveNext())
+                            {
+                                buffer.Append('&');
+                                AppendObject(buffer, preName, array.Current);
+                            }
+                        }
+                        break;
                 }
                 return;
             }
@@ -96,12 +142,44 @@ namespace blqw.Web
                 return;
             }
 
-            AppendObject(buffer, ConcatName(preName, props[0].Name), props[0].GetValue(value));
-            for (var i = 1; i < pCount; i++)
+            switch (ObjectEncodeMode)
             {
-                buffer.Append('&');
-                AppendObject(buffer, ConcatName(preName, props[i].Name), props[i].GetValue(value));
+                case ObjectEncodeMode.NameOnly:
+                    {
+                        AppendObject(buffer, props[0].Name, props[0].GetValue(value));
+                        for (var i = 1; i < pCount; i++)
+                        {
+                            buffer.Append('&');
+                            AppendObject(buffer, props[0].Name, props[i].GetValue(value));
+                        }
+                    }
+                    break;
+                case ObjectEncodeMode.JQuery:
+                    {
+                        AppendObject(buffer, ConcatName(preName, props[0].Name, 1), props[0].GetValue(value));
+                        for (var i = 1; i < pCount; i++)
+                        {
+                            buffer.Append('&');
+                            AppendObject(buffer, ConcatName(preName, props[i].Name, 1), props[i].GetValue(value));
+                        }
+                    }
+                    break;
+                case ObjectEncodeMode.Json:
+                    AppendObject(buffer, preName, IOC.ComponentServices.ToJsonString(value));
+                    break;
+                case ObjectEncodeMode.Default:
+                default:
+                    {
+                        AppendObject(buffer, ConcatName(preName, props[0].Name, 0), props[0].GetValue(value));
+                        for (var i = 1; i < pCount; i++)
+                        {
+                            buffer.Append('&');
+                            AppendObject(buffer, ConcatName(preName, props[i].Name, 0), props[i].GetValue(value));
+                        }
+                    }
+                    break;
             }
+
         }
 
         /// <summary>
@@ -133,13 +211,14 @@ namespace blqw.Web
         }
 
         /// <summary>
-        /// 连接参数名,如果存在前缀的话 组成 `前缀.参数名` 的格式
+        /// 连接参数名
         /// </summary>
         /// <param name="pre"> 参数名前缀 </param>
         /// <param name="name"> 参数名 </param>
         /// <returns> </returns>
         /// <remarks> 周子鉴 2015.08.01 </remarks>
-        private static string ConcatName(string pre, string name) => pre == null ? name : $"{pre}[{name}]"; //jquery采用该命名方式 $.param(myObject)
-        //=> pre == null ? name : $"{pre}.{name}";
+        private static string ConcatName(string pre, string name, int style) => pre == null ? name : (style == 1 ? $"{pre}[{name}]" : $"{pre}.{name}");
+
+
     }
 }

@@ -40,7 +40,8 @@ namespace blqw.Web
             {
                 _UrlEncodedBuilder = new HttpUrlEncodedBuilder();
             }
-
+            _UrlEncodedBuilder.ArrayEncodeMode = request.Query.ArrayEncodeMode;
+            _UrlEncodedBuilder.ObjectEncodeMode = request.Query.ObjectEncodeMode;
 
             if (request.Version != null)
             {

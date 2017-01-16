@@ -52,7 +52,7 @@ namespace blqw.Web
             var @params = new HttpParameterContainer();
             Body = new HttpBody(@params);
             Headers = new HttpHeaders(@params);
-            Query = new HttpStringParams(@params, HttpParamLocation.Query);
+            Query = new HttpQuery(@params, HttpParamLocation.Query);
             PathParams = new HttpStringParams(@params, HttpParamLocation.Path);
             Params = new HttpParams(@params);
             _paramContainer = @params;
@@ -119,7 +119,7 @@ namespace blqw.Web
         /// <summary>
         /// HTTP 请求查询参数
         /// </summary>
-        public HttpStringParams Query { get; }
+        public HttpQuery Query { get; }
 
         /// <summary>
         /// 代理设置

@@ -44,7 +44,7 @@ namespace blqw.Web
         /// <summary>
         /// HTTP 请求查询参数
         /// </summary>
-        HttpStringParams Query { get; }
+        HttpQuery Query { get; }
 
         /// <summary>
         /// HTTP 请求路径参数

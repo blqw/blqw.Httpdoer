@@ -3,7 +3,7 @@
     /// <summary>
     /// 表示值为字符串的参数集合
     /// </summary>
-    public sealed class HttpStringParams : HttpParamsBase<string>
+    public class HttpStringParams : HttpParamsBase<string>
     {
         internal HttpStringParams(IHttpParameterContainer @params, HttpParamLocation location)
             : base(@params, location)
