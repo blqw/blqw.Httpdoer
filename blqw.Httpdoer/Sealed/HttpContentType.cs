@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -183,13 +185,16 @@ namespace blqw.Web
             Type = type;
             Format = format;
             Charset = charset;
-            _Parser = parser;
+            _parser = parser;
+            _formatServices = null;
         }
 
         /// <summary>
         /// 自定义解析器
         /// </summary>
-        private readonly IHttpBodyParser _Parser;
+        private readonly IHttpBodyParser _parser;
+
+        private IDictionary<Type, object> _formatServices;
 
         /// <summary>
         /// 类型
@@ -224,6 +229,26 @@ namespace blqw.Web
         }
 
         /// <summary>
+        /// 注册服务
+        /// </summary>
+        /// <param name="formatType"></param>
+        /// <param name="formatService"></param>
+        public void RegisterFormatService(Type formatType, object formatService)
+        {
+            if (formatType == null) throw new ArgumentNullException(nameof(formatType));
+            if (formatService == null)
+            {
+                _formatServices?.Remove(formatType);
+                return;
+            }
+            if (_formatServices == null)
+            {
+                _formatServices = new Dictionary<Type, object>();
+            }
+            _formatServices[formatType] = formatService;
+        }
+
+        /// <summary>
         /// 返回一个对象，该对象为指定类型提供格式设置服务。
         /// </summary>
         /// <returns> 如果 <see cref="T:System.IFormatProvider" /> 实现能够提供该类型的对象，则为 <paramref name="formatType" /> 所指定对象的实例；否则为 null。 </returns>
@@ -234,7 +259,7 @@ namespace blqw.Web
             if ((formatType == typeof(IHttpBodyParser))
                 || (formatType == typeof(ICustomFormatter)))
             {
-                return _Parser ?? HttpBodyParsers.Get(Type, Format) ?? HttpBodyParsers.Default;
+                return _parser ?? HttpBodyParsers.Get(Type, Format) ?? HttpBodyParsers.Default;
             }
             if (formatType == typeof(Encoding))
             {
@@ -243,6 +268,10 @@ namespace blqw.Web
             if (formatType == typeof(string))
             {
                 return $"{Type}/{Format}";
+            }
+            if (_formatServices != null && _formatServices.TryGetValue(formatType,out var service))
+            {
+                return service;
             }
             return null;
         }
@@ -292,6 +321,6 @@ namespace blqw.Web
         public bool Equals(HttpContentType other) => Equals(Charset, other.Charset)
                                                      && string.Equals(Format, other.Format, StringComparison.OrdinalIgnoreCase)
                                                      && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
-                                                     && (_Parser == other._Parser);
+                                                     && (_parser == other._parser);
     }
 }

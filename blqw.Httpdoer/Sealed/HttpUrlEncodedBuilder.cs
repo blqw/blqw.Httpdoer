@@ -56,6 +56,23 @@ namespace blqw.Web
             AppendObject(_buffer, name, value);
         }
 
+        private string TryToString(object value)
+        {
+            switch (value)
+            {
+                case string s:
+                    return s;
+                case bool b:
+                    return b ? "true" : "false";
+                case IFormattable f:
+                    return f.ToString(null, null);
+                case IConvertible c:
+                    return c.ToString(null);
+                default:
+                    return null;
+            }
+        }
+
         /// <summary>
         /// 将有一个参数写入<paramref name="buffer" />中
         /// </summary>
@@ -64,9 +81,7 @@ namespace blqw.Web
         /// <param name="value"> 参数值 </param>
         private void AppendObject(StringBuilder buffer, string preName, object value)
         {
-            var str = value as string
-                      ?? (value as IFormattable)?.ToString(null, null)
-                      ?? (value as IConvertible)?.ToString(null);
+            var str = TryToString(value);
             if ((str != null) || (value == null))
             {
                 if (preName != null)
@@ -84,7 +99,19 @@ namespace blqw.Web
                 switch (ArrayEncodeMode)
                 {
                     case ArrayEncodeMode.Merge:
-                        AppendObject(buffer, preName, string.Join(",", array));
+                        AppendEscape(buffer, preName);
+                        buffer.Append('=');
+                        if (array.MoveNext())
+                        {
+                            var v = array.Current;
+                            AppendEscape(buffer, TryToString(v) ?? IOC.ComponentServices.ToJsonString(v));
+                            while (array.MoveNext())
+                            {
+                                v = array.Current;
+                                buffer.Append(',');
+                                AppendEscape(buffer, TryToString(v) ?? IOC.ComponentServices.ToJsonString(v));
+                            }
+                        }
                         break;
                     case ArrayEncodeMode.JQuery:
                         if (array.MoveNext())
@@ -150,7 +177,7 @@ namespace blqw.Web
                         for (var i = 1; i < pCount; i++)
                         {
                             buffer.Append('&');
-                            AppendObject(buffer, props[0].Name, props[i].GetValue(value));
+                            AppendObject(buffer, props[i].Name, props[i].GetValue(value));
                         }
                     }
                     break;

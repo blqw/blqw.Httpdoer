@@ -12,23 +12,23 @@ namespace blqw.Web
     public enum ArrayEncodeMode
     {
         /// <summary>
-        /// a=1&amp;a=2&amp;a=3
+        /// a=x&amp;a=y&amp;a=z
         /// </summary>
         Default = 0,
         /// <summary>
-        /// a=1,2,3
+        /// a=x,y,z
         /// </summary>
         Merge = 1,
         /// <summary>
-        /// a[]=1&amp;a[]=2&amp;a[]=3
+        /// a[]=x&amp;a[]=y&amp;a[]=z
         /// </summary>
         JQuery = 2,
         /// <summary>
-        /// a=[1,2,3]
+        /// a=["x","y","z"]
         /// </summary>
         Json = 3,
         /// <summary>
-        /// a[0]=1&amp;a[1]=2&amp;a[2]=3
+        /// a[0]=x&amp;a[1]=y&amp;a[2]=z
         /// </summary>
         Asp = 4
     }

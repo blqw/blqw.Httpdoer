@@ -34,10 +34,10 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(VersionString.VERSION + VersionString.BUG_FIX)]
 [assembly: AssemblyFileVersion(VersionString.VERSION + VersionString.BUG_FIX)]
-//[assembly: AssemblyInformationalVersion(VersionString.VERSION + "-beta")]
+[assembly: AssemblyInformationalVersion(VersionString.VERSION + "-beta")]
 
 internal static class VersionString
 {
-    public const string VERSION = "1.5.4";
-    public const string BUG_FIX = ".8";
+    public const string VERSION = "1.5.5";
+    public const string BUG_FIX = ".0";
 }

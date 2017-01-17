@@ -60,7 +60,9 @@ namespace blqw.Web
             {
                 _UrlEncodedBuilder.Clear(null);
             }
-
+            var request = formatProvider.GetFormat(typeof(IHttpRequest)) as IHttpRequest;
+            _UrlEncodedBuilder.ArrayEncodeMode = request?.Query.ArrayEncodeMode ?? ArrayEncodeMode.Default;
+            _UrlEncodedBuilder.ObjectEncodeMode = request?.Query.ObjectEncodeMode ?? ObjectEncodeMode.Default;
             foreach (var item in body)
             {
                 _UrlEncodedBuilder.AppendObject(item.Key, item.Value);
