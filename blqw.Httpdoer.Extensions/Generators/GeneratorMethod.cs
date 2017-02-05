@@ -97,7 +97,7 @@ namespace blqw.Web.Extensions
                                    .Replace("\r", "%0D")
                                    .Replace("\"", "%22");
                 case "Params":
-                    return string.Join(";\r\n                ", Params.Select(GetSetParamDefinition));
+                    return string.Join("\r\n                ", Params.Select(GetSetParamDefinition));
                 case "return":
                     return ReturnType != null && ReturnType != typeof(void) && ReturnType != typeof(Task) ? "return" : "";
                 case "await":
@@ -158,19 +158,17 @@ namespace blqw.Web.Extensions
             var value = p.VarName;
             if (p.Format != null)
             {
-                return $@"
-var fmt = {value} as IFormattable;
-if (fmt == null)
-{{
-    SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()});
-}}
-else
-{{
-    SetParam({name}, {value}.ToString(""{p.Format}"", null), HttpParamLocation.{p.Location.ToString()});
-}}
-";
+                return $@"var {value}_fmt = {value} as IFormattable;
+                if ({value}_fmt == null)
+                {{
+                    SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()});
+                }}
+                else
+                {{
+                    SetParam({name}, {value}_fmt.ToString(""{p.Format}"", null), HttpParamLocation.{p.Location.ToString()});
+                }}";
             }
-            return $@"SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()})";
+            return $@"SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()});";
         }
 
         public static string GetRemoveParamDefinition(GeneratorParam p)

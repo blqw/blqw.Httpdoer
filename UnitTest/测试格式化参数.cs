@@ -18,7 +18,7 @@ namespace UnitTest
             Assert.AreEqual($"http://baidu.com/test/?now={Uri.EscapeDataString(time.ToString())}", url0);
 
 
-            var req1 = www.Test1(time);
+            var req1 = www.Test1(time, time, new object());
             var url1 = req1.RequestData.Url;
             Assert.AreEqual($"http://baidu.com/test/?now={Uri.EscapeDataString(time.ToString("yyyy-MM-dd"))}", url1);
         }
@@ -29,7 +29,7 @@ namespace UnitTest
             IHttpResponse Test0([Query]DateTime now);
 
             [HttpGet("/test/")]
-            IHttpResponse Test1([Query(Format = "yyyy-MM-dd")]DateTime now);
+            IHttpResponse Test1([Query(Format = "yyyy-MM-dd")]DateTime now, [Header(Format = "yyyy-MM-dd")]DateTime head, [Header(Format = "yyyy-MM-dd")]object head2);
         }
     }
 
