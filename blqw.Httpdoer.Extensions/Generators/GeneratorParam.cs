@@ -13,23 +13,26 @@ namespace blqw.Web.Extensions
         {
             VarName = p.Name;
             ParamType = p.ParameterType;
-
+            
             var attr = p.GetCustomAttribute<HttpParamAttribute>();
-            Location = attr?.Location ?? HttpParamLocation.Auto;
-            if (attr?.NameIsNull == true)
+            if (attr == null)
             {
-                ParamName = null;
+                Location = HttpParamLocation.Auto;
+                ParamName = VarName;
+                Format = null;
             }
             else
             {
-                ParamName = attr?.Name ?? VarName;
+                Location = attr.Location;
+                Format = attr.Format;
+                ParamName = attr.Name ?? (attr.NameIsNull ? null : VarName);
             }
         }
 
-        public string ParamName { get; private set; }
-        public string VarName { get; private set; }
-        public Type ParamType { get; private set; }
-        public HttpParamLocation Location { get; private set; }
-        
+        public string ParamName { get; }
+        public string VarName { get;  }
+        public Type ParamType { get;  }
+        public HttpParamLocation Location { get; }
+        public string Format { get;}
     }
 }

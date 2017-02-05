@@ -155,7 +155,22 @@ namespace blqw.Web.Extensions
             {
                 name = $"\"{name}\"";
             }
-            return $@"SetParam({name}, {p.VarName}, HttpParamLocation.{p.Location.ToString()})";
+            var value = p.VarName;
+            if (p.Format != null)
+            {
+                return $@"
+var fmt = {value} as IFormattable;
+if (fmt == null)
+{{
+    SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()});
+}}
+else
+{{
+    SetParam({name}, {value}.ToString(""{p.Format}"", null), HttpParamLocation.{p.Location.ToString()});
+}}
+";
+            }
+            return $@"SetParam({name}, {value}, HttpParamLocation.{p.Location.ToString()})";
         }
 
         public static string GetRemoveParamDefinition(GeneratorParam p)
