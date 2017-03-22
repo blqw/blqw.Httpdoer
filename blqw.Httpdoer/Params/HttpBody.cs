@@ -14,6 +14,7 @@ namespace blqw.Web
         /// 为属性<see cref="ContentType" />提供数据
         /// </summary>
         private HttpContentType _contentType;
+        internal byte[] _customConent;
 
         /// <summary>
         /// 初始化请求正文
@@ -34,7 +35,7 @@ namespace blqw.Web
         public HttpBody(HttpContentType contentType, byte[] responseBody)
             : base(new LazyDeserializeBodyParameters(contentType, responseBody), HttpParamLocation.Body)
         {
-            ResponseBody = responseBody;
+            _customConent = responseBody;
             ContentType = contentType;
             IsResponseBody = true;
         }
@@ -64,9 +65,14 @@ namespace blqw.Web
         public bool IsResponseBody { get; }
 
         /// <summary>
+        /// 是否只读
+        /// </summary>
+        public override bool IsReadOnly => _customConent != null || IsResponseBody;
+
+        /// <summary>
         /// 响应正文字节
         /// </summary>
-        public byte[] ResponseBody { get; }
+        public byte[] ResponseBody => _customConent;
 
         /// <summary>
         /// 使用指定的格式格式化当前实例的值。
@@ -126,9 +132,9 @@ namespace blqw.Web
         /// <returns> </returns>
         public byte[] GetBytes()
         {
-            if (ResponseBody != null)
+            if (_customConent != null)
             {
-                return ResponseBody;
+                return _customConent;
             }
             var parser = ContentType.GetFormat(typeof(IHttpBodyParser)) as IHttpBodyParser;
             Debug.Assert(parser != null, "parser != null");
@@ -136,9 +142,22 @@ namespace blqw.Web
         }
 
         /// <summary>
+        /// 向body中写入写入字节流
+        /// </summary>
+        /// <param name="bytes"> 需要写入的字节流 </param>
+        public void Wirte(byte[] bytes)
+        {
+            if (IsResponseBody)
+            {
+                throw new NotImplementedException("响应流不可写");
+            }
+            _customConent = bytes;
+        }
+
+        /// <summary>
         /// Body中是否有值
         /// </summary>
         /// <returns></returns>
-        public bool HasAny() => Params.Any(it => it.Location == HttpParamLocation.Body);
+        public bool HasAny() => _customConent != null || Params.Any(it => it.Location == HttpParamLocation.Body);
     }
 }

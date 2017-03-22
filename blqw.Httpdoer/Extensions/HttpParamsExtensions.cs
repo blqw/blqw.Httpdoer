@@ -154,11 +154,6 @@ namespace blqw.Web
             }
         }
 
-        /// <summary>
-        /// 向body中写入写入字节流
-        /// </summary>
-        /// <param name="body"> </param>
-        /// <param name="bytes"> 需要写入的字节流 </param>
-        public static void Wirte(this HttpBody body, byte[] bytes) => body?.Set(null, bytes);
+      
     }
 }

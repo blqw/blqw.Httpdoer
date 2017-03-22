@@ -114,7 +114,7 @@ namespace blqw.Web
                     AddHeader("Connection", "Keep-Alive");
                 }
             }
-            Body = parser.Serialize(null, bodyparams, _provider);
+            Body = request.Body._customConent ?? parser.Serialize(null, bodyparams, _provider);
             request.OnParamsExtracted();
             var query = _UrlEncodedBuilder.ToString();
 

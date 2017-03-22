@@ -52,9 +52,13 @@ namespace blqw.Web
                 {
                     return (T)value;
                 }
-                return  (T)IOC.ComponentServices.Converter.Convert(value, typeof(T));
+                return (T)IOC.ComponentServices.Converter.Convert(value, typeof(T));
             }
-            set { Params.SetValue(Location, name, value); }
+            set
+            {
+                ThrowIfReadOnly();
+                Params.SetValue(Location, name, value);
+            }
         }
 
 
@@ -80,14 +84,22 @@ namespace blqw.Web
         /// </summary>
         /// <param name="name"> 参数名 </param>
         /// <param name="value"> 参数值 </param>
-        public void Set(string name, T value) => Params.SetValue(Location, name, value);
+        public void Set(string name, T value)
+        {
+            ThrowIfReadOnly();
+            Params.SetValue(Location, name, value);
+        }
 
         /// <summary>
         /// 添加参数
         /// </summary>
         /// <param name="name"> 参数名 </param>
         /// <param name="value"> 参数值 </param>
-        public void Add(string name, T value) => Params.AddValue(Location, name, value);
+        public void Add(string name, T value)
+        {
+            ThrowIfReadOnly();
+            Params.AddValue(Location, name, value);
+        }
 
         /// <summary>
         /// 获取指定名称的参数值
@@ -109,10 +121,19 @@ namespace blqw.Web
         /// </summary>
         public void Clear()
         {
+            ThrowIfReadOnly();
             var keys = (from item in Params where item.Location == Location select item.Name).ToArray();
             for (int i = 0, length = keys.Length; i < length; i++)
             {
                 Params.Remove(Location, keys[i]);
+            }
+        }
+
+        private void ThrowIfReadOnly()
+        {
+            if (IsReadOnly)
+            {
+                throw new NotImplementedException("集合是只读的");
             }
         }
 
@@ -122,6 +143,11 @@ namespace blqw.Web
         /// <param name="name"> 待判断的参数名称 </param>
         /// <returns> </returns>
         public bool Contains(string name) => Params.Contains(Location, name);
+
+        /// <summary>
+        /// 是否只读
+        /// </summary>
+        public virtual bool IsReadOnly { get; }
 
         private class InnerDictionary : IDictionary<string, object>
         {
