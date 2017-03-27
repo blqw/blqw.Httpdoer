@@ -13,9 +13,12 @@ namespace Demo
         static void Main(string[] args)
         {
             var www = new Httpdoer("www.baidu.com");
-            www.Query.AddModel(new {a = new[] {1, 2, 3}});
-            www.Query.ArrayEncodeMode =ArrayEncodeMode.Json;
-            Console.WriteLine(www.ToString("q"));
+            www.Body.ContentType = HttpContentType.Json;
+            www.Method = HttpRequestMethod.Post;
+            www.Body.Wirte(Encoding.UTF8.GetBytes("{'a':1}"));
+            // www.Body.AddModel(new { a = 1, b = "fdsfdas", c = new { d = true, e = DateTime.Now, f = new[] { 1, 2, 3, 4, 5 } } });
+            var str = www.GetString();
+            Console.WriteLine(str);
 
         }
 
