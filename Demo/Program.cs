@@ -18,6 +18,9 @@ namespace Demo
             www.Body.Wirte(Encoding.UTF8.GetBytes("{'a':1}"));
             // www.Body.AddModel(new { a = 1, b = "fdsfdas", c = new { d = true, e = DateTime.Now, f = new[] { 1, 2, 3, 4, 5 } } });
             var str = www.GetString();
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine(www.Response.RequestData.Raw);
+            Console.WriteLine("-----------------------------------");
             Console.WriteLine(str);
 
         }
