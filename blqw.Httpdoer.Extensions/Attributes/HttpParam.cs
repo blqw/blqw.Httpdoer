@@ -10,7 +10,7 @@ namespace blqw.Web.Extensions
     {
         public string Name { get; }
         public bool NameIsNull { get; }
-
+        public string Format { get; set; }
         public HttpParamAttribute(string name)
         {
             Name = name;

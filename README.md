@@ -21,6 +21,9 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
+#### [1.5.5.1] 2017.03.23
+- 修复`Body.Wirte`后使用Json发出会变乱码的问题 
+
 #### [1.5.5.0-beta] 2017.01.18
 * 新增控制`Query`参数中数组和对象的名称解析方式的枚举`ArrayEncodeMode`和`ObjectEncodeMode`
 * `Query`中的枚举,默认可以控制`Content-Type=x-www-form-urlencoded`时,`Body`的序列化行为
