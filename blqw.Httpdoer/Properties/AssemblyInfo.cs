@@ -38,6 +38,6 @@ using System.Runtime.InteropServices;
 
 internal static class VersionString
 {
-    public const string VERSION = "1.5.4";
-    public const string BUG_FIX = ".9";
+    public const string VERSION = "1.5.5";
+    public const string BUG_FIX = ".1";
 }

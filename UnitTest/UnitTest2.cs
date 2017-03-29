@@ -33,6 +33,8 @@ namespace UnitTest
                 "{\"OwnerId\":510789,\"BrokerKId\":49005,\"BrokerName\":\"肖佳\",\"Phone\":\"15012345600\",\"EarnestMoney\":15200,\"HouseList\":[{\"VillageName\":\"凤凰城\",\"Building\":\"1幢\",\"HouseId\":\"12\"}]}"
                 , json);
             www.Body.ContentType = HttpContentType.Form;
+            www.Query.ObjectEncodeMode = ObjectEncodeMode.JQuery;
+            www.Query.ArrayEncodeMode = ArrayEncodeMode.JQuery;
             var str = Uri.UnescapeDataString(www.Body.ToString());
             Assert.AreEqual(
                 "OwnerId=510789&BrokerKId=49005&BrokerName=肖佳&Phone=15012345600&EarnestMoney=15200&HouseList[][VillageName]=凤凰城&HouseList[][Building]=1幢&HouseList[][HouseId]=12"
@@ -72,6 +74,8 @@ namespace UnitTest
             Assert.AreEqual(9, ((object[])arr[3])[1]);
             
             www.Body.ContentType = HttpContentType.Form;
+            www.Query.ObjectEncodeMode = ObjectEncodeMode.JQuery;
+            www.Query.ArrayEncodeMode = ArrayEncodeMode.JQuery;
             Assert.AreEqual(
                 "a[]=1,2,3&a[]=4,5,6&a[]=7&a[][]=8&a[][]=9"
                 , Uri.UnescapeDataString(www.Body.ToString())

@@ -21,8 +21,12 @@ static void Main(string[] args)
 ```
 
 ### 更新日志 
-#### [1.5.4.9] 2017.03.23
+#### [1.5.5.1] 2017.03.23
 - 修复`Body.Wirte`后使用Json发出会变乱码的问题 
+
+#### [1.5.5.0-beta] 2017.01.18
+* 新增控制`Query`参数中数组和对象的名称解析方式的枚举`ArrayEncodeMode`和`ObjectEncodeMode`
+* `Query`中的枚举,默认可以控制`Content-Type=x-www-form-urlencoded`时,`Body`的序列化行为
 
 #### [1.5.4.8] 2017.01.11
 * 修复一个逻辑上的错误,多个`Httpdoer`不在共享一个日志对象,而是共享全局侦听器

@@ -11,6 +11,11 @@ namespace blqw.Web
     public sealed class HttpBody : HttpParamsBase<object>, IFormattable
     {
         /// <summary>
+        /// HTTP请求对象
+        /// </summary>
+        private readonly IHttpRequest _request;
+
+        /// <summary>
         /// 为属性<see cref="ContentType" />提供数据
         /// </summary>
         private HttpContentType _contentType;
@@ -19,10 +24,12 @@ namespace blqw.Web
         /// <summary>
         /// 初始化请求正文
         /// </summary>
+        /// <param name="request"> HTTP请求对象 </param>
         /// <param name="params"> 参数容器 </param>
-        internal HttpBody(IHttpParameterContainer @params)
+        internal HttpBody(IHttpRequest request, IHttpParameterContainer @params)
             : base(@params, HttpParamLocation.Body)
         {
+            _request = request;
             ContentType = HttpContentType.Undefined;
             IsResponseBody = false;
         }
@@ -56,6 +63,8 @@ namespace blqw.Web
             set
             {
                 _contentType = value;
+                if (_request != null)
+                    _contentType.RegisterFormatService(typeof(IHttpRequest), _request);
             }
         }
 

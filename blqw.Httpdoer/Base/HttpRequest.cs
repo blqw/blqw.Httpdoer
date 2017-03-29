@@ -50,13 +50,13 @@ namespace blqw.Web
         public HttpRequest()
         {
             var @params = new HttpParameterContainer();
-            Body = new HttpBody(@params);
+            Body = new HttpBody(this, @params);
             Headers = new HttpHeaders(@params);
-            Query = new HttpStringParams(@params, HttpParamLocation.Query);
+            Query = new HttpQuery(@params, HttpParamLocation.Query);
             PathParams = new HttpStringParams(@params, HttpParamLocation.Path);
             Params = new HttpParams(@params);
             _paramContainer = @params;
-            Timeout = new  TimeSpan(0, 0, 15);
+            Timeout = new TimeSpan(0, 0, 15);
             Logger = new TraceSource(Httpdoer.DefaultLogger.Name, Httpdoer.DefaultLogger.Switch.Level);
             Logger.Listeners.AddRange(Httpdoer.DefaultLogger.Listeners);
             CookieMode = HttpCookieMode.ApplicationCache;
@@ -119,7 +119,7 @@ namespace blqw.Web
         /// <summary>
         /// HTTP 请求查询参数
         /// </summary>
-        public HttpStringParams Query { get; }
+        public HttpQuery Query { get; }
 
         /// <summary>
         /// 代理设置
